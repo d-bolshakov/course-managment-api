@@ -1,0 +1,12 @@
+node_modules
+Dockerfile.migrations
+Dockerfile.backend
+docker-compose.yml
+docker-compose.dev.yml
+.dockerignore
+README.md
+.git
+.gitignore
+dist
+.development.env
+.production.env
