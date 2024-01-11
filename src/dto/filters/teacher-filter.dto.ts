@@ -12,9 +12,9 @@ export class TeacherFilterDto {
     {},
     {
       each: true,
-      message: "subject should be a number",
+      message: "subjectId should be a number",
     }
   )
   @Type(() => Number)
-  subject: number[];
+  subjectId: number[] | number;
 }

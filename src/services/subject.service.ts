@@ -6,7 +6,6 @@ import {
   FindManyOptions,
   FindOptionsRelations,
   FindOptionsWhere,
-  In,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
 
@@ -24,48 +23,39 @@ class SubjectService {
 
   async getOne(
     conditions: FindOptionsWhere<Subject>,
-    relations?: FindOptionsRelations<Subject>
+    options?: { relations?: FindOptionsRelations<Subject> }
   ) {
     return this.subjectRepository.findOne({
       where: conditions,
-      relations,
+      relations: options?.relations,
     });
   }
 
   async getMany(options?: {
     conditions?: FindOptionsWhere<Subject>;
     relations?: FindOptionsRelations<Subject>;
-    disablePagination?: boolean;
     page?: number;
   }) {
     const findOptions: FindManyOptions<Subject> = {
       where: options?.conditions,
       relations: options?.relations,
     };
-    if (!options?.disablePagination) {
-      findOptions.take = 10;
-      findOptions.skip = getPaginationOffset(options?.page || 1);
-    }
+    findOptions.take = 10;
+    findOptions.skip = getPaginationOffset(options?.page || 1);
     return this.subjectRepository.find(findOptions);
   }
 
-  async getById(id: number) {
-    const subject = await this.getOne({ id });
+  async getById(
+    id: number,
+    options?: { relations?: FindOptionsRelations<Subject> }
+  ) {
+    const subject = await this.getOne({ id }, options);
     if (!subject) throw BadRequest(`Subject with id ${id} does not exist`);
     return subject;
   }
 
   async getByTitle(title: string) {
     return this.getOne({ title });
-  }
-
-  async getManyByTeacherId(id: number) {
-    return this.getMany({
-      conditions: {
-        teachers: { id },
-      },
-      disablePagination: true,
-    });
   }
 
   async update(id: number, dto: SubjectDto) {

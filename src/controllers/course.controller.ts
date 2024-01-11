@@ -1,30 +1,24 @@
-import { plainToInstance } from "class-transformer";
 import { courseService } from "../services";
 import { NextFunction, Request, Response } from "express";
-import { CourseDto, BaseDtoGroups } from "../dto/";
 
 class CourseController {
   async create({ body, user }: Request, res: Response, next: NextFunction) {
     try {
       const response = await courseService.create(body, user!);
-      res.status(201).json(
-        plainToInstance(CourseDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }
   }
 
-  async getOne({ params: { id } }: Request, res: Response, next: NextFunction) {
+  async getOne(
+    { params: { courseId } }: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const response = await courseService.getById(Number(id));
-      res.status(200).json(
-        plainToInstance(CourseDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      const response = await courseService.getById(Number(courseId));
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }
@@ -36,47 +30,36 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const options = {
+      const response = await courseService.getMany({
+        filters: filters as any,
         page: Number(page),
-        relations: { subject: true, teacher: true },
-      };
-      let response;
-      if (Object.keys(filters).length)
-        response = await courseService.getManyFiltered({
-          ...options,
-          filters,
-        });
-      else response = await courseService.getMany(options);
-      res.status(200).json(
-        plainToInstance(CourseDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      });
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }
   }
 
   async update(
-    { body, params: { id } }: Request,
+    { body, params: { courseId } }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const response = await courseService.update(Number(id), body);
-      res.status(201).json(
-        plainToInstance(CourseDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      const response = await courseService.update(Number(courseId), body);
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }
   }
 
-  async delete({ params: { id } }: Request, res: Response, next: NextFunction) {
+  async delete(
+    { params: { courseId } }: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      res.status(201).json(courseService.delete(Number(id)));
+      res.status(201).json(courseService.delete(Number(courseId)));
     } catch (e) {
       next(e);
     }

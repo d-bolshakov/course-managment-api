@@ -5,7 +5,8 @@ import {
   AuthMiddleware,
   IdValidationMiddleware,
 } from "../middleware/";
-import { TeacherDto, TeacherFilterDto, BaseDtoGroups } from "../dto/";
+import { TeacherDto, BaseDtoGroups } from "../dto/";
+import { TeacherFilterDto } from "../dto/filters";
 
 export const TeacherRouter = Router();
 
@@ -22,11 +23,15 @@ TeacherRouter.get(
   DtoValidationMiddleware(TeacherFilterDto, "query"),
   teacherController.getMany
 );
-TeacherRouter.get("/:id", teacherController.getOne);
-TeacherRouter.get("/:id/courses", teacherController.getCoursesByTeacher);
+TeacherRouter.get("/:id", IdValidationMiddleware(), teacherController.getOne);
+TeacherRouter.get(
+  "/:id/courses",
+  IdValidationMiddleware(),
+  teacherController.getCoursesByTeacher
+);
 TeacherRouter.patch(
   "/:id",
-  IdValidationMiddleware,
+  IdValidationMiddleware(),
   AuthMiddleware,
   DtoValidationMiddleware(TeacherDto, "body", {
     groups: [BaseDtoGroups.UPDATE],
@@ -35,7 +40,7 @@ TeacherRouter.patch(
 );
 TeacherRouter.delete(
   "/:id",
-  IdValidationMiddleware,
+  IdValidationMiddleware(),
   AuthMiddleware,
   teacherController.delete
 );

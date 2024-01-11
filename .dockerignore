@@ -10,3 +10,5 @@ README.md
 dist
 .development.env
 .production.env
+todo.todo
+static

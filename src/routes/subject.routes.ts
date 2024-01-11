@@ -18,10 +18,10 @@ SubjectRouter.post(
   subjectController.create
 );
 SubjectRouter.get("/", subjectController.getMany);
-SubjectRouter.get("/:id", IdValidationMiddleware, subjectController.getOne);
+SubjectRouter.get("/:id", IdValidationMiddleware(), subjectController.getOne);
 SubjectRouter.patch(
   "/:id",
-  IdValidationMiddleware,
+  IdValidationMiddleware(),
   AuthMiddleware,
   DtoValidationMiddleware(SubjectDto, "body", {
     groups: [BaseDtoGroups.UPDATE],
@@ -30,7 +30,7 @@ SubjectRouter.patch(
 );
 SubjectRouter.delete(
   "/:id",
-  IdValidationMiddleware,
+  IdValidationMiddleware(),
   AuthMiddleware,
   subjectController.delete
 );

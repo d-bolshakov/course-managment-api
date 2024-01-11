@@ -24,30 +24,36 @@ export class CourseDto {
     ],
   })
   @IsString({
-    message: "Title should be a string",
+    message: "title should be a string",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   public title: string;
 
   @Expose({
+    groups: [BaseDtoGroups.RESPONSE_FULL],
+  })
+  @TransformDto(SubjectDto, {
+    groups: [BaseDtoGroups.RESPONSE_FULL],
+    targetDtoGroups: [BaseDtoGroups.RESPONSE_PARTIAL],
+  })
+  public subject: SubjectDto;
+
+  @Expose({
     groups: [
       BaseDtoGroups.CREATE,
       BaseDtoGroups.UPDATE,
       BaseDtoGroups.RESPONSE_FULL,
+      BaseDtoGroups.RESPONSE_PARTIAL,
     ],
   })
   @IsNumber(
     {},
     {
-      message: "Subject should be a number",
+      message: "subjectId should be a number",
       groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
     }
   )
-  @TransformDto(SubjectDto, {
-    groups: [BaseDtoGroups.RESPONSE_FULL],
-    targetDtoGroups: [BaseDtoGroups.RESPONSE_PARTIAL],
-  })
-  public subject: number | SubjectDto;
+  public subjectId: number;
 
   @Expose({
     groups: [
@@ -59,7 +65,7 @@ export class CourseDto {
   @IsNumber(
     {},
     {
-      message: "MaxStudents should be a number",
+      message: "maxStudents should be a number",
       groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
     }
   )
@@ -74,11 +80,11 @@ export class CourseDto {
   })
   @Type(() => Date)
   @IsDate({
-    message: "StartsAt should be a date",
+    message: "startsAt should be a date",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   @MinDate(new Date(), {
-    message: "StartsAt should be later than now",
+    message: "startsAt should be later than now",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   public startsAt: Date;
@@ -92,11 +98,11 @@ export class CourseDto {
   })
   @Type(() => Date)
   @IsDate({
-    message: "EndsAt should be a date",
+    message: "endsAt should be a date",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   @IsAfter("startsAt", {
-    message: "EndsAt should be later than now",
+    message: "endsAt should be later than now",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   public endsAt: Date;

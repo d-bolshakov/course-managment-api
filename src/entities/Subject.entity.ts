@@ -10,10 +10,10 @@ import { Course, Teacher } from "./";
 @Entity()
 export class Subject {
   @PrimaryGeneratedColumn()
-  public id: number = 0;
+  public id: number;
 
   @Column("varchar", { length: 30, nullable: false, unique: true })
-  public title: string = "";
+  public title: string;
 
   @OneToMany(() => Course, (course) => course.subject)
   courses: Course[];

@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  RelationId,
 } from "typeorm";
 import { Course, Student } from "./";
 
@@ -16,11 +17,15 @@ export enum Status {
 @Entity()
 export class Enrollment {
   @PrimaryGeneratedColumn()
-  id: number = 0;
+  id: number;
 
   @ManyToOne(() => Course, (course) => course.enrollments, { nullable: false })
   @JoinColumn()
   course!: Course;
+
+  @Column("integer", { nullable: false })
+  @RelationId((enrollment: Enrollment) => enrollment.course)
+  courseId: number;
 
   @ManyToOne(() => Student, (student) => student.enrollments, {
     nullable: false,
@@ -28,9 +33,16 @@ export class Enrollment {
   @JoinColumn()
   student!: Student;
 
+  @Column("integer", { nullable: false })
+  @RelationId((enrollment: Enrollment) => enrollment.student)
+  studentId: number;
+
   @Column("enum", { enum: Status, default: Status.APPLIED, nullable: false })
   status: Status = Status.APPLIED;
 
-  @Column("timestamptz", { nullable: false })
-  changedAt: Date = new Date();
+  @Column("timestamptz", {
+    nullable: false,
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  changedAt: Date;
 }

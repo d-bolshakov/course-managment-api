@@ -1,30 +1,37 @@
 import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
 import { Course, User } from "../entities/";
-import { subjectService, teacherService } from "./";
+import { teacherService } from "./";
 import { CourseDto } from "../dto/course.dto";
 import {
   Between,
   FindManyOptions,
   FindOptionsRelations,
+  FindOptionsSelect,
   FindOptionsWhere,
   LessThanOrEqual,
   MoreThanOrEqual,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
+import { CourseFilterDto } from "../dto/filters";
 
 class CourseService {
   private courseRepository = AppDataSource.getRepository(Course);
 
   async create(dto: CourseDto, user: User) {
-    const teacher = await teacherService.getByUserId(user.id);
-    const teacherSubjects = await subjectService.getManyByTeacherId(teacher.id);
-    const subject = teacherSubjects.find((s) => s.id === dto.subject);
+    const teacher = await teacherService.getByUserId(user.id, {
+      relations: { subjects: true },
+    });
+    const subject = teacher.subjects.find((s) => s.id === dto.subjectId);
     if (!subject)
       throw BadRequest(
-        `Teacher with id ${teacher.id} does not have subject ${dto.subject} on his subjects' list`
+        `Teacher with id ${teacher.id} does not have subject ${dto.subjectId} on his subjects' list`
       );
-    const course = this.courseRepository.create(dto as Partial<Course>);
+    const course = new Course();
+    course.title = dto.title;
+    course.maxStudents = dto.maxStudents;
+    course.startsAt = dto.startsAt;
+    course.endsAt = dto.endsAt;
     course.subject = subject;
     course.teacher = teacher;
     return this.courseRepository.save(course);
@@ -32,72 +39,64 @@ class CourseService {
 
   async getOne(
     conditions: FindOptionsWhere<Course>,
-    relations?: FindOptionsRelations<Course>
+    options?: {
+      relations?: FindOptionsRelations<Course>;
+      select?: FindOptionsSelect<Course>;
+    }
   ) {
     return this.courseRepository.findOne({
       where: conditions,
-      relations,
+      relations: options?.relations,
+      select: options?.select,
     });
   }
 
-  async getMany(options?: {
-    conditions?: FindOptionsWhere<Course>;
+  async getMany(options: {
+    filters: CourseFilterDto;
     relations?: FindOptionsRelations<Course>;
-    disablePagination?: boolean;
+    select?: FindOptionsSelect<Course>;
     page?: number;
-  }) {
-    const findOptions: FindManyOptions<Course> = {
-      where: options?.conditions,
-      relations: options?.relations,
-    };
-    if (!options?.disablePagination) {
-      findOptions.take = 10;
-      findOptions.skip = getPaginationOffset(options?.page || 1);
-    }
-    return this.courseRepository.find(findOptions);
-  }
-
-  async getManyFiltered(options?: {
-    relations?: FindOptionsRelations<Course>;
-    page?: number;
-    filters: any;
   }) {
     const conditions: FindOptionsWhere<Course> = {};
-    const { subject, teacher, minStudents, startsAfter, startsBefore } =
-      options?.filters;
-    if (subject) conditions.subject = { id: subject };
-    if (teacher) conditions.teacher = { id: teacher };
-    if (minStudents) conditions.maxStudents = MoreThanOrEqual(minStudents);
+    const { subjectId, teacherId, startsAfter, startsBefore } = options.filters;
+    if (subjectId) conditions.subject = { id: subjectId };
+    if (teacherId) conditions.teacher = { id: teacherId };
     if (startsAfter || startsBefore) {
       if (startsAfter && startsBefore)
         conditions.startsAt = Between(startsAfter, startsBefore);
       else if (startsAfter) conditions.startsAt = MoreThanOrEqual(startsAfter);
       else conditions.startsAt = LessThanOrEqual(startsBefore);
     }
-    return this.getMany({
-      conditions,
+    const findOptions: FindManyOptions<Course> = {
+      where: conditions,
       relations: options?.relations,
-      page: options?.page,
-    });
+      select: options?.select,
+    };
+    findOptions.take = 10;
+    findOptions.skip = getPaginationOffset(options?.page || 1);
+    return this.courseRepository.find(findOptions);
   }
 
-  async getById(id: number) {
-    const course = await this.getOne(
-      { id },
-      {
-        teacher: true,
-        subject: true,
-      }
-    );
+  async getById(
+    id: number,
+    options?: {
+      relations?: FindOptionsRelations<Course>;
+      select?: FindOptionsSelect<Course>;
+    }
+  ) {
+    const course = await this.getOne({ id }, options);
     if (!course) throw new BadRequest(`Course with id ${id} does not exist`);
     return course;
   }
 
-  async update(id: number, dto: any) {
+  async update(id: number, dto: CourseDto) {
     const course = await this.getById(id);
     if (course.endsAt < new Date())
       throw new BadRequest(`Course with id ${id} has already ended`);
-    await this.courseRepository.update(course, dto);
+    course.startsAt = dto.startsAt;
+    course.endsAt = dto.endsAt;
+    course.maxStudents = dto.maxStudents;
+    await this.courseRepository.save(course);
     return course;
   }
 

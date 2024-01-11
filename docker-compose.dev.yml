@@ -49,9 +49,9 @@ services:
     volumes:
       - .:/app
     expose:
-      - '5000'
+      - '3000'
     ports:
-      - 5000:5000
+      - 3000:3000
     restart: always
     env_file:
       - .env

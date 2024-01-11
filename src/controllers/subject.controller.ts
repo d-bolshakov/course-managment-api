@@ -1,17 +1,11 @@
 import { subjectService } from "../services/";
 import { NextFunction, Request, Response } from "express";
-import { SubjectDto, BaseDtoGroups } from "../dto/";
-import { plainToInstance } from "class-transformer";
 
 class SubjectController {
   async create({ body }: Request, res: Response, next: NextFunction) {
     try {
       const response = await subjectService.create(body);
-      res.status(201).json(
-        plainToInstance(SubjectDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }
@@ -20,11 +14,7 @@ class SubjectController {
   async getOne({ params: { id } }: Request, res: Response, next: NextFunction) {
     try {
       const response = await subjectService.getById(Number(id));
-      res.status(200).json(
-        plainToInstance(SubjectDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }
@@ -39,11 +29,7 @@ class SubjectController {
       const response = await subjectService.getMany({
         page: Number(page),
       });
-      res.status(200).json(
-        plainToInstance(SubjectDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }
@@ -56,11 +42,7 @@ class SubjectController {
   ) {
     try {
       const response = await subjectService.update(Number(id), body);
-      res.status(201).json(
-        plainToInstance(SubjectDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }

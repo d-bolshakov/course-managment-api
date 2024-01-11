@@ -12,7 +12,13 @@ import {
   CourseRouter,
   SubjectRouter,
   TeacherRouter,
+  EnrollmentRouter,
+  AssignmentRouter,
+  SubmissionRouter,
 } from "./routes";
+
+import { TestRouter } from "./routes/test.routes";
+import fileUpload from "express-fileupload";
 
 const PORT = process.env.PORT || 5000;
 
@@ -20,6 +26,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(fileUpload());
 
 const sessionRepository = AppDataSource.getRepository(Session);
 app.use(
@@ -41,6 +48,10 @@ app.use("/auth/", AuthRouter);
 app.use("/subjects/", SubjectRouter);
 app.use("/teachers/", TeacherRouter);
 app.use("/courses/", CourseRouter);
+app.use("/enrollments/", EnrollmentRouter);
+app.use("/assignments/", AssignmentRouter);
+app.use("/submissions/", SubmissionRouter);
+app.use("/test/", TestRouter);
 
 app.use(ErrorHandlerMiddleware);
 

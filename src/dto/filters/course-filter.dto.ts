@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
-import { IsNumber, IsDate } from "class-validator";
-import { IsAfterNow, IsAfter } from "../decorators/";
+import { IsNumber, IsDate, IsBoolean } from "class-validator";
+import { IsAfterNow, IsAfter } from "../../decorators";
 
 export class CourseFilterDto {
   @Expose()
@@ -16,12 +16,12 @@ export class CourseFilterDto {
     }
   )
   @Type(() => Number)
-  subject: number;
+  subjectId: number;
 
   @Expose()
   @IsNumber()
   @Type(() => Number)
-  teacher: number;
+  teacherId: number;
 
   @Expose()
   @IsNumber()
@@ -46,4 +46,12 @@ export class CourseFilterDto {
     message: "startsBefore can't be before now",
   })
   startsBefore: Date;
+
+  @Expose()
+  @IsBoolean({ message: "started should be a boolean" })
+  started: boolean;
+
+  @Expose()
+  @IsBoolean({ message: "available should be a boolean" })
+  available: boolean;
 }

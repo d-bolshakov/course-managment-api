@@ -12,11 +12,11 @@ export class SubjectDto {
     groups: Object.values(BaseDtoGroups),
   })
   @IsString({
-    message: "Title should be a string",
+    message: "title should be a string",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   @MinLength(2, {
-    message: "Title should be longer than 2 characters",
+    message: "title should be longer than 2 characters",
     groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   public title: string;

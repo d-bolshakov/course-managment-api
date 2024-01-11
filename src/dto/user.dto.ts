@@ -22,11 +22,11 @@ export class UserDto {
     ],
   })
   @IsString({
-    message: "FirstName should be a string",
+    message: "firstName should be a string",
     groups: [AuthDtoGroups.REGISTRATION],
   })
   @MinLength(2, {
-    message: "FirstName should be longer than 2 characters",
+    message: "firstName should be longer than 2 characters",
     groups: [AuthDtoGroups.REGISTRATION],
   })
   public firstName: string;
@@ -39,11 +39,11 @@ export class UserDto {
     ],
   })
   @IsString({
-    message: "LastName should be a string",
+    message: "lastName should be a string",
     groups: [AuthDtoGroups.REGISTRATION],
   })
   @MinLength(2, {
-    message: "FirstName should be longer than 2 characters",
+    message: "lirstName should be longer than 2 characters",
     groups: [AuthDtoGroups.REGISTRATION],
   })
   public lastName: string;
@@ -59,7 +59,7 @@ export class UserDto {
   @IsEmail(
     {},
     {
-      message: "Email is not valid",
+      message: "email is not valid",
       groups: [AuthDtoGroups.REGISTRATION, AuthDtoGroups.LOGIN],
     }
   )
@@ -74,11 +74,11 @@ export class UserDto {
     groups: [AuthDtoGroups.REGISTRATION, AuthDtoGroups.LOGIN],
   })
   @IsString({
-    message: "Password should be a string",
+    message: "password should be a string",
     groups: [AuthDtoGroups.REGISTRATION, AuthDtoGroups.LOGIN],
   })
   @MinLength(6, {
-    message: "Passwword should be minimum of 6 characters",
+    message: "passwword should be minimum of 6 characters",
     groups: [AuthDtoGroups.REGISTRATION, AuthDtoGroups.LOGIN],
   })
   password: string;

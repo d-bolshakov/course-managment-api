@@ -6,17 +6,19 @@ import { TeacherDto } from "../dto/teacher.dto";
 import {
   FindManyOptions,
   FindOptionsRelations,
+  FindOptionsSelect,
   FindOptionsWhere,
   In,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
+import { TeacherFilterDto } from "../dto/filters";
 
 class TeacherService {
   private teacherRepository = AppDataSource.getRepository(Teacher);
 
   async create(dto: TeacherDto, user: User) {
     const candidate = await this.teacherRepository.findOne({
-      where: { user },
+      where: { id: user.id },
     });
     if (candidate)
       throw BadRequest(
@@ -24,8 +26,7 @@ class TeacherService {
       );
     const teacher = new Teacher();
     teacher.subjects = await subjectService.getMany({
-      conditions: { id: In(dto.subjects as number[]) },
-      disablePagination: true,
+      conditions: { id: In(dto.subjectId) },
     });
     teacher.user = user;
     await this.teacherRepository.save(teacher);
@@ -35,55 +36,60 @@ class TeacherService {
 
   async getOne(
     conditions: FindOptionsWhere<Teacher>,
-    relations?: FindOptionsRelations<Teacher>
+    options?: {
+      relations?: FindOptionsRelations<Teacher>;
+      select?: FindOptionsSelect<Teacher>;
+    }
   ) {
     return this.teacherRepository.findOne({
       where: conditions,
-      relations,
+      relations: options?.relations,
+      select: options?.select,
     });
   }
 
   async getMany(options?: {
-    conditions?: FindOptionsWhere<Teacher>;
+    filters?: TeacherFilterDto;
     relations?: FindOptionsRelations<Teacher>;
-    disablePagination?: boolean;
+    select?: FindOptionsSelect<Teacher>;
     page?: number;
   }) {
     const findOptions: FindManyOptions<Teacher> = {
-      where: options?.conditions,
       relations: options?.relations,
+      select: options?.select,
     };
-    if (!options?.disablePagination) {
-      findOptions.take = 10;
-      findOptions.skip = getPaginationOffset(options?.page || 1);
+    if (options?.filters?.subjectId) {
+      findOptions.where = Array.isArray(options.filters.subjectId)
+        ? { subjects: { id: In(options.filters.subjectId as number[]) } }
+        : {
+            subjects: { id: options.filters.subjectId as number },
+          };
     }
+    findOptions.take = 10;
+    findOptions.skip = getPaginationOffset(options?.page || 1);
     return this.teacherRepository.find(findOptions);
   }
 
-  async getManyFiltered(options: {
-    relations?: FindOptionsRelations<Teacher>;
-    filters: any;
-    page?: number;
-  }) {
-    const conditions: FindOptionsWhere<Teacher> = {};
-    const { subject } = options.filters;
-    if (subject.length) conditions.subjects = { id: In(subject) };
-    else conditions.subjects = { id: subject };
-    return this.getMany({
-      conditions,
-      relations: options.relations,
-      page: options?.page,
-    });
-  }
-
-  async getById(id: number, options?: any) {
-    const teacher = await this.getOne({ id }, options?.relations);
+  async getById(
+    id: number,
+    options?: {
+      relations?: FindOptionsRelations<Teacher>;
+      select?: FindOptionsSelect<Teacher>;
+    }
+  ) {
+    const teacher = await this.getOne({ id }, options);
     if (!teacher) throw BadRequest(`Teacher with id ${id} does not exist`);
     return teacher;
   }
 
-  async getByUserId(id: number, options?: any) {
-    const teacher = await this.getOne({ user: { id } }, options?.relations);
+  async getByUserId(
+    id: number,
+    options?: {
+      relations?: FindOptionsRelations<Teacher>;
+      select?: FindOptionsSelect<Teacher>;
+    }
+  ) {
+    const teacher = await this.getOne({ user: { id } }, options);
     if (!teacher)
       throw BadRequest(
         `Teacher associated with user with id ${id} does not exist`
@@ -100,8 +106,7 @@ class TeacherService {
     const teacher = await this.getById(id, { relations: { user: true } });
     if (dto.subjects) {
       teacher.subjects = await subjectService.getMany({
-        conditions: { id: In(dto.subjects as number[]) },
-        disablePagination: true,
+        conditions: { id: In(dto.subjectId) },
       });
     }
     return this.teacherRepository.save(teacher);

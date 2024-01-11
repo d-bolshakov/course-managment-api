@@ -1,17 +1,11 @@
 import { teacherService } from "../services/teacher.service";
 import { NextFunction, Request, Response } from "express";
-import { TeacherDto, CourseDto, BaseDtoGroups } from "../dto/";
-import { plainToInstance } from "class-transformer";
 
 class TeacherController {
   async create({ body, user }: Request, res: Response, next: NextFunction) {
     try {
       const response = await teacherService.create(body, user!);
-      res.status(201).json(
-        plainToInstance(TeacherDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }
@@ -21,12 +15,20 @@ class TeacherController {
     try {
       const response = await teacherService.getById(Number(req.params.id), {
         relations: { subjects: true, user: true },
+        select: {
+          id: true,
+          subjects: {
+            id: true,
+            title: true,
+          },
+          user: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
       });
-      res.status(200).json(
-        plainToInstance(TeacherDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }
@@ -39,11 +41,7 @@ class TeacherController {
   ) {
     try {
       const response = await teacherService.getCoursesByTeacher(Number(id));
-      res.status(201).json(
-        plainToInstance(CourseDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_PARTIAL],
-        })
-      );
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }
@@ -55,29 +53,26 @@ class TeacherController {
     next: NextFunction
   ) {
     try {
-      let response;
-      if (Object.keys(filters).length)
-        response = await teacherService.getManyFiltered({
-          filters,
-          page: Number(page),
-          relations: {
-            subjects: true,
-            user: true,
+      const response = await teacherService.getMany({
+        filters: filters as any,
+        relations: {
+          subjects: true,
+          user: true,
+        },
+        select: {
+          id: true,
+          subjects: {
+            id: true,
+            title: true,
           },
-        });
-      else
-        response = await teacherService.getMany({
-          page: Number(page),
-          relations: {
-            subjects: true,
-            user: true,
+          user: {
+            firstName: true,
+            lastName: true,
           },
-        });
-      res.status(200).json(
-        plainToInstance(TeacherDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+        },
+        page: Number(page),
+      });
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }
@@ -90,11 +85,7 @@ class TeacherController {
   ) {
     try {
       const response = await teacherService.update(Number(id), body);
-      res.status(201).json(
-        plainToInstance(TeacherDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }

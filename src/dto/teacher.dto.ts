@@ -10,21 +10,22 @@ export class TeacherDto {
   id: number;
 
   @Expose({
-    groups: [
-      BaseDtoGroups.CREATE,
-      BaseDtoGroups.UPDATE,
-      BaseDtoGroups.RESPONSE_FULL,
-    ],
+    groups: [BaseDtoGroups.RESPONSE_FULL],
+  })
+  @TransformDto(SubjectDto, {
+    targetDtoGroups: [BaseDtoGroups.RESPONSE_PARTIAL],
+    groups: [BaseDtoGroups.RESPONSE_FULL],
+  })
+  public subjects: SubjectDto[];
+
+  @Expose({
+    groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE],
   })
   @IsNumber(
     {},
     { each: true, groups: [BaseDtoGroups.CREATE, BaseDtoGroups.UPDATE] }
   )
-  @TransformDto(SubjectDto, {
-    targetDtoGroups: [BaseDtoGroups.RESPONSE_PARTIAL],
-    groups: [BaseDtoGroups.RESPONSE_FULL],
-  })
-  public subjects: number[] | SubjectDto[];
+  public subjectId: number[];
 
   @Expose({
     groups: [BaseDtoGroups.RESPONSE_FULL],
