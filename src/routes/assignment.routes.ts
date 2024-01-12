@@ -10,14 +10,14 @@ import {
   DtoValidationMiddleware,
   IdValidationMiddleware,
 } from "../middleware";
-import { CourseDto, BaseDtoGroups } from "../dto";
-import { AssignmentFilterDto, MarkFilterDto } from "../dto/filters";
+import { CourseDto } from "../dto";
+import { FilterAssignmentDto, FilterMarkDto } from "../dto/";
 
 export const AssignmentRouter = Router();
 
 AssignmentRouter.get(
   "/",
-  DtoValidationMiddleware(AssignmentFilterDto, "query"),
+  DtoValidationMiddleware(FilterAssignmentDto, "query"),
   assignmentController.getMany
 );
 AssignmentRouter.get(
@@ -28,7 +28,7 @@ AssignmentRouter.get(
 AssignmentRouter.get(
   "/:assignmentId/marks",
   IdValidationMiddleware("assignmentId"),
-  DtoValidationMiddleware(MarkFilterDto, "query"),
+  DtoValidationMiddleware(FilterMarkDto, "query"),
   markController.getMarksByAssignment
 );
 AssignmentRouter.patch(

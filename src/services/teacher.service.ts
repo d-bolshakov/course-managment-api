@@ -2,7 +2,6 @@ import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
 import { Teacher, Role, User } from "../entities/";
 import { subjectService, userService } from "./";
-import { TeacherDto } from "../dto/teacher.dto";
 import {
   FindManyOptions,
   FindOptionsRelations,
@@ -11,12 +10,12 @@ import {
   In,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { TeacherFilterDto } from "../dto/filters";
+import { CreateTeacherDto, FilterTeacherDto, UpdateTeacherDto } from "../dto/";
 
 class TeacherService {
   private teacherRepository = AppDataSource.getRepository(Teacher);
 
-  async create(dto: TeacherDto, user: User) {
+  async create(dto: CreateTeacherDto, user: User) {
     const candidate = await this.teacherRepository.findOne({
       where: { id: user.id },
     });
@@ -49,7 +48,7 @@ class TeacherService {
   }
 
   async getMany(options?: {
-    filters?: TeacherFilterDto;
+    filters?: FilterTeacherDto;
     relations?: FindOptionsRelations<Teacher>;
     select?: FindOptionsSelect<Teacher>;
     page?: number;
@@ -102,9 +101,9 @@ class TeacherService {
     return teacher.courses;
   }
 
-  async update(id: number, dto: TeacherDto) {
+  async update(id: number, dto: UpdateTeacherDto) {
     const teacher = await this.getById(id, { relations: { user: true } });
-    if (dto.subjects) {
+    if (dto.subjectId) {
       teacher.subjects = await subjectService.getMany({
         conditions: { id: In(dto.subjectId) },
       });

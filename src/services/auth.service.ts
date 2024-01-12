@@ -1,10 +1,10 @@
 import { hash, compare } from "bcryptjs";
 import { BadRequest, InternalServerError } from "http-errors";
 import { userService } from "./";
-import { UserDto } from "../dto/user.dto";
+import { LoginUserDto, RegisterUserDto } from "../dto/";
 
 class AuthService {
-  async login(dto: UserDto, session: Express.Request["session"]) {
+  async login(dto: LoginUserDto, session: Express.Request["session"]) {
     const user = await userService.getByEmail(dto.email);
     if (!user) throw BadRequest(`User with email ${dto.email} does not exist`);
     const isPassValid = await compare(dto.password, user.password);
@@ -13,7 +13,10 @@ class AuthService {
     return user;
   }
 
-  async registration(dto: UserDto, session: Express.Request["session"]) {
+  async registration(
+    dto: RegisterUserDto,
+    session: Express.Request["session"]
+  ) {
     const user = await userService.create({
       ...dto,
       password: await hash(dto.password, 3),

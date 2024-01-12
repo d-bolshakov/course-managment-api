@@ -2,7 +2,6 @@ import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
 import { Course, User } from "../entities/";
 import { teacherService } from "./";
-import { CourseDto } from "../dto/course.dto";
 import {
   Between,
   FindManyOptions,
@@ -13,12 +12,12 @@ import {
   MoreThanOrEqual,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { CourseFilterDto } from "../dto/filters";
+import { CreateCourseDto, FilterCourseDto, UpdateCourseDto } from "../dto/";
 
 class CourseService {
   private courseRepository = AppDataSource.getRepository(Course);
 
-  async create(dto: CourseDto, user: User) {
+  async create(dto: CreateCourseDto, user: User) {
     const teacher = await teacherService.getByUserId(user.id, {
       relations: { subjects: true },
     });
@@ -52,7 +51,7 @@ class CourseService {
   }
 
   async getMany(options: {
-    filters: CourseFilterDto;
+    filters: FilterCourseDto;
     relations?: FindOptionsRelations<Course>;
     select?: FindOptionsSelect<Course>;
     page?: number;
@@ -89,7 +88,7 @@ class CourseService {
     return course;
   }
 
-  async update(id: number, dto: CourseDto) {
+  async update(id: number, dto: UpdateCourseDto) {
     const course = await this.getById(id);
     if (course.endsAt < new Date())
       throw new BadRequest(`Course with id ${id} has already ended`);

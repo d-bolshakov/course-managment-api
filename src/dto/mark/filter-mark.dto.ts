@@ -1,33 +1,33 @@
-import { IsNumber } from "class-validator";
-import { Expose, Type } from "class-transformer";
+import { IsNumber, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
 
-export class MarkFilterDto {
-  @Expose()
+export class FilterMarkDto {
+  @IsOptional()
   @IsNumber({}, { message: "studentId should be a number" })
-  studentId: number;
+  readonly studentId: number;
 
-  @Expose()
+  @IsOptional()
   @IsNumber({}, { message: "courseId should be a number" })
   @Type(() => Number)
-  courseId: number;
+  readonly courseId: number;
 
-  @Expose()
+  @IsOptional()
   @IsNumber({}, { message: "submissionId should be a number" })
   @Type(() => Number)
-  submissionId: number;
+  readonly submissionId: number;
 
-  @Expose()
+  @IsOptional()
   @IsNumber({}, { message: "assignmentId should be a number" })
   @Type(() => Number)
-  assignmentId: number;
+  readonly assignmentId: number;
 
-  @Expose()
+  @IsOptional()
   @IsNumber({}, { message: "higherThan should be a number" })
   @Type(() => Number)
-  higherThan: number;
+  readonly higherThan: number;
 
-  @Expose()
+  @IsOptional()
   @IsNumber({}, { message: "lowerThan should be a number" })
   @Type(() => Number)
-  lowerThan: number;
+  readonly lowerThan: number;
 }

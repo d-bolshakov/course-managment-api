@@ -11,14 +11,17 @@ import {
   DtoValidationMiddleware,
   IdValidationMiddleware,
 } from "../middleware";
-import { CourseDto, BaseDtoGroups, SubmissionReviewDto } from "../dto";
-import { MarkFilterDto, SubmissionFilterDto } from "../dto/filters";
+import {
+  FilterMarkDto,
+  FilterSubmissionDto,
+  CreateSubmissionReviewDto,
+} from "../dto/";
 
 export const SubmissionRouter = Router();
 
 SubmissionRouter.get(
   "/",
-  DtoValidationMiddleware(SubmissionFilterDto, "query"),
+  DtoValidationMiddleware(FilterSubmissionDto, "query"),
   submissionController.getMany
 );
 SubmissionRouter.get(
@@ -29,7 +32,7 @@ SubmissionRouter.get(
 SubmissionRouter.get(
   "/:submissionId/marks",
   IdValidationMiddleware("submissionId"),
-  DtoValidationMiddleware(MarkFilterDto, "query"),
+  DtoValidationMiddleware(FilterMarkDto, "query"),
   markController.getMarksBySubmission
 );
 SubmissionRouter.delete(
@@ -42,8 +45,6 @@ SubmissionRouter.patch(
   "/:submissionId/review",
   IdValidationMiddleware("submissionId"),
   AuthMiddleware,
-  DtoValidationMiddleware(SubmissionReviewDto, "body", {
-    groups: [BaseDtoGroups.CREATE],
-  }),
+  DtoValidationMiddleware(CreateSubmissionReviewDto, "body"),
   submissionController.review
 );

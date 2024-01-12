@@ -1,20 +1,18 @@
 import { Router } from "express";
 import { authController } from "../controllers/";
 import { DtoValidationMiddleware, AuthMiddleware } from "../middleware/";
-import { UserDto, AuthDtoGroups } from "../dto/";
+import { LoginUserDto, RegisterUserDto } from "../dto/";
 
 export const AuthRouter = Router();
 
 AuthRouter.post(
   "/login",
-  DtoValidationMiddleware(UserDto, "body", { groups: [AuthDtoGroups.LOGIN] }),
+  DtoValidationMiddleware(LoginUserDto, "body"),
   authController.login
 );
 AuthRouter.post(
   "/registration",
-  DtoValidationMiddleware(UserDto, "body", {
-    groups: [AuthDtoGroups.REGISTRATION],
-  }),
+  DtoValidationMiddleware(RegisterUserDto, "body"),
   authController.registration
 );
 AuthRouter.get("/logout", AuthMiddleware, authController.logout);

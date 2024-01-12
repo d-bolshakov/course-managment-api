@@ -11,28 +11,27 @@ import {
   DtoValidationMiddleware,
   IdValidationMiddleware,
 } from "../middleware/";
-import { CourseDto, BaseDtoGroups } from "../dto/";
 import {
-  AssignmentFilterDto,
-  CourseFilterDto,
-  EnrollmentFilterDto,
-  MarkFilterDto,
-  SubmissionFilterDto,
-} from "../dto/filters";
+  CreateCourseDto,
+  UpdateCourseDto,
+  FilterAssignmentDto,
+  FilterCourseDto,
+  FilterEnrollmentDto,
+  FilterMarkDto,
+  FilterSubmissionDto,
+} from "../dto";
 
 export const CourseRouter = Router();
 
 CourseRouter.post(
   "/",
   AuthMiddleware,
-  DtoValidationMiddleware(CourseDto, "body", {
-    groups: [BaseDtoGroups.CREATE],
-  }),
+  DtoValidationMiddleware(CreateCourseDto, "body"),
   courseController.create
 );
 CourseRouter.get(
   "/",
-  DtoValidationMiddleware(CourseFilterDto, "query"),
+  DtoValidationMiddleware(FilterCourseDto, "query"),
   courseController.getMany
 );
 CourseRouter.get(
@@ -43,17 +42,14 @@ CourseRouter.get(
 CourseRouter.get(
   "/:courseId/marks",
   IdValidationMiddleware("courseId"),
-  DtoValidationMiddleware(MarkFilterDto, "query"),
+  DtoValidationMiddleware(FilterMarkDto, "query"),
   markController.getMarksByCourse
 );
 CourseRouter.patch(
   "/:courseId",
   IdValidationMiddleware("courseId"),
   AuthMiddleware,
-  DtoValidationMiddleware(CourseDto, "body", {
-    groups: [BaseDtoGroups.UPDATE],
-    skipMissingProperties: true,
-  }),
+  DtoValidationMiddleware(UpdateCourseDto, "body"),
   courseController.update
 );
 CourseRouter.delete(
@@ -71,7 +67,7 @@ CourseRouter.post(
 CourseRouter.get(
   "/:courseId/enrollments/",
   IdValidationMiddleware("courseId"),
-  DtoValidationMiddleware(EnrollmentFilterDto, "query"),
+  DtoValidationMiddleware(FilterEnrollmentDto, "query"),
   AuthMiddleware,
   enrollmentController.getEnrollmentsByCourse
 );
@@ -105,7 +101,7 @@ CourseRouter.post(
 CourseRouter.get(
   "/:courseId/assignments/",
   IdValidationMiddleware("courseId"),
-  DtoValidationMiddleware(AssignmentFilterDto, "query"),
+  DtoValidationMiddleware(FilterAssignmentDto, "query"),
   AuthMiddleware,
   assignmentController.getAssignmentsByCourse
 );
@@ -120,7 +116,7 @@ CourseRouter.get(
   "/:courseId/assignments/:assignmentId/submissions",
   IdValidationMiddleware("courseId"),
   IdValidationMiddleware("assignmentId"),
-  DtoValidationMiddleware(SubmissionFilterDto, "query"),
+  DtoValidationMiddleware(FilterSubmissionDto, "query"),
   AuthMiddleware,
   submissionController.getSubmissionsByAssignment
 );

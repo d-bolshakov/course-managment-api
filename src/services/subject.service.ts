@@ -1,18 +1,18 @@
 import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
 import { Subject } from "../entities/";
-import { SubjectDto } from "../dto/subject.dto";
 import {
   FindManyOptions,
   FindOptionsRelations,
   FindOptionsWhere,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
+import { CreateSubjectDto, UpdateSubjectDto } from "../dto";
 
 class SubjectService {
   private subjectRepository = AppDataSource.getRepository(Subject);
 
-  async create(dto: SubjectDto) {
+  async create(dto: CreateSubjectDto) {
     const candidate = await this.getByTitle(dto.title);
     if (candidate) {
       throw BadRequest(`Subject with title ${dto.title} already exists`);
@@ -58,7 +58,7 @@ class SubjectService {
     return this.getOne({ title });
   }
 
-  async update(id: number, dto: SubjectDto) {
+  async update(id: number, dto: UpdateSubjectDto) {
     const subject = await this.getById(id);
     return this.subjectRepository.save({
       ...subject,

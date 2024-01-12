@@ -1,12 +1,12 @@
 import { AppDataSource } from "../db/data-source";
-import { UserDto } from "../dto/user.dto";
+import { RegisterUserDto } from "../dto";
 import { Role, User } from "../entities/";
 import { BadRequest } from "http-errors";
 
 class UserService {
   private userRepository = AppDataSource.getRepository(User);
 
-  async create(dto: UserDto) {
+  async create(dto: RegisterUserDto) {
     const candidate = await this.getByEmail(dto.email);
     if (candidate)
       throw BadRequest(`User with email ${dto.email} already exists`);

@@ -5,13 +5,12 @@ import {
   DtoValidationMiddleware,
   IdValidationMiddleware,
 } from "../middleware";
-import { CourseDto, BaseDtoGroups } from "../dto";
 
 export const EnrollmentRouter = Router();
 
 EnrollmentRouter.get(
   "/",
-  //  DtoValidationMiddleware(CourseFilterDto, "query"),
+  //  DtoValidationMiddleware(FilterCourseDto, "query"),
   enrollmentController.getMany
 );
 EnrollmentRouter.get(

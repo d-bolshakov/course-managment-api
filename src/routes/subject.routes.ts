@@ -5,16 +5,14 @@ import {
   IdValidationMiddleware,
   AuthMiddleware,
 } from "../middleware/";
-import { SubjectDto, BaseDtoGroups } from "../dto/";
+import { CreateSubjectDto, UpdateSubjectDto } from "../dto/";
 
 export const SubjectRouter = Router();
 
 SubjectRouter.post(
   "/",
   AuthMiddleware,
-  DtoValidationMiddleware(SubjectDto, "body", {
-    groups: [BaseDtoGroups.CREATE],
-  }),
+  DtoValidationMiddleware(CreateSubjectDto, "body"),
   subjectController.create
 );
 SubjectRouter.get("/", subjectController.getMany);
@@ -23,9 +21,7 @@ SubjectRouter.patch(
   "/:id",
   IdValidationMiddleware(),
   AuthMiddleware,
-  DtoValidationMiddleware(SubjectDto, "body", {
-    groups: [BaseDtoGroups.UPDATE],
-  }),
+  DtoValidationMiddleware(UpdateSubjectDto, "body"),
   subjectController.update
 );
 SubjectRouter.delete(

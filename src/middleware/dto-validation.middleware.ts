@@ -15,7 +15,6 @@ export const DtoValidationMiddleware = (
   return (req: Request, res: Response, next: NextFunction) => {
     const dtoObj = plainToInstance(dto, req[reqTargetProperty], {
       groups: options?.groups,
-      excludeExtraneousValues: true,
       exposeUnsetFields: options?.exposeUnsetFields,
     });
     validate(dtoObj, {

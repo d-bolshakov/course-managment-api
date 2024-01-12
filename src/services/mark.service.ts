@@ -1,7 +1,6 @@
 import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
-import { Mark, User } from "../entities";
-import { studentService } from ".";
+import { Mark } from "../entities";
 import {
   Between,
   FindManyOptions,
@@ -13,7 +12,7 @@ import {
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
 import { MarkDto } from "../dto";
-import { MarkFilterDto } from "../dto/filters";
+import { FilterMarkDto } from "../dto/";
 
 class MarkService {
   private markRepository = AppDataSource.getRepository(Mark);
@@ -40,7 +39,7 @@ class MarkService {
   }
 
   async getMany(options: {
-    filters: MarkFilterDto;
+    filters: FilterMarkDto;
     select?: FindOptionsSelect<Mark>;
     relations?: FindOptionsRelations<Mark>;
     page?: number;

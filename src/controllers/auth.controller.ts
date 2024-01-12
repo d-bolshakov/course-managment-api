@@ -1,17 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { authService } from "../services/";
-import { UserDto, BaseDtoGroups } from "../dto/";
+import { UserDto } from "../dto/";
 import { plainToInstance } from "class-transformer";
 
 class AuthController {
   async login({ body, session }: Request, res: Response, next: NextFunction) {
     try {
       const response = await authService.login(body, session);
-      res.status(201).json(
-        plainToInstance(UserDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(plainToInstance(UserDto, response));
     } catch (e) {
       next(e);
     }
@@ -24,11 +20,7 @@ class AuthController {
   ) {
     try {
       const response = await authService.registration(body, session);
-      res.status(201).json(
-        plainToInstance(UserDto, response, {
-          groups: [BaseDtoGroups.RESPONSE_FULL],
-        })
-      );
+      res.status(201).json(plainToInstance(UserDto, response));
     } catch (e) {
       next(e);
     }

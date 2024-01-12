@@ -1,16 +1,15 @@
 import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
-import { Enrollment, Status, User } from "../entities";
+import { Enrollment, EnrollmentStatus, User } from "../entities";
 import { courseService, studentService } from ".";
 import {
-  Between,
   FindManyOptions,
   FindOptionsRelations,
   FindOptionsSelect,
   FindOptionsWhere,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { EnrollmentFilterDto } from "../dto/filters";
+import { FilterEnrollmentDto } from "../dto";
 
 class EnrollmentService {
   private enrollmentRepository = AppDataSource.getRepository(Enrollment);
@@ -27,7 +26,7 @@ class EnrollmentService {
     const enrollments = await this.getMany({
       filters: {
         courseId,
-        status: Status.ENROLLED,
+        status: EnrollmentStatus.ENROLLED,
       },
     });
     if (enrollments.length == course.maxStudents)
@@ -37,7 +36,7 @@ class EnrollmentService {
     const enrollment = new Enrollment();
     enrollment.student = studentProfile;
     enrollment.course = course;
-    enrollment.status = Status.APPLIED;
+    enrollment.status = EnrollmentStatus.APPLIED;
     return this.enrollmentRepository.save(enrollment);
   }
 
@@ -56,7 +55,7 @@ class EnrollmentService {
   }
 
   async getMany(options: {
-    filters: EnrollmentFilterDto;
+    filters: FilterEnrollmentDto;
     relations?: FindOptionsRelations<Enrollment>;
     select?: FindOptionsSelect<Enrollment>;
     page?: number;

@@ -1,7 +1,7 @@
 import { AppDataSource } from "../db/data-source";
 import { BadRequest } from "http-errors";
-import { Assignment, AssignmentAttachment, File, User } from "../entities";
-import { courseService, fileService } from ".";
+import { Assignment, User } from "../entities";
+import { courseService } from ".";
 import {
   FindManyOptions,
   FindOptionsRelations,
@@ -11,8 +11,8 @@ import {
   MoreThan,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { AssignmentDto } from "../dto";
-import { AssignmentFilterDto, AssignmentFilterStatus } from "../dto/filters";
+import { CreateAssignmentDto, UpdateAssignmentDto } from "../dto";
+import { FilterAssignmentDto, FilterAssignmentStatus } from "../dto/";
 import { UploadedFile } from "express-fileupload";
 import { attachmentService } from ".";
 
@@ -21,7 +21,7 @@ class AssignmentService {
 
   async create(
     courseId: number,
-    dto: AssignmentDto,
+    dto: CreateAssignmentDto,
     user: User,
     attachment?: UploadedFile | UploadedFile[]
   ) {
@@ -63,7 +63,7 @@ class AssignmentService {
   }
 
   async getMany(options: {
-    filters: AssignmentFilterDto;
+    filters: FilterAssignmentDto;
     relations?: FindOptionsRelations<Assignment>;
     select?: FindOptionsSelect<Assignment>;
     page?: number;
@@ -72,9 +72,9 @@ class AssignmentService {
     const { courseId, status } = options?.filters;
     if (courseId) conditions.course = { id: courseId };
     if (status) {
-      if (status === AssignmentFilterStatus.ACTIVE)
+      if (status === FilterAssignmentStatus.ACTIVE)
         conditions.deadline = MoreThan(new Date());
-      else if (status === AssignmentFilterStatus.INACTIVE)
+      else if (status === FilterAssignmentStatus.INACTIVE)
         conditions.deadline = LessThanOrEqual(new Date());
     }
     const findOptions: FindManyOptions<Assignment> = {
@@ -101,7 +101,7 @@ class AssignmentService {
     return assignment;
   }
 
-  async update(id: number, dto: AssignmentDto) {
+  async update(id: number, dto: UpdateAssignmentDto) {
     const { deadline, text, title } = dto;
     const assignment = await this.getById(id);
     if (assignment.deadline! < new Date())

@@ -14,8 +14,12 @@ import {
   FindOptionsWhere,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { MarkDto, SubmissionDto, SubmissionReviewDto } from "../dto";
-import { SubmissionFilterDto } from "../dto/filters";
+import {
+  CreateSubmissionDto,
+  MarkDto,
+  CreateSubmissionReviewDto,
+} from "../dto";
+import { FilterSubmissionDto } from "../dto/";
 import { UploadedFile } from "express-fileupload";
 
 class SubmissionService {
@@ -23,7 +27,7 @@ class SubmissionService {
 
   async create(
     assignmentId: number,
-    dto: SubmissionDto,
+    dto: CreateSubmissionDto,
     user: User,
     attachment?: UploadedFile | UploadedFile[]
   ) {
@@ -71,7 +75,7 @@ class SubmissionService {
   }
 
   async getMany(options: {
-    filters: SubmissionFilterDto;
+    filters: FilterSubmissionDto;
     relations?: FindOptionsRelations<Submission>;
     select?: FindOptionsSelect<Submission>;
     page?: number;
@@ -104,7 +108,7 @@ class SubmissionService {
     return submission;
   }
 
-  async review(id: number, dto: SubmissionReviewDto, user: User) {
+  async review(id: number, dto: CreateSubmissionReviewDto, user: User) {
     const submission = await this.getById(id);
     const { status, comment, mark } = dto;
     if (status === SubmissionStatus.REJECTED) {

@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 import { Course, Student } from "./";
 
-export enum Status {
+export enum EnrollmentStatus {
   APPLIED = "applied",
   INVITED = "invited",
   ENROLLED = "enrolled",
@@ -37,8 +37,12 @@ export class Enrollment {
   @RelationId((enrollment: Enrollment) => enrollment.student)
   studentId: number;
 
-  @Column("enum", { enum: Status, default: Status.APPLIED, nullable: false })
-  status: Status = Status.APPLIED;
+  @Column("enum", {
+    enum: EnrollmentStatus,
+    default: EnrollmentStatus.APPLIED,
+    nullable: false,
+  })
+  status: EnrollmentStatus = EnrollmentStatus.APPLIED;
 
   @Column("timestamptz", {
     nullable: false,
