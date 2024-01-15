@@ -8,13 +8,7 @@ import {
   OneToOne,
   OneToMany,
 } from "typeorm";
-import { Assignment, File, Mark, Student, SubmissionAttachment } from "./";
-
-export enum SubmissionStatus {
-  SUBMITTED = "submitted",
-  REVIEWED = "reviewed",
-  REJECTED = "rejected",
-}
+import { Assignment, Review, Student, SubmissionAttachment } from "./";
 
 @Entity()
 export class Submission {
@@ -47,26 +41,18 @@ export class Submission {
   @Column("varchar", { length: 255, nullable: false })
   comment: string;
 
-  @Column("varchar", { length: 255, nullable: true })
-  reviewComment: string;
-
-  @ManyToOne(() => Mark, { nullable: true })
+  @OneToOne(() => Review, (review: Review) => review.submission, {
+    nullable: true,
+  })
   @JoinColumn()
-  mark!: Mark;
+  review: Review;
 
   @Column("integer", { nullable: true })
-  @RelationId((submission: Submission) => submission.mark)
-  markId: number;
+  @RelationId((submission: Submission) => submission.review)
+  reviewId: number;
 
   @Column("timestamp", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
-
-  @Column("enum", {
-    enum: SubmissionStatus,
-    default: SubmissionStatus.SUBMITTED,
-    nullable: false,
-  })
-  status: SubmissionStatus = SubmissionStatus.SUBMITTED;
 
   @OneToMany(
     () => SubmissionAttachment,

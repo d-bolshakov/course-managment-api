@@ -53,12 +53,15 @@ class MarkService {
       higherThan,
       lowerThan,
     } = options.filters;
-    if (submissionId) conditions.submission = { id: submissionId };
+    if (submissionId) conditions.review = { id: submissionId };
     if (assignmentId)
-      conditions.submission = { assignment: { id: assignmentId } };
+      conditions.review = { submission: { assignment: { id: assignmentId } } };
     if (courseId)
-      conditions.submission = { assignment: { course: { id: courseId } } };
-    if (studentId) conditions.submission = { student: { id: studentId } };
+      conditions.review = {
+        submission: { assignment: { course: { id: courseId } } },
+      };
+    if (studentId)
+      conditions.review = { submission: { student: { id: studentId } } };
     if (higherThan || lowerThan) {
       if (higherThan && lowerThan)
         conditions.mark = Between(higherThan, lowerThan);

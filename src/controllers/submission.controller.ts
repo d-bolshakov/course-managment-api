@@ -28,19 +28,17 @@ class SubmissionController {
   ) {
     try {
       const response = await submissionService.getById(Number(submissionId), {
-        relations: { attachments: true, mark: true },
+        relations: { attachments: true /*, mark: true */ },
         select: {
           id: true,
           text: true,
           comment: true,
           createdAt: true,
-          mark: {
-            id: true,
-            mark: true,
-          },
+          // mark: {
+          //   id: true,
+          //   mark: true,
+          // },
           assignmentId: true,
-          status: true,
-          reviewComment: true,
           attachments: {
             id: true,
             fileId: true,
@@ -64,7 +62,6 @@ class SubmissionController {
         filters: filters as any,
         select: {
           id: true,
-          status: true,
           assignmentId: true,
           studentId: true,
           createdAt: true,
@@ -90,7 +87,6 @@ class SubmissionController {
         } as any,
         select: {
           id: true,
-          status: true,
           studentId: true,
           createdAt: true,
         },
@@ -102,22 +98,22 @@ class SubmissionController {
     }
   }
 
-  async review(
-    { params: { submissionId }, user, body }: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const response = await submissionService.review(
-        Number(submissionId),
-        body,
-        user!
-      );
-      res.status(201).json(response);
-    } catch (e) {
-      next(e);
-    }
-  }
+  // async review(
+  //   { params: { submissionId }, user, body }: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) {
+  //   try {
+  //     const response = await submissionService.review(
+  //       Number(submissionId),
+  //       body,
+  //       user!
+  //     );
+  //     res.status(201).json(response);
+  //   } catch (e) {
+  //     next(e);
+  //   }
+  // }
 
   async delete(
     { params: { submissionId } }: Request,

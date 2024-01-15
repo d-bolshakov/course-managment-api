@@ -1,6 +1,6 @@
 import { AppDataSource } from "../db/data-source";
 import { BadRequest, Forbidden } from "http-errors";
-import { Submission, SubmissionStatus, User } from "../entities";
+import { Submission, User } from "../entities";
 import {
   assignmentService,
   attachmentService,
@@ -14,11 +14,7 @@ import {
   FindOptionsWhere,
 } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util";
-import {
-  CreateSubmissionDto,
-  MarkDto,
-  CreateSubmissionReviewDto,
-} from "../dto";
+import { CreateSubmissionDto, MarkDto, CreateReviewDto } from "../dto";
 import { FilterSubmissionDto } from "../dto/";
 import { UploadedFile } from "express-fileupload";
 
@@ -80,11 +76,10 @@ class SubmissionService {
     select?: FindOptionsSelect<Submission>;
     page?: number;
   }) {
-    const { assignmentId, courseId, status } = options.filters;
+    const { assignmentId, courseId } = options.filters;
     const conditions: FindOptionsWhere<Submission> = {};
     if (assignmentId) conditions.assignment = { id: assignmentId };
     if (courseId) conditions.assignment = { course: { id: courseId } };
-    if (status) conditions.status = status;
     const findOptions: FindManyOptions<Submission> = {
       where: conditions,
       relations: options?.relations,
@@ -108,22 +103,22 @@ class SubmissionService {
     return submission;
   }
 
-  async review(id: number, dto: CreateSubmissionReviewDto, user: User) {
-    const submission = await this.getById(id);
-    const { status, comment, mark } = dto;
-    if (status === SubmissionStatus.REJECTED) {
-      submission.status = status;
-      submission.reviewComment = comment;
-      await this.submissionRepository.save(submission);
-      return submission;
-    }
-    const createdMark = await markService.create({ mark } as MarkDto);
-    submission.mark = createdMark;
-    submission.status = SubmissionStatus.REVIEWED;
-    submission.reviewComment = comment;
-    await this.submissionRepository.save(submission);
-    return submission;
-  }
+  // async review(id: number, dto: CreateSubmissionReviewDto, user: User) {
+  //   const submission = await this.getById(id);
+  //   const { status, comment, mark } = dto;
+  //   if (status === SubmissionStatus.REJECTED) {
+  //     submission.status = status;
+  //     submission.reviewComment = comment;
+  //     await this.submissionRepository.save(submission);
+  //     return submission;
+  //   }
+  //   const createdMark = await markService.create({ mark } as MarkDto);
+  //   submission.mark = createdMark;
+  //   submission.status = SubmissionStatus.REVIEWED;
+  //   submission.reviewComment = comment;
+  //   await this.submissionRepository.save(submission);
+  //   return submission;
+  // }
 
   async delete(id: number) {
     const submission = await this.getById(id);

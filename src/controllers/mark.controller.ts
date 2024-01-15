@@ -15,7 +15,7 @@ class MarkController {
           courseId: Number(courseId),
         } as any,
         relations: {
-          submission: true,
+          review: { submission: true },
         },
       });
       res.status(200).json(response);
@@ -36,14 +36,16 @@ class MarkController {
           assignmentId: Number(assignmentId),
         } as any,
         relations: {
-          submission: true,
+          review: { submission: true },
         },
         select: {
           id: true,
           mark: true,
           createdAt: true,
-          submission: {
-            id: true,
+          review: {
+            submission: {
+              id: true,
+            },
           },
         },
       });

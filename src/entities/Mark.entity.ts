@@ -1,13 +1,5 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  RelationId,
-  OneToOne,
-} from "typeorm";
-import { Student, Course, Submission } from "./";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import { Review } from "./";
 
 @Entity()
 export class Mark {
@@ -20,6 +12,6 @@ export class Mark {
   @Column("timestamp", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
 
-  @OneToOne(() => Submission, (submission) => submission.mark)
-  submission: Submission;
+  @OneToOne(() => Review, (review: Review) => review.mark)
+  review: Review;
 }

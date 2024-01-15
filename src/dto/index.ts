@@ -32,8 +32,8 @@ export * from "./submission/create-submission.dto";
 export * from "./submission/update-submission.dto";
 export * from "./submission/filter-submission.dto";
 
-export * from "./submission-review/submission-review.dto";
-export * from "./submission-review/create-submission-review.dto";
+export * from "./review/review.dto";
+export * from "./review/create-review.dto";
 
 export * from "./mark/mark.dto";
 export * from "./mark/filter-mark.dto";

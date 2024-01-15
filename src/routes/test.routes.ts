@@ -1,6 +1,7 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { fileService } from "../services/file.service";
-
+import { DtoValidationMiddleware } from "../middleware";
+import { CreateReviewDto } from "../dto";
 export const TestRouter = Router();
 
 TestRouter.post("/files/", async (req, res, next) => {
@@ -22,3 +23,9 @@ TestRouter.get("/files/:id", async (req, res, next) => {
     console.log(err);
   }
 });
+
+TestRouter.post(
+  "/reviews/",
+  DtoValidationMiddleware(CreateReviewDto, "body"),
+  (req: Request, res: Response, next) => console.log(req.body)
+);

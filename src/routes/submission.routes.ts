@@ -11,11 +11,7 @@ import {
   DtoValidationMiddleware,
   IdValidationMiddleware,
 } from "../middleware";
-import {
-  FilterMarkDto,
-  FilterSubmissionDto,
-  CreateSubmissionReviewDto,
-} from "../dto/";
+import { FilterMarkDto, FilterSubmissionDto, CreateReviewDto } from "../dto/";
 
 export const SubmissionRouter = Router();
 
@@ -41,10 +37,10 @@ SubmissionRouter.delete(
   AuthMiddleware,
   submissionController.delete
 );
-SubmissionRouter.patch(
-  "/:submissionId/review",
-  IdValidationMiddleware("submissionId"),
-  AuthMiddleware,
-  DtoValidationMiddleware(CreateSubmissionReviewDto, "body"),
-  submissionController.review
-);
+// SubmissionRouter.patch(
+//   "/:submissionId/review",
+//   IdValidationMiddleware("submissionId"),
+//   AuthMiddleware,
+//   DtoValidationMiddleware(CreateSubmissionReviewDto, "body"),
+//   submissionController.review
+// );

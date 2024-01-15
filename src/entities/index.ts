@@ -7,6 +7,7 @@ export * from "./Course.entity";
 export * from "./Enrollment.entity";
 export * from "./Assignment.entity";
 export * from "./Submission.entity";
+export * from "./Review.entity";
 export * from "./Mark.entity";
 export * from "./Message.entity";
 export * from "./File.entity";
