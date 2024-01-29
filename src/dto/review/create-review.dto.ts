@@ -8,7 +8,7 @@ import {
   ValidateIf,
   ValidationError,
 } from "class-validator";
-import { ReviewStatus } from "../../entities";
+import { ReviewStatus } from "../../entities/Review.entity.js";
 
 export class CreateReviewDto {
   @Expose()

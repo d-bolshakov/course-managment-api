@@ -1,104 +1,120 @@
-import { AppDataSource } from "../db/data-source";
-import { BadRequest } from "http-errors";
-import { Enrollment, EnrollmentStatus, User } from "../entities";
-import { courseService, studentService } from ".";
-import {
-  FindManyOptions,
-  FindOptionsRelations,
-  FindOptionsSelect,
-  FindOptionsWhere,
-} from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { FilterEnrollmentDto } from "../dto";
+import { AppDataSource } from "../db/data-source.js";
+import createError from "http-errors";
+import { FindManyOptions, FindOptionsSelect, FindOptionsWhere } from "typeorm";
+import { getPaginationOffset } from "../utils/pagination-offset.util.js";
+import { plainToInstance } from "class-transformer";
+import { EnrollmentDto } from "../dto/enrollment/enrollment.dto.js";
+import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js";
+import { Course } from "../entities/Course.entity.js";
+import { Enrollment, EnrollmentStatus } from "../entities/Enrollment.entity.js";
 
 class EnrollmentService {
   private enrollmentRepository = AppDataSource.getRepository(Enrollment);
 
-  async create(courseId: number, user: User) {
-    const studentProfile = await studentService.getByUserId(user.id);
-    if (user.role !== "student" || !studentProfile)
-      throw new BadRequest(`Only students can enroll to the course`);
-    const course = await courseService.getById(courseId);
-    if (course.startsAt < new Date())
-      throw new BadRequest(
-        `Enrollment for the course with id ${course.id} is not available`
+  async create(courseId: number, studentId: number) {
+    if (!(await this.isEnrollmentAvailable(courseId)))
+      throw new createError.BadRequest(
+        `Enrollment for the course with id ${courseId} is not available`
       );
-    const enrollments = await this.getMany({
-      filters: {
-        courseId,
-        status: EnrollmentStatus.ENROLLED,
-      },
+    const enrollment = this.enrollmentRepository.create({
+      courseId,
+      studentId,
+      status: EnrollmentStatus.APPLIED,
     });
-    if (enrollments.length == course.maxStudents)
-      throw new BadRequest(
-        `Enrollment for the course with id ${course.id} is not available`
-      );
-    const enrollment = new Enrollment();
-    enrollment.student = studentProfile;
-    enrollment.course = course;
-    enrollment.status = EnrollmentStatus.APPLIED;
-    return this.enrollmentRepository.save(enrollment);
-  }
-
-  async getOne(
-    conditions: FindOptionsWhere<Enrollment>,
-    options?: {
-      relations?: FindOptionsRelations<Enrollment>;
-      select?: FindOptionsSelect<Enrollment>;
-    }
-  ) {
-    return this.enrollmentRepository.findOne({
-      where: conditions,
-      relations: options?.relations,
-      select: options?.select,
+    await this.enrollmentRepository.save(enrollment);
+    return plainToInstance(EnrollmentDto, enrollment, {
+      exposeUnsetFields: false,
     });
   }
 
-  async getMany(options: {
-    filters: FilterEnrollmentDto;
-    relations?: FindOptionsRelations<Enrollment>;
-    select?: FindOptionsSelect<Enrollment>;
-    page?: number;
-  }) {
+  async getMany(options: { filters: FilterEnrollmentDto }) {
     const conditions: FindOptionsWhere<Enrollment> = {};
     const { status, courseId } = options?.filters;
     if (courseId) conditions.course = { id: courseId };
     if (status) conditions.status = status;
-    const findOptions: FindManyOptions<Enrollment> = {
+    const enrollments = await this.enrollmentRepository.find({
       where: conditions,
-      relations: options?.relations,
-      select: options?.select,
-    };
-    findOptions.take = 10;
-    findOptions.skip = getPaginationOffset(options?.page || 1);
-    return this.enrollmentRepository.find(findOptions);
+      relations: {
+        course: true,
+        student: {
+          user: true,
+        },
+      },
+      select: {
+        id: true,
+        status: true,
+        changedAt: true,
+        course: {
+          id: true,
+          title: true,
+        },
+        student: {
+          id: true,
+          user: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      take: 10,
+      skip: getPaginationOffset(options?.filters.page || 1),
+    });
+    return plainToInstance(EnrollmentDto, enrollments, {
+      exposeUnsetFields: false,
+    });
   }
 
-  async getById(
-    id: number,
-    options?: {
-      relations?: FindOptionsRelations<Enrollment>;
-      select?: FindOptionsSelect<Enrollment>;
-    }
-  ) {
-    const enrollment = await this.getOne({ id }, options);
+  async getById(id: number) {
+    const enrollment = await this.enrollmentRepository.findOne({
+      where: { id },
+    });
     if (!enrollment)
-      throw new BadRequest(`Enrollment with id ${id} does not exist`);
-    return enrollment;
+      throw new createError.NotFound(`Enrollment with id ${id} does not exist`);
+    return plainToInstance(EnrollmentDto, enrollment, {
+      exposeUnsetFields: false,
+    });
   }
 
   async update(id: number, dto: any) {
-    const enrollment = await this.getById(id, { relations: { course: true } });
-    if (enrollment.course.startsAt < new Date())
-      throw new BadRequest(`Could not update enrollment's status`);
-    enrollment.status = dto.status;
-    return this.enrollmentRepository.save(enrollment);
+    const enrollment = await this.getById(id);
+    if (!(await this.isEnrollmentAvailable(enrollment.courseId)))
+      throw new createError.BadRequest(
+        `Could not update enrollment's status: enrollment for the course with id ${enrollment.courseId} is not available`
+      );
+    await this.enrollmentRepository.update({ id }, { status: dto.status });
+    return plainToInstance(EnrollmentDto, enrollment, {
+      exposeUnsetFields: false,
+    });
   }
 
   async delete(id: number) {
-    const enrollment = await this.getById(id);
+    const enrollment = await this.enrollmentRepository.findOne({
+      where: { id },
+    });
+    if (!enrollment)
+      throw new createError.NotFound(`Enrollment with id ${id} does not exist`);
     await this.enrollmentRepository.remove(enrollment);
     return { message: `Enrollment with id ${id} was deleted successfully` };
+  }
+
+  async isEnrolled(studentId: number, courseId: number) {
+    return this.enrollmentRepository
+      .createQueryBuilder("e")
+      .where("e.studentId = :studentId", { studentId })
+      .andWhere("e.courseId = :courseId", { courseId })
+      .getExists();
+  }
+
+  async isEnrollmentAvailable(courseId: number) {
+    return AppDataSource.createQueryBuilder()
+      .from(Course, "c")
+      .where("c.startsAt > CURRENT_TIMESTAMP")
+      .andWhere("c.id = :courseId", { courseId })
+      .andWhere(
+        `c.maxStudents > (SELECT COUNT(*) FROM enrollment WHERE enrollment."courseId" = :courseId AND enrollment.status = :enrollmentStatus)`,
+        { courseId, enrollmentStatus: EnrollmentStatus.ENROLLED }
+      )
+      .getExists();
   }
 }
 

@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   OneToOne,
@@ -9,7 +9,9 @@ import {
   RelationId,
   Column,
 } from "typeorm";
-import { User, Course, Subject } from "./";
+import { Course } from "./Course.entity.js";
+import { Subject } from "./Subject.entity.js";
+import { User } from "./User.entity.js";
 
 @Entity()
 export class Teacher {
@@ -18,7 +20,7 @@ export class Teacher {
 
   @OneToOne(() => User, { nullable: false })
   @JoinColumn()
-  user!: User;
+  user: typeorm.Relation<User>;
 
   @Column("integer", { nullable: false })
   @RelationId((teacher: Teacher) => teacher.user)
@@ -26,8 +28,8 @@ export class Teacher {
 
   @ManyToMany(() => Subject, (subject) => subject.teachers, { cascade: true })
   @JoinTable({ name: "teacher_subject" })
-  subjects!: Subject[];
+  subjects: typeorm.Relation<Subject[]>;
 
   @OneToMany(() => Course, (course) => course.teacher, { cascade: true })
-  courses!: Course[];
+  courses: typeorm.Relation<Course[]>;
 }

@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -8,7 +8,10 @@ import {
   OneToOne,
   OneToMany,
 } from "typeorm";
-import { Assignment, Review, Student, SubmissionAttachment } from "./";
+import { Assignment } from "./Assignment.entity.js";
+import { Review } from "./Review.entity.js";
+import { Student } from "./Student.entity.js";
+import { SubmissionAttachment } from "./SubmissionAttachment.entity.js";
 
 @Entity()
 export class Submission {
@@ -19,7 +22,7 @@ export class Submission {
     nullable: false,
   })
   @JoinColumn()
-  assignment!: Assignment;
+  assignment: typeorm.Relation<Assignment>;
 
   @Column("integer", { nullable: false })
   @RelationId((submission: Submission) => submission.assignment)
@@ -29,7 +32,7 @@ export class Submission {
     nullable: false,
   })
   @JoinColumn()
-  student!: Student;
+  student: typeorm.Relation<Student>;
 
   @Column("integer", { nullable: false })
   @RelationId((submission: Submission) => submission.student)
@@ -45,7 +48,7 @@ export class Submission {
     nullable: true,
   })
   @JoinColumn()
-  review: Review;
+  review: typeorm.Relation<Review>;
 
   @Column("integer", { nullable: true })
   @RelationId((submission: Submission) => submission.review)
@@ -63,5 +66,5 @@ export class Submission {
       nullable: false,
     }
   )
-  attachments: SubmissionAttachment;
+  attachments: typeorm.Relation<SubmissionAttachment>;
 }

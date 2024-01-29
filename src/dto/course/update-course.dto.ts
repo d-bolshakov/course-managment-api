@@ -5,16 +5,18 @@ import {
   MinDate,
   IsOptional,
 } from "class-validator";
-import { Type } from "class-transformer";
-import { IsAfter } from "../../decorators";
+import { Expose, Type } from "class-transformer";
+import { IsAfter } from "../../decorators/IsAfter.decorator.js";
 
 export class UpdateCourseDto {
+  @Expose()
   @IsOptional()
   @IsString({
     message: "title should be a string",
   })
   readonly title: string;
 
+  @Expose()
   @IsOptional()
   @IsNumber(
     {},
@@ -24,6 +26,7 @@ export class UpdateCourseDto {
   )
   readonly subjectId: number;
 
+  @Expose()
   @IsOptional()
   @IsNumber(
     {},
@@ -33,6 +36,7 @@ export class UpdateCourseDto {
   )
   readonly maxStudents: number;
 
+  @Expose()
   @IsOptional()
   @Type(() => Date)
   @IsDate({
@@ -43,6 +47,7 @@ export class UpdateCourseDto {
   })
   readonly startsAt: Date;
 
+  @Expose()
   @IsOptional()
   @Type(() => Date)
   @IsDate({

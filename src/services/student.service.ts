@@ -1,93 +1,73 @@
-import { AppDataSource } from "../db/data-source";
-import { BadRequest } from "http-errors";
-import { Role, User, Student } from "../entities";
-import { userService } from ".";
-import {
-  FindManyOptions,
-  FindOptionsRelations,
-  FindOptionsSelect,
-  FindOptionsWhere,
-} from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util";
+import { AppDataSource } from "../db/data-source.js";
+import createError from "http-errors";
+import { getPaginationOffset } from "../utils/pagination-offset.util.js";
+import { plainToInstance } from "class-transformer";
+import { Student } from "../entities/Student.entity.js";
+import { StudentDto } from "../dto/student/student.dto.js";
 
 class StudentService {
   private studentRepository = AppDataSource.getRepository(Student);
 
-  async create(user: User) {
+  async create(userId: number) {
     const candidate = await this.studentRepository.findOne({
-      where: { id: user.id },
+      where: { id: userId },
     });
     if (candidate)
-      throw BadRequest(
-        `Student assosiated with user with id ${user.id} already exists`
+      throw createError.BadRequest(
+        `Student assosiated with user with id ${userId} already exists`
       );
-    const student = new Student();
-    student.user = user;
+    const student = this.studentRepository.create({ userId });
     await this.studentRepository.save(student);
-    await userService.updateRole(user, Role.STUDENT);
-    return student;
-  }
-
-  async getOne(
-    conditions: FindOptionsWhere<Student>,
-    options?: {
-      relations?: FindOptionsRelations<Student>;
-      select?: FindOptionsSelect<Student>;
-    }
-  ) {
-    return this.studentRepository.findOne({
-      where: conditions,
-      relations: options?.relations,
-      select: options?.select,
+    return plainToInstance(StudentDto, student, {
+      exposeUnsetFields: false,
     });
   }
 
-  async getMany(options?: {
-    conditions?: FindOptionsWhere<Student>;
-    relations?: FindOptionsRelations<Student>;
-    select?: FindOptionsSelect<Student>;
-    disablePagination?: boolean;
-    page?: number;
-  }) {
-    const findOptions: FindManyOptions<Student> = {
-      where: options?.conditions,
-      relations: options?.relations,
-      select: options?.select,
-    };
-    if (!options?.disablePagination) {
-      findOptions.take = 10;
-      findOptions.skip = getPaginationOffset(options?.page || 1);
-    }
-    return this.studentRepository.find(findOptions);
+  async getMany(options?: { filters: { page: number } }) {
+    const students = await this.studentRepository.find({
+      relations: { user: true },
+      select: {
+        id: true,
+        user: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+      take: 10,
+      skip: getPaginationOffset(options?.filters.page || 1),
+    });
+    return plainToInstance(StudentDto, students, {
+      exposeUnsetFields: false,
+    });
   }
 
-  async getById(
-    id: number,
-    options?: {
-      relations?: FindOptionsRelations<Student>;
-      select?: FindOptionsSelect<Student>;
-    }
-  ) {
-    const student = await this.getOne({ id }, options);
-    if (!student) throw BadRequest(`Student with id ${id} does not exist`);
-    return student;
-  }
-
-  async getByUserId(id: number, options?: any) {
-    const student = await this.getOne({ user: { id } }, options?.relations);
+  async getFullDataById(id: number) {
+    const student = await this.studentRepository.findOne({
+      relations: {
+        user: true,
+      },
+      where: { id },
+      select: {
+        id: true,
+        user: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    });
     if (!student)
-      throw BadRequest(
-        `Student associated with user with id ${id} does not exist`
-      );
-    return student;
+      throw createError.NotFound(`Student with id ${id} does not exist`);
+    return plainToInstance(StudentDto, student, {
+      exposeUnsetFields: false,
+    });
   }
 
-  async delete(id: number) {
-    const student = await this.getById(id);
-    await userService.updateRole(student.user, Role.STUDENT);
-    await this.studentRepository.remove(student);
-    return { message: `Student with id ${id} was deleted successfully` };
-  }
+  async update(id: number, bode: any) {}
+
+  async delete(id: number) {}
 }
 
 export const studentService = new StudentService();

@@ -1,6 +1,8 @@
+import { Expose } from "class-transformer";
 import { IsString, IsEmail, MinLength } from "class-validator";
 
 export class LoginUserDto {
+  @Expose()
   @IsEmail(
     {},
     {
@@ -9,6 +11,7 @@ export class LoginUserDto {
   )
   readonly email: string;
 
+  @Expose()
   @IsString({
     message: "password should be a string",
   })

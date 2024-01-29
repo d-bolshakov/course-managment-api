@@ -1,14 +1,16 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
   ManyToOne,
   OneToMany,
   JoinColumn,
   RelationId,
 } from "typeorm";
-import { Teacher, Subject, Enrollment, Assignment, Mark } from "./";
+import { Assignment } from "./Assignment.entity.js";
+import { Enrollment } from "./Enrollment.entity.js";
+import { Subject } from "./Subject.entity.js";
+import { Teacher } from "./Teacher.entity.js";
 
 @Entity()
 export class Course {
@@ -20,7 +22,7 @@ export class Course {
 
   @ManyToOne(() => Teacher, (teacher) => teacher.courses)
   @JoinColumn()
-  teacher!: Teacher;
+  teacher: typeorm.Relation<Teacher>;
 
   @Column("integer", { nullable: false })
   @RelationId((course: Course) => course.teacher)
@@ -28,14 +30,14 @@ export class Course {
 
   @ManyToOne(() => Subject, { nullable: false })
   @JoinColumn()
-  subject!: Subject;
+  subject: typeorm.Relation<Subject>;
 
   @Column("integer", { nullable: false })
   @RelationId((course: Course) => course.subject)
   subjectId: number;
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
-  enrollments!: Enrollment[];
+  enrollments: typeorm.Relation<Enrollment[]>;
 
   @Column("integer", { nullable: false })
   maxStudents: number;
@@ -49,5 +51,5 @@ export class Course {
   @OneToMany(() => Assignment, (assignment) => assignment.course, {
     cascade: true,
   })
-  assignments!: Assignment[];
+  assignments: typeorm.Relation<Assignment[]>;
 }

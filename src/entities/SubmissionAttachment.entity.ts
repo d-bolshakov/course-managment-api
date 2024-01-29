@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -8,7 +8,8 @@ import {
   OneToOne,
   OneToMany,
 } from "typeorm";
-import { Assignment, File, Mark, Student, Submission } from "./";
+import { File } from "./File.entity.js";
+import { Submission } from "./Submission.entity.js";
 
 @Entity()
 export class SubmissionAttachment {
@@ -20,7 +21,7 @@ export class SubmissionAttachment {
     onDelete: "CASCADE",
   })
   @JoinColumn()
-  submission!: Submission;
+  submission: typeorm.Relation<Submission>;
 
   @Column("integer", { nullable: false })
   @RelationId(
@@ -34,7 +35,7 @@ export class SubmissionAttachment {
     nullable: false,
   })
   @JoinColumn()
-  file: File;
+  file: typeorm.Relation<File>;
 
   @Column("string", { nullable: false })
   @RelationId(

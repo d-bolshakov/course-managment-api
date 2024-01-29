@@ -1,57 +1,27 @@
-import { Type } from "class-transformer";
-import { IsNumber, IsDate, IsBoolean, IsOptional } from "class-validator";
-import { IsAfterNow, IsAfter } from "../../decorators";
+import { Expose, Type } from "class-transformer";
+import { IsNumber, IsOptional } from "class-validator";
 
 export class FilterCourseDto {
+  @Expose()
   @IsOptional()
   @IsNumber({}, { message: "page should be a number" })
   @Type(() => Number)
-  readonly page: number;
+  readonly page?: number;
 
+  @Expose()
   @IsOptional()
   @IsNumber(
     {},
     {
-      message: "subject should be a number",
+      message: "subjectId should be a number",
     }
   )
   @Type(() => Number)
   readonly subjectId: number;
 
+  @Expose()
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: "teacherId should be a number" })
   @Type(() => Number)
   readonly teacherId: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  readonly minStudents: number;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  @IsAfterNow({
-    message: "startsAfter can't be before now",
-  })
-  readonly startsAfter: Date;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  @IsAfter("startsAfter", {
-    message: "startsBefore can't be before startsAfter",
-  })
-  @IsAfterNow({
-    message: "startsBefore can't be before now",
-  })
-  readonly startsBefore: Date;
-
-  @IsOptional()
-  @IsBoolean({ message: "started should be a boolean" })
-  readonly started: boolean;
-
-  @IsOptional()
-  @IsBoolean({ message: "available should be a boolean" })
-  readonly available: boolean;
 }

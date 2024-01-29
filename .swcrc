@@ -1,0 +1,22 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "target": "esnext",
+    "baseUrl": ".",
+    "transform": {
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    },
+    "minify": {
+      "compress": true
+    }
+  },
+  "module": {
+    "type": "es6"
+  }
+}

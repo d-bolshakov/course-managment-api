@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { authService } from "../services/";
-import { UserDto } from "../dto/";
-import { plainToInstance } from "class-transformer";
+import { authService } from "../services/auth.service.js";
 
 class AuthController {
   async login({ body, session }: Request, res: Response, next: NextFunction) {
     try {
       const response = await authService.login(body, session);
-      res.status(201).json(plainToInstance(UserDto, response));
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }
@@ -20,7 +18,7 @@ class AuthController {
   ) {
     try {
       const response = await authService.registration(body, session);
-      res.status(201).json(plainToInstance(UserDto, response));
+      res.status(201).json(response);
     } catch (e) {
       next(e);
     }

@@ -1,12 +1,10 @@
-import { AppDataSource } from "../db/data-source";
-import {
-  Assignment,
-  AssignmentAttachment,
-  Submission,
-  SubmissionAttachment,
-} from "../entities";
+import { AppDataSource } from "../db/data-source.js";
 import { UploadedFile } from "express-fileupload";
-import { fileService } from "./file.service";
+import { fileService } from "./file.service.js";
+import { plainToInstance } from "class-transformer";
+import { AttachmentDto } from "../dto/attachment/attachment.dto.js";
+import { AssignmentAttachment } from "../entities/AssignmentAttachment.entity.js";
+import { SubmissionAttachment } from "../entities/SubmissionAttachment.entity.js";
 
 class AttachmentService {
   private assigAttachmentRepository =
@@ -15,30 +13,32 @@ class AttachmentService {
     AppDataSource.getRepository(SubmissionAttachment);
 
   async createForAssignment(
-    assignment: Assignment,
+    assignmentId: number,
     file: UploadedFile | UploadedFile[]
   ) {
-    const fileEntities = await fileService.create(file);
-    let attachment = fileEntities.map((file) =>
-      this.assigAttachmentRepository.create({ assignment, file })
+    const savedFile = await fileService.create(file);
+    let attachment = savedFile.map((file) =>
+      this.assigAttachmentRepository.create({ assignmentId, fileId: file.id })
     );
-    return this.assigAttachmentRepository.save(attachment as any);
+    await this.assigAttachmentRepository.save(attachment as any);
+    return plainToInstance(AttachmentDto, attachment, {
+      exposeUnsetFields: false,
+    });
   }
 
   async createForSubmission(
-    submission: Submission,
+    submissionId: number,
     file: UploadedFile | UploadedFile[]
   ) {
-    const fileEntities = await fileService.create(file);
-    let attachment = fileEntities.map((file) =>
-      this.submAttachmentRepository.create({ submission, file })
+    const savedFiles = await fileService.create(file);
+    let attachment = savedFiles.map((file) =>
+      this.submAttachmentRepository.create({ submissionId, fileId: file.id })
     );
-    return this.submAttachmentRepository.save(attachment as any);
+    await this.submAttachmentRepository.save(attachment as any);
+    return plainToInstance(AttachmentDto, attachment, {
+      exposeUnsetFields: false,
+    });
   }
-
-  async createMany(files: UploadedFile[]) {}
-
-  async getOne(id: string) {}
 }
 
 export const attachmentService = new AttachmentService();

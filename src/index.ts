@@ -4,21 +4,18 @@ import cors from "cors";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { TypeormStore } from "connect-typeorm";
-import { AppDataSource } from "./db/data-source";
-import { Session } from "./entities/";
-import { ErrorHandlerMiddleware } from "./middleware/";
-import {
-  AuthRouter,
-  CourseRouter,
-  SubjectRouter,
-  TeacherRouter,
-  EnrollmentRouter,
-  AssignmentRouter,
-  SubmissionRouter,
-} from "./routes";
+import { AppDataSource } from "./db/data-source.js";
+import { Session } from "./entities/Session.entity.js";
+import { ErrorHandlerMiddleware } from "./middleware/error-handler.middleware.js";
 
-import { TestRouter } from "./routes/test.routes";
 import fileUpload from "express-fileupload";
+import { AssignmentRouter } from "./routes/assignment.routes.js";
+import { AuthRouter } from "./routes/auth.routes.js";
+import { CourseRouter } from "./routes/course.routes.js";
+import { StudentRouter } from "./routes/student.routes.js";
+import { SubjectRouter } from "./routes/subject.routes.js";
+import { SubmissionRouter } from "./routes/submission.routes.js";
+import { TeacherRouter } from "./routes/teacher.routes.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -47,11 +44,10 @@ app.use(
 app.use("/auth/", AuthRouter);
 app.use("/subjects/", SubjectRouter);
 app.use("/teachers/", TeacherRouter);
+app.use("/students/", StudentRouter);
 app.use("/courses/", CourseRouter);
-app.use("/enrollments/", EnrollmentRouter);
 app.use("/assignments/", AssignmentRouter);
 app.use("/submissions/", SubmissionRouter);
-app.use("/test/", TestRouter);
 
 app.use(ErrorHandlerMiddleware);
 

@@ -1,12 +1,14 @@
-import { Type } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 import { IsNumber, IsOptional } from "class-validator";
 
 export class FilterTeacherDto {
+  @Expose()
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: "page should be a number" })
   @Type(() => Number)
-  readonly page: number;
+  readonly page?: number;
 
+  @Expose()
   @IsOptional()
   @IsNumber(
     {},

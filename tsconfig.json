@@ -4,11 +4,16 @@
     "outDir": "dist",
     "strict": true,
     "strictPropertyInitialization": false,
-    "lib": ["esnext"],
+    "lib": ["ESNext"],
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "typeRoots": ["./src/typings", "./node_modules/@types"]
+    "typeRoots": ["./src/typings", "./node_modules/@types"],
+    "moduleResolution": "Node",
+    "module": "ESNext",
+    "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

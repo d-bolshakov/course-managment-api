@@ -1,61 +1,56 @@
-import { AppDataSource } from "../db/data-source";
-import { BadRequest } from "http-errors";
-import { Teacher, Role, User } from "../entities/";
-import { subjectService, userService } from "./";
-import {
-  FindManyOptions,
-  FindOptionsRelations,
-  FindOptionsSelect,
-  FindOptionsWhere,
-  In,
-} from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { CreateTeacherDto, FilterTeacherDto, UpdateTeacherDto } from "../dto/";
+import { AppDataSource } from "../db/data-source.js";
+import createError from "http-errors";
+import { FindManyOptions, In } from "typeorm";
+import { getPaginationOffset } from "../utils/pagination-offset.util.js";
+
+import { plainToInstance } from "class-transformer";
+import { CreateTeacherDto } from "../dto/teacher/create-teacher.dto.js";
+import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
+import { TeacherDto } from "../dto/teacher/teacher.dto.js";
+import { UpdateTeacherDto } from "../dto/teacher/update-teacher.dto.js";
+import { Teacher } from "../entities/Teacher.entity.js";
+import { subjectService } from "./subject.service.js";
+import { User } from "../entities/User.entity.js";
+import { UserDto } from "../dto/user/user.dto.js";
 
 class TeacherService {
   private teacherRepository = AppDataSource.getRepository(Teacher);
 
-  async create(dto: CreateTeacherDto, user: User) {
-    const candidate = await this.teacherRepository.findOne({
-      where: { id: user.id },
-    });
-    if (candidate)
-      throw BadRequest(
-        `Teacher assosiated with user with id ${user.id} already exists`
-      );
-    const teacher = new Teacher();
-    teacher.subjects = await subjectService.getMany({
-      conditions: { id: In(dto.subjectId) },
-    });
-    teacher.user = user;
+  async create(userId: number, dto: CreateTeacherDto) {
+    const teacher = this.teacherRepository.create({ userId });
     await this.teacherRepository.save(teacher);
-    await userService.updateRole(user, Role.TEACHER);
-    return teacher;
+    const subjects = await subjectService.getManyByIds(dto.subjectIds);
+    if (!subjects) throw createError.NotFound("invalid subjects");
+    await AppDataSource.createQueryBuilder()
+      .insert()
+      .into("teacher_subject")
+      .values(subjects.map((s) => ({ teacherId: teacher.id, subjectId: s.id })))
+      .execute();
+    return plainToInstance(
+      TeacherDto,
+      { ...teacher, subjects },
+      {
+        exposeUnsetFields: false,
+      }
+    );
   }
 
-  async getOne(
-    conditions: FindOptionsWhere<Teacher>,
-    options?: {
-      relations?: FindOptionsRelations<Teacher>;
-      select?: FindOptionsSelect<Teacher>;
-    }
-  ) {
-    return this.teacherRepository.findOne({
-      where: conditions,
-      relations: options?.relations,
-      select: options?.select,
-    });
-  }
-
-  async getMany(options?: {
-    filters?: FilterTeacherDto;
-    relations?: FindOptionsRelations<Teacher>;
-    select?: FindOptionsSelect<Teacher>;
-    page?: number;
-  }) {
+  async getMany(options?: { filters?: FilterTeacherDto }) {
     const findOptions: FindManyOptions<Teacher> = {
-      relations: options?.relations,
-      select: options?.select,
+      relations: {
+        subjects: true,
+        user: true,
+      },
+      select: {
+        id: true,
+        user: {
+          firstName: true,
+          lastName: true,
+        },
+        subjects: true,
+      },
+      take: 10,
+      skip: getPaginationOffset(options?.filters?.page || 1),
     };
     if (options?.filters?.subjectId) {
       findOptions.where = Array.isArray(options.filters.subjectId)
@@ -64,58 +59,76 @@ class TeacherService {
             subjects: { id: options.filters.subjectId as number },
           };
     }
-    findOptions.take = 10;
-    findOptions.skip = getPaginationOffset(options?.page || 1);
-    return this.teacherRepository.find(findOptions);
+    const teachers = await this.teacherRepository.find(findOptions);
+    return plainToInstance(TeacherDto, teachers, {
+      exposeUnsetFields: false,
+    });
   }
 
-  async getById(
-    id: number,
-    options?: {
-      relations?: FindOptionsRelations<Teacher>;
-      select?: FindOptionsSelect<Teacher>;
-    }
-  ) {
-    const teacher = await this.getOne({ id }, options);
-    if (!teacher) throw BadRequest(`Teacher with id ${id} does not exist`);
-    return teacher;
-  }
-
-  async getByUserId(
-    id: number,
-    options?: {
-      relations?: FindOptionsRelations<Teacher>;
-      select?: FindOptionsSelect<Teacher>;
-    }
-  ) {
-    const teacher = await this.getOne({ user: { id } }, options);
+  async getFullDataById(id: number) {
+    const teacher = await this.teacherRepository.findOne({
+      where: { id },
+      relations: {
+        subjects: true,
+        user: true,
+      },
+      select: {
+        id: true,
+        user: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+        subjects: true,
+      },
+    });
     if (!teacher)
-      throw BadRequest(
-        `Teacher associated with user with id ${id} does not exist`
-      );
-    return teacher;
+      throw createError.NotFound(`Teacher with id ${id} does not exist`);
+    return plainToInstance(TeacherDto, teacher, {
+      exposeUnsetFields: false,
+    });
   }
 
-  async getCoursesByTeacher(id: number) {
-    const teacher = await this.getById(id, { relations: { courses: true } });
-    return teacher.courses;
+  async getTeacher(userId: number) {
+    const teacher = await AppDataSource.getRepository(User).findOne({
+      where: { id: userId },
+      relations: { teacherProfile: { subjects: true } },
+    });
+    return plainToInstance(UserDto, teacher, { exposeUnsetFields: false });
   }
 
   async update(id: number, dto: UpdateTeacherDto) {
-    const teacher = await this.getById(id, { relations: { user: true } });
-    if (dto.subjectId) {
-      teacher.subjects = await subjectService.getMany({
-        conditions: { id: In(dto.subjectId) },
-      });
-    }
-    return this.teacherRepository.save(teacher);
+    const teacher = await this.teacherRepository.findOne({ where: { id } });
+    if (!teacher)
+      throw createError.NotFound(`Teacher with id ${id} does not exist`);
+    const subjects = await subjectService.getManyByIds(dto.subjectIds);
+    if (!subjects) throw createError.NotFound("invalid subjects");
+    await AppDataSource.createQueryBuilder()
+      .delete()
+      .from("teacher_subject")
+      .where("teacherId  = :id", { id })
+      .execute();
+    await AppDataSource.createQueryBuilder()
+      .insert()
+      .into("teacher_subject")
+      .values(dto.subjectIds.map((s) => ({ teacherId: id, subjectId: s })))
+      .execute();
+    return plainToInstance(
+      TeacherDto,
+      { ...teacher, subjects },
+      { exposeUnsetFields: false }
+    );
   }
 
-  async delete(id: number) {
-    const teacher = await this.getById(id);
-    await userService.updateRole(teacher.user, Role.STUDENT);
-    await this.teacherRepository.remove(teacher);
-    return { message: `Teacher with id ${id} was deleted successfully` };
+  // deprecated?
+  async delete(id: number) {}
+
+  async hasSubject(teacherId: number, subjectId: number) {
+    return AppDataSource.createQueryBuilder()
+      .from("teacher_subject", "ts")
+      .where("ts.teacherId = :teacherId", { teacherId })
+      .andWhere("ts.subjectId = :subjectId", { subjectId })
+      .getExists();
   }
 }
 

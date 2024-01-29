@@ -1,5 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import { Review } from "./";
+import typeorm, {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+} from "typeorm";
+import { Review } from "./Review.entity.js";
 
 @Entity()
 export class Mark {
@@ -13,5 +18,5 @@ export class Mark {
   createdAt: Date;
 
   @OneToOne(() => Review, (review: Review) => review.mark)
-  review: Review;
+  review: typeorm.Relation<Review>;
 }

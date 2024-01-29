@@ -1,6 +1,6 @@
-import { Entity, PrimaryColumn, Column, OneToOne } from "typeorm";
-import { SubmissionAttachment } from "./SubmissionAttachment.entity";
-import { AssignmentAttachment } from "./AssignmentAttachment.entity";
+import typeorm, { Entity, PrimaryColumn, Column, OneToOne } from "typeorm";
+import { SubmissionAttachment } from "./SubmissionAttachment.entity.js";
+import { AssignmentAttachment } from "./AssignmentAttachment.entity.js";
 
 @Entity()
 export class File {
@@ -21,12 +21,12 @@ export class File {
     (submissionAttachment: SubmissionAttachment) => submissionAttachment.file,
     { cascade: true }
   )
-  submissionAttachment?: SubmissionAttachment;
+  submissionAttachment?: typeorm.Relation<SubmissionAttachment>;
 
   @OneToOne(
     () => AssignmentAttachment,
     (assignmentAttachment: AssignmentAttachment) => assignmentAttachment.file,
     { cascade: true }
   )
-  assignmentAttachment?: AssignmentAttachment;
+  assignmentAttachment?: typeorm.Relation<AssignmentAttachment>;
 }

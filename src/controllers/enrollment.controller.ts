@@ -1,14 +1,17 @@
-import { enrollmentService } from "../services";
+import { enrollmentService } from "../services/enrollment.service.js";
 import { NextFunction, Request, Response } from "express";
 
 class EnrollmentController {
   async create(
-    { user, params: { id } }: Request,
+    { user, params: { courseId } }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const response = await enrollmentService.create(Number(id), user!);
+      const response = await enrollmentService.create(
+        Number(courseId),
+        user?.studentProfile.id!
+      );
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -28,15 +31,10 @@ class EnrollmentController {
     }
   }
 
-  async getMany(
-    { query: { page, ...filters } }: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
       const response = await enrollmentService.getMany({
-        filters: filters as any,
-        page: Number(page),
+        filters: query as any,
       });
       res.status(200).json(response);
     } catch (e) {
@@ -45,14 +43,14 @@ class EnrollmentController {
   }
 
   async getEnrollmentsByCourse(
-    { query: { page, ...filters }, params: { courseId } }: Request,
+    { query, params: { courseId } }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await enrollmentService.getMany({
-        page: Number(page),
         filters: {
+          ...query,
           courseId: Number(courseId),
         } as any,
       });

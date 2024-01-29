@@ -1,6 +1,15 @@
-import { IsString, IsEmail, MinLength, IsOptional } from "class-validator";
+import { Expose, Type } from "class-transformer";
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
+import { UpdateTeacherDto } from "../teacher/update-teacher.dto";
 
 export class UpdateUserDto {
+  @Expose()
   @IsOptional()
   @IsString({
     message: "firstName should be a string",
@@ -10,6 +19,7 @@ export class UpdateUserDto {
   })
   readonly firstName: string;
 
+  @Expose()
   @IsOptional()
   @IsString({
     message: "lastName should be a string",
@@ -19,6 +29,7 @@ export class UpdateUserDto {
   })
   readonly lastName: string;
 
+  @Expose()
   @IsOptional()
   @IsString({
     message: "email should be a string",
@@ -30,4 +41,10 @@ export class UpdateUserDto {
     }
   )
   readonly email: string;
+
+  @Expose()
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateTeacherDto)
+  teacherProfile?: UpdateTeacherDto;
 }

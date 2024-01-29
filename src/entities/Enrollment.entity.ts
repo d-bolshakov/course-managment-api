@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -6,7 +6,8 @@ import {
   JoinColumn,
   RelationId,
 } from "typeorm";
-import { Course, Student } from "./";
+import { Course } from "./Course.entity.js";
+import { Student } from "./Student.entity.js";
 
 export enum EnrollmentStatus {
   APPLIED = "applied",
@@ -21,7 +22,7 @@ export class Enrollment {
 
   @ManyToOne(() => Course, (course) => course.enrollments, { nullable: false })
   @JoinColumn()
-  course!: Course;
+  course: typeorm.Relation<Course>;
 
   @Column("integer", { nullable: false })
   @RelationId((enrollment: Enrollment) => enrollment.course)
@@ -31,7 +32,7 @@ export class Enrollment {
     nullable: false,
   })
   @JoinColumn()
-  student!: Student;
+  student: typeorm.Relation<Student>;
 
   @Column("integer", { nullable: false })
   @RelationId((enrollment: Enrollment) => enrollment.student)
@@ -42,7 +43,7 @@ export class Enrollment {
     default: EnrollmentStatus.APPLIED,
     nullable: false,
   })
-  status: EnrollmentStatus = EnrollmentStatus.APPLIED;
+  status: typeorm.Relation<EnrollmentStatus> = EnrollmentStatus.APPLIED;
 
   @Column("timestamptz", {
     nullable: false,

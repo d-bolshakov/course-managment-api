@@ -1,10 +1,18 @@
-import { Type } from "class-transformer";
+import { Expose, Type } from "class-transformer";
+import { ReviewDto } from "../review/review.dto.js";
 
 export class MarkDto {
-  id: number;
+  @Expose()
+  readonly id: number;
 
-  mark: number;
+  @Expose()
+  readonly mark: number;
 
+  @Expose()
   @Type(() => Date)
-  public createdAt: Date;
+  readonly createdAt: Date;
+
+  @Expose()
+  @Type(() => ReviewDto)
+  readonly review: () => ReviewDto;
 }

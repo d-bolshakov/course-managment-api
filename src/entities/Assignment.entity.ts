@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -6,9 +6,10 @@ import {
   JoinColumn,
   OneToMany,
   RelationId,
-  OneToOne,
 } from "typeorm";
-import { AssignmentAttachment, Course, File, Submission } from "./";
+import { AssignmentAttachment } from "./AssignmentAttachment.entity.js";
+import { Course } from "./Course.entity.js";
+import { Submission } from "./Submission.entity.js";
 
 @Entity()
 export class Assignment {
@@ -23,7 +24,7 @@ export class Assignment {
 
   @ManyToOne(() => Course, (course) => course.assignments, { nullable: false })
   @JoinColumn()
-  course!: Course;
+  course: typeorm.Relation<Course>;
 
   @Column("integer", { nullable: false })
   @RelationId((assignment: Assignment) => assignment.course)
@@ -38,7 +39,7 @@ export class Assignment {
   @OneToMany(() => Submission, (Submission) => Submission.assignment, {
     cascade: true,
   })
-  submissions!: Submission[];
+  submissions: typeorm.Relation<Submission[]>;
 
   @OneToMany(
     () => AssignmentAttachment,
@@ -49,5 +50,5 @@ export class Assignment {
       nullable: false,
     }
   )
-  attachments: AssignmentAttachment;
+  attachments: typeorm.Relation<AssignmentAttachment>;
 }

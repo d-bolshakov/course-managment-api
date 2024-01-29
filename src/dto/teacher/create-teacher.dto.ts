@@ -1,6 +1,12 @@
-import { IsNumber } from "class-validator";
+import { Expose } from "class-transformer";
+import { IsArray, IsNumber } from "class-validator";
 
 export class CreateTeacherDto {
-  @IsNumber({}, { each: true, message: "each subjectId should be a number" })
-  readonly subjectId: number[];
+  @Expose()
+  @IsArray({ message: "subjectIds should be an array" })
+  @IsNumber(
+    {},
+    { each: true, message: "each subjectId in subjectIds should be a number" }
+  )
+  readonly subjectIds: number[];
 }

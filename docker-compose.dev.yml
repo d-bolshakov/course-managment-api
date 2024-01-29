@@ -20,23 +20,23 @@ services:
       timeout: 5s
       retries: 5
 
-  migrations:
-    container_name: course-management-migrations-dev
-    build:
-      context: .
-      dockerfile: Dockerfile.migrations
-    image: course-management-migrations:dev
-    volumes:
-      - ./src/migrations/:/app/src/migrations
-      - ./src/entities/:/app/src/entities
-      - ./src/db/seeds:/app/src/db/seeds
-    stdin_open: true
-    tty: true
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
+  # migrations:
+  #   container_name: course-management-migrations-dev
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.migrations
+  #   image: course-management-migrations:dev
+  #   volumes:
+  #     - ./src/migrations/:/app/src/migrations
+  #     - ./src/entities/:/app/src/entities
+  #     - ./src/db/seeds:/app/src/db/seeds
+  #   stdin_open: true
+  #   tty: true
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
 
 
   backend:
@@ -47,7 +47,7 @@ services:
       target: dev
     image: course-management-backend:dev
     volumes:
-      - .:/app
+      - ./src:/app/src
     expose:
       - '3000'
     ports:

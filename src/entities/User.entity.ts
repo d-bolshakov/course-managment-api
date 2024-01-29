@@ -1,12 +1,12 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
-  OneToMany,
   RelationId,
 } from "typeorm";
-import { Message, Student, Teacher } from "./";
+import { Student } from "./Student.entity.js";
+import { Teacher } from "./Teacher.entity.js";
 
 export enum Role {
   ADMIN = "admin",
@@ -37,15 +37,11 @@ export class User {
   @Column("enum", { enum: Role, default: Role.STUDENT, nullable: false })
   role: Role;
 
-  @OneToOne(() => Student, (student) => student.user, { cascade: true })
-  studentProfile?: Student;
+  @OneToOne(() => Student, (student: Student) => student.user, {
+    cascade: true,
+  })
+  studentProfile?: typeorm.Relation<Student>;
 
   @OneToOne(() => Teacher, (teacher) => teacher.user, { cascade: true })
-  teacherProfile?: Teacher;
-
-  @OneToMany(() => Message, (message) => message.sender, { cascade: true })
-  sentMessages!: Message[];
-
-  @OneToMany(() => Message, (message) => message.receiver, { cascade: true })
-  receivedMessages!: Message[];
+  teacherProfile?: typeorm.Relation<Teacher>;
 }

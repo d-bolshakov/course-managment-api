@@ -1,127 +1,306 @@
-import { AppDataSource } from "../db/data-source";
-import { BadRequest, Forbidden } from "http-errors";
-import { Submission, User } from "../entities";
-import {
-  assignmentService,
-  attachmentService,
-  markService,
-  studentService,
-} from ".";
-import {
-  FindManyOptions,
-  FindOptionsRelations,
-  FindOptionsSelect,
-  FindOptionsWhere,
-} from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { CreateSubmissionDto, MarkDto, CreateReviewDto } from "../dto";
-import { FilterSubmissionDto } from "../dto/";
+import { AppDataSource } from "../db/data-source.js";
+import createError from "http-errors";
+import { FindOptionsSelect, FindOptionsWhere, IsNull } from "typeorm";
+import { getPaginationOffset } from "../utils/pagination-offset.util.js";
+
 import { UploadedFile } from "express-fileupload";
+import { plainToInstance } from "class-transformer";
+import { CreateReviewDto } from "../dto/review/create-review.dto.js";
+import { CreateSubmissionDto } from "../dto/submission/create-submission.dto.js";
+import {
+  FilterSubmissionDto,
+  FilterSubmissionstatus,
+} from "../dto/submission/filter-submission.dto.js";
+import { SubmissionDto } from "../dto/submission/submission.dto.js";
+import { Submission } from "../entities/Submission.entity.js";
+import { assignmentService } from "./assignment.service.js";
+import { attachmentService } from "./attachment.service.js";
+import { reviewService } from "./review.service.js";
 
 class SubmissionService {
   private submissionRepository = AppDataSource.getRepository(Submission);
 
   async create(
-    assignmentId: number,
     dto: CreateSubmissionDto,
-    user: User,
+    studentId: number,
     attachment?: UploadedFile | UploadedFile[]
   ) {
-    const { text, comment } = dto;
-    const candidateAssignment = await assignmentService.getById(assignmentId);
-    const studentProfile = await studentService.getByUserId(user.id, {
-      relations: {
-        enrollments: true,
-      },
+    if (!(await assignmentService.isActive(dto.assignmentId)))
+      throw createError.BadRequest(
+        "Could not create submission for an inactive assignment"
+      );
+    const submission = this.submissionRepository.create({
+      ...dto,
+      studentId,
+      assignmentId: dto.assignmentId,
     });
-    if (
-      !studentProfile.enrollments.find(
-        (e) => e.courseId === candidateAssignment.courseId
-      )
-    )
-      throw new Forbidden();
-    if (candidateAssignment.deadline! < new Date())
-      throw BadRequest("Could not create submission after the deadline");
-    const submission = new Submission();
-    submission.student = studentProfile;
-    submission.assignment = candidateAssignment;
-    submission.text = text;
-    submission.comment = comment;
     const saved = await this.submissionRepository.save(submission);
+    let savedAttachments;
     if (attachment)
-      submission.attachments = await attachmentService.createForSubmission(
-        saved,
+      savedAttachments = await attachmentService.createForSubmission(
+        saved.id,
         attachment
       );
-    return submission;
+    return plainToInstance(
+      SubmissionDto,
+      { ...submission, attachments: savedAttachments },
+      {
+        exposeUnsetFields: false,
+      }
+    );
   }
 
-  async getOne(
-    conditions: FindOptionsWhere<Submission>,
-    options?: {
-      relations?: FindOptionsRelations<Submission>;
-      select?: FindOptionsSelect<Submission>;
-    }
-  ) {
-    return this.submissionRepository.findOne({
-      where: conditions,
-      relations: options?.relations,
-      select: options?.select,
-    });
-  }
-
-  async getMany(options: {
-    filters: FilterSubmissionDto;
-    relations?: FindOptionsRelations<Submission>;
-    select?: FindOptionsSelect<Submission>;
-    page?: number;
-  }) {
-    const { assignmentId, courseId } = options.filters;
+  async getMany(options: { filters: FilterSubmissionDto }) {
+    const { assignmentId, courseId, status } = options.filters;
     const conditions: FindOptionsWhere<Submission> = {};
     if (assignmentId) conditions.assignment = { id: assignmentId };
     if (courseId) conditions.assignment = { course: { id: courseId } };
-    const findOptions: FindManyOptions<Submission> = {
+    if (status === FilterSubmissionstatus.SUMBITTED)
+      conditions.reviewId = IsNull();
+    else if (
+      status === FilterSubmissionstatus.ACCEPTED ||
+      status === FilterSubmissionstatus.REJECTED
+    )
+      conditions.review = { status: status as any };
+    const submissions = await this.submissionRepository.find({
       where: conditions,
-      relations: options?.relations,
-      select: options.select,
-    };
-    findOptions.take = 10;
-    findOptions.skip = getPaginationOffset(options?.page || 1);
-    return this.submissionRepository.find(findOptions);
+      relations: {
+        assignment: {
+          course: true,
+        },
+        student: {
+          user: true,
+        },
+      },
+      select: {
+        id: true,
+        reviewId: true,
+        assignment: {
+          id: true,
+          courseId: true,
+          course: {
+            id: true,
+            title: true,
+          },
+        },
+        student: {
+          id: true,
+          user: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      take: 10,
+      skip: getPaginationOffset(options?.filters.page || 1),
+    });
+    return plainToInstance(SubmissionDto, submissions, {
+      exposeUnsetFields: false,
+    });
   }
 
-  async getById(
-    id: number,
+  async getSubmissionsOfTeacher(
+    teacherId: number,
     options?: {
-      relations?: FindOptionsRelations<Submission>;
-      select?: FindOptionsSelect<Submission>;
+      filters: FilterSubmissionDto;
     }
   ) {
-    const submission = await this.getOne({ id }, options);
-    if (!submission)
-      throw new BadRequest(`Submission with id ${id} does not exist`);
-    return submission;
+    const conditions: FindOptionsWhere<Submission> = {
+      assignment: { course: { teacherId } },
+    };
+    if (options?.filters.assignmentId)
+      conditions.assignmentId = options.filters.assignmentId;
+    if (options?.filters.courseId)
+      // @ts-expect-error
+      conditions.assignment!.courseId = options.filters.courseId;
+    if (options?.filters.status === FilterSubmissionstatus.SUMBITTED)
+      conditions.reviewId = IsNull();
+    else if (
+      options?.filters.status === FilterSubmissionstatus.ACCEPTED ||
+      options?.filters.status === FilterSubmissionstatus.REJECTED
+    )
+      conditions.review = { status: options.filters.status as any };
+    const submissions = await this.submissionRepository.find({
+      relations: {
+        assignment: {
+          course: true,
+        },
+        student: {
+          user: true,
+        },
+      },
+      select: {
+        id: true,
+        reviewId: true,
+        assignment: {
+          id: true,
+          courseId: true,
+          course: {
+            id: true,
+            title: true,
+          },
+        },
+        student: {
+          id: true,
+          user: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      where: conditions,
+      take: 10,
+      skip: getPaginationOffset(options?.filters.page || 1),
+    });
+    return plainToInstance(SubmissionDto, submissions, {
+      exposeUnsetFields: false,
+    });
   }
 
-  // async review(id: number, dto: CreateSubmissionReviewDto, user: User) {
-  //   const submission = await this.getById(id);
-  //   const { status, comment, mark } = dto;
-  //   if (status === SubmissionStatus.REJECTED) {
-  //     submission.status = status;
-  //     submission.reviewComment = comment;
-  //     await this.submissionRepository.save(submission);
-  //     return submission;
-  //   }
-  //   const createdMark = await markService.create({ mark } as MarkDto);
-  //   submission.mark = createdMark;
-  //   submission.status = SubmissionStatus.REVIEWED;
-  //   submission.reviewComment = comment;
-  //   await this.submissionRepository.save(submission);
-  //   return submission;
-  // }
+  async getSubmissionsOfStudent(
+    studentId: number,
+    options?: {
+      filters: FilterSubmissionDto;
+    }
+  ) {
+    const conditions: FindOptionsWhere<Submission> = {
+      assignment: { course: { enrollments: { studentId } } },
+    };
+    if (options?.filters.assignmentId)
+      conditions.assignmentId = options.filters.assignmentId;
+    if (options?.filters.courseId)
+      // @ts-expect-error
+      conditions.assignment!.courseId = options.filters.courseId;
+    if (options?.filters.status === FilterSubmissionstatus.SUMBITTED)
+      conditions.reviewId = IsNull();
+    else if (
+      options?.filters.status === FilterSubmissionstatus.ACCEPTED ||
+      options?.filters.status === FilterSubmissionstatus.REJECTED
+    )
+      conditions.review = { status: options.filters.status as any };
+    const submissions = await this.submissionRepository.find({
+      relations: {
+        assignment: {
+          course: true,
+        },
+        student: {
+          user: true,
+        },
+      },
+      select: {
+        id: true,
+        reviewId: true,
+        assignment: {
+          id: true,
+          courseId: true,
+          course: {
+            id: true,
+            title: true,
+          },
+        },
+        student: {
+          id: true,
+          user: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+      where: conditions,
+      take: 10,
+      skip: getPaginationOffset(options?.filters.page || 1),
+    });
+    return plainToInstance(SubmissionDto, submissions, {
+      exposeUnsetFields: false,
+    });
+  }
+
+  async getFullDataById(id: number) {
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+      relations: {
+        assignment: {
+          course: true,
+        },
+        student: {
+          user: true,
+        },
+        review: {
+          mark: true,
+        },
+        attachments: true,
+      },
+      select: {
+        id: true,
+        text: true,
+        comment: true,
+        createdAt: true,
+        assignment: {
+          id: true,
+          title: true,
+          course: {
+            id: true,
+            title: true,
+          },
+        },
+        student: {
+          id: true,
+          user: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        review: {
+          id: true,
+          status: true,
+          createdAt: true,
+          comment: true,
+          mark: {
+            id: true,
+            mark: true,
+          },
+        },
+        attachments: {
+          id: true,
+          fileId: true,
+        },
+      },
+    });
+    if (!submission)
+      throw new createError.NotFound(`Submission with id ${id} does not exist`);
+    return plainToInstance(SubmissionDto, submission, {
+      exposeUnsetFields: false,
+    });
+  }
+
+  async review(id: number, dto: CreateReviewDto) {
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+    if (!submission)
+      throw new createError.NotFound(`Submission with id ${id} does not exist`);
+    if (submission.reviewId)
+      throw createError.BadRequest(
+        `Submission with id ${id} has review already`
+      );
+    const review = await reviewService.create(dto);
+    submission.reviewId = review.id;
+    await this.submissionRepository.save(submission);
+    return plainToInstance(
+      SubmissionDto,
+      { ...submission, review },
+      {
+        exposeUnsetFields: false,
+      }
+    );
+  }
 
   async delete(id: number) {
-    const submission = await this.getById(id);
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+    if (!submission)
+      throw new createError.NotFound(`Submission with id ${id} does not exist`);
     await this.submissionRepository.remove(submission);
     return { message: `Submission with id ${id} was deleted successfully` };
   }

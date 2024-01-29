@@ -1,14 +1,22 @@
-import { AppDataSource } from "../db/data-source";
-import { File } from "../entities";
+import { AppDataSource } from "../db/data-source.js";
 import { writeFile, open, mkdir } from "fs/promises";
 import path from "path";
 import { UploadedFile } from "express-fileupload";
 import { v4 } from "uuid";
-import { NotFound, InternalServerError } from "http-errors";
+import createError from "http-errors";
+import { plainToInstance } from "class-transformer";
+import { File } from "../entities/File.entity.js";
+import { FileDto } from "../dto/file/file.dto.js";
+import { fileURLToPath } from "url";
 
 class FileService {
   private fileRepository = AppDataSource.getRepository(File);
-  private basePath = path.resolve(__dirname, "..", "static", "attachments");
+  private basePath = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "static",
+    "attachments"
+  );
 
   async create(file: UploadedFile | UploadedFile[]) {
     if (Array.isArray(file)) return this.createMany(file);
@@ -18,7 +26,7 @@ class FileService {
       await mkdir(this.basePath, { recursive: true });
       await writeFile(path.join(this.basePath, id + ext), file.data);
     } catch (err) {
-      throw InternalServerError(
+      throw createError.InternalServerError(
         `Error occured during saving '${file.name}': ${err}`
       );
     }
@@ -29,7 +37,10 @@ class FileService {
         mimetype: file.mimetype,
       },
     ]);
-    return this.fileRepository.save(fileEntity);
+    await this.fileRepository.save(fileEntity);
+    return plainToInstance(FileDto, fileEntity, {
+      exposeUnsetFields: false,
+    });
   }
 
   async createMany(files: UploadedFile[]) {
@@ -41,7 +52,7 @@ class FileService {
         try {
           await writeFile(path.join(this.basePath, id + ext), file.data);
         } catch (err) {
-          throw InternalServerError(
+          throw createError.InternalServerError(
             `Error occured during saving '${file.name}': ${err}`
           );
         }
@@ -52,12 +63,16 @@ class FileService {
         });
       })
     );
-    return this.fileRepository.save(fileEntities);
+    await this.fileRepository.save(fileEntities);
+    return plainToInstance(FileDto, fileEntities, {
+      exposeUnsetFields: false,
+    });
   }
 
   async getOne(id: string) {
     const fileEntity = await this.fileRepository.findOne({ where: { id } });
-    if (!fileEntity) throw NotFound(`File with id ${id} does not exist`);
+    if (!fileEntity)
+      throw createError.NotFound(`File with id ${id} does not exist`);
     const ext = "." + fileEntity.filename.split(".")[1];
     const fd = await open(path.join(this.basePath, id + ext));
     const stream = fd.createReadStream();

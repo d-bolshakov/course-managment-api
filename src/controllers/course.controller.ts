@@ -1,10 +1,13 @@
-import { courseService } from "../services";
+import { courseService } from "../services/course.service.js";
 import { NextFunction, Request, Response } from "express";
 
 class CourseController {
   async create({ body, user }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await courseService.create(body, user!);
+      const response = await courseService.create(
+        body,
+        user?.teacherProfile.id!
+      );
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -17,22 +20,17 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const response = await courseService.getById(Number(courseId));
+      const response = await courseService.getFullDataById(Number(courseId));
       res.status(200).json(response);
     } catch (e) {
       next(e);
     }
   }
 
-  async getMany(
-    { query: { page, ...filters } }: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
       const response = await courseService.getMany({
-        filters: filters as any,
-        page: Number(page),
+        filters: query as any,
       });
       res.status(200).json(response);
     } catch (e) {

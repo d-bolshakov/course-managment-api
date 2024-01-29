@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   OneToOne,
@@ -7,7 +7,9 @@ import {
   RelationId,
   Column,
 } from "typeorm";
-import { User, Enrollment, Mark, Submission } from "./";
+import { Enrollment } from "./Enrollment.entity.js";
+import { Submission } from "./Submission.entity.js";
+import { User } from "./User.entity.js";
 
 @Entity()
 export class Student {
@@ -16,7 +18,7 @@ export class Student {
 
   @OneToOne(() => User, { nullable: false })
   @JoinColumn()
-  user!: User;
+  user: typeorm.Relation<User>;
 
   @Column("integer", { nullable: false })
   @RelationId((student: Student) => student.user)
@@ -25,10 +27,10 @@ export class Student {
   @OneToMany(() => Enrollment, (enrollment) => enrollment.student, {
     cascade: true,
   })
-  enrollments!: Enrollment[];
+  enrollments: typeorm.Relation<Enrollment[]>;
 
   @OneToMany(() => Submission, (submission) => submission.student, {
     cascade: true,
   })
-  submissions!: Submission[];
+  submissions: typeorm.Relation<Submission[]>;
 }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { isHttpError } from "http-errors";
+import createError from "http-errors";
 
 export const ErrorHandlerMiddleware = (
   error: Error,
@@ -8,7 +8,7 @@ export const ErrorHandlerMiddleware = (
   next: NextFunction
 ) => {
   console.error(error);
-  if (isHttpError(error))
+  if (createError.isHttpError(error))
     return res.status(error.statusCode).json({ message: error.message });
   return res.status(500).json({ message: "Internal error" });
 };

@@ -1,6 +1,6 @@
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 import { DataSource } from "typeorm";
-import { Subject } from "../../entities/Subject.entity";
+import { Subject } from "../../entities/Subject.entity.js";
 
 export default class SubjectSeeder implements Seeder {
   public async run(

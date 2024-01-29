@@ -1,23 +1,24 @@
-import {
+import typeorm, {
   Column,
   Entity,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Course, Teacher } from "./";
+import { Course } from "./Course.entity.js";
+import { Teacher } from "./Teacher.entity.js";
 
 @Entity()
 export class Subject {
   @PrimaryGeneratedColumn()
-  public id: number;
+  id: number;
 
   @Column("varchar", { length: 30, nullable: false, unique: true })
-  public title: string;
+  title: string;
 
   @OneToMany(() => Course, (course) => course.subject)
-  courses: Course[];
+  courses: typeorm.Relation<Course[]>;
 
   @ManyToMany(() => Teacher, (teacher) => teacher.subjects)
-  teachers: Teacher[];
+  teachers: typeorm.Relation<Teacher[]>;
 }

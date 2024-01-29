@@ -1,8 +1,8 @@
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 import { DataSource } from "typeorm";
-import { Role, User } from "../../entities/User.entity";
+import { Role, User } from "../../entities/User.entity.js";
 import { hash } from "bcryptjs";
-import { Subject } from "../../entities/Subject.entity";
+import { Subject } from "../../entities/Subject.entity.js";
 
 export default class UserSeeder implements Seeder {
   public async run(

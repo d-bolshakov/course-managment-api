@@ -1,4 +1,4 @@
-import { subjectService } from "../services/";
+import { subjectService } from "../services/subject.service.js";
 import { NextFunction, Request, Response } from "express";
 
 class SubjectController {
@@ -20,14 +20,10 @@ class SubjectController {
     }
   }
 
-  async getMany(
-    { query: { page } }: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
       const response = await subjectService.getMany({
-        page: Number(page),
+        filters: query as any,
       });
       res.status(200).json(response);
     } catch (e) {

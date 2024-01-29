@@ -1,4 +1,4 @@
-import {
+import typeorm, {
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -8,8 +8,9 @@ import {
   BeforeInsert,
   BeforeUpdate,
 } from "typeorm";
-import { Mark, Submission } from ".";
-import { BadRequest } from "http-errors";
+import createError from "http-errors";
+import { Mark } from "./Mark.entity.js";
+import { Submission } from "./Submission.entity.js";
 
 export enum ReviewStatus {
   ACCEPTED = "accepted",
@@ -35,7 +36,7 @@ export class Review {
     onDelete: "CASCADE",
   })
   @JoinColumn()
-  mark!: Mark;
+  mark: Mark;
 
   @Column("integer", { nullable: true })
   @RelationId((review: Review) => review.mark)
@@ -44,15 +45,18 @@ export class Review {
   @Column("timestamp", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
 
-  @OneToOne(() => Submission, (submission: Submission) => submission.review)
-  submission: Submission;
+  @OneToOne("Submission", (submission: Submission) => submission.review)
+  submission: typeorm.Relation<Submission>;
 
   @BeforeInsert()
-  @BeforeUpdate()
   checkMark() {
-    if (this.status === ReviewStatus.ACCEPTED && (!this.markId || !this.mark))
-      throw BadRequest("review with status 'accepted' should have a mark");
-    if (this.status === ReviewStatus.REJECTED && (this.markId || this.mark))
-      throw BadRequest("review with status 'rejected' should not have a mark");
+    if (this.status === ReviewStatus.ACCEPTED && !this.markId)
+      throw createError.BadRequest(
+        "review with status 'accepted' should have a mark"
+      );
+    if (this.status === ReviewStatus.REJECTED && this.markId)
+      throw createError.BadRequest(
+        "review with status 'rejected' should not have a mark"
+      );
   }
 }

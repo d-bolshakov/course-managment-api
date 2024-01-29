@@ -1,7 +1,7 @@
 import { validate, ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";
 import { plainToInstance } from "class-transformer";
-import { BadRequest } from "http-errors";
+import createError from "http-errors";
 
 const getErrorMessagesArray = (errors: ValidationError[]) => {
   const messages: string[] = [];
@@ -26,7 +26,7 @@ export const DtoValidationMiddleware = (
     validate(dtoObj).then((errors: ValidationError[]) => {
       if (errors.length > 0) {
         const dtoErrors = getErrorMessagesArray(errors).join(", ");
-        next(BadRequest(dtoErrors));
+        next(createError.BadRequest(dtoErrors));
       } else {
         req[reqTargetProperty] = dtoObj;
         next();

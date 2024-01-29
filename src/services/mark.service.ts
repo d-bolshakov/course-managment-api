@@ -1,6 +1,5 @@
-import { AppDataSource } from "../db/data-source";
-import { BadRequest } from "http-errors";
-import { Mark } from "../entities";
+import { AppDataSource } from "../db/data-source.js";
+import createError from "http-errors";
 import {
   Between,
   FindManyOptions,
@@ -10,39 +9,26 @@ import {
   LessThanOrEqual,
   MoreThanOrEqual,
 } from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util";
-import { MarkDto } from "../dto";
-import { FilterMarkDto } from "../dto/";
+import { getPaginationOffset } from "../utils/pagination-offset.util.js";
+import { plainToInstance } from "class-transformer";
+import { FilterMarkDto } from "../dto/mark/filter-mark.dto.js";
+import { MarkDto } from "../dto/mark/mark.dto.js";
+import { Mark } from "../entities/Mark.entity.js";
 
 class MarkService {
   private markRepository = AppDataSource.getRepository(Mark);
 
-  async create(dto: MarkDto) {
-    const { mark } = dto;
-    const nmark = new Mark();
-    nmark.mark = mark;
-    return this.markRepository.save(nmark);
-  }
-
-  async getOne(
-    conditions: FindOptionsWhere<Mark>,
-    options?: {
-      relations?: FindOptionsRelations<Mark>;
-      select?: FindOptionsSelect<Mark>;
-    }
-  ) {
-    return this.markRepository.findOne({
-      where: conditions,
-      relations: options?.relations,
-      select: options?.select,
+  async create(dto: { mark: number }) {
+    const mark = this.markRepository.create({ mark: dto.mark });
+    await this.markRepository.save(mark);
+    return plainToInstance(MarkDto, mark, {
+      exposeUnsetFields: false,
     });
   }
 
   async getMany(options: {
     filters: FilterMarkDto;
     select?: FindOptionsSelect<Mark>;
-    relations?: FindOptionsRelations<Mark>;
-    page?: number;
   }) {
     const conditions: FindOptionsWhere<Mark> = {};
     const {
@@ -68,30 +54,21 @@ class MarkService {
       else if (higherThan) conditions.mark = MoreThanOrEqual(higherThan);
       else conditions.mark = LessThanOrEqual(lowerThan);
     }
-    const findOptions: FindManyOptions<Mark> = {
+    const marks = await this.markRepository.find({
       select: options.select,
       where: conditions,
-      relations: options?.relations,
-    };
-    findOptions.take = 10;
-    findOptions.skip = getPaginationOffset(options?.page || 1);
-    return this.markRepository.find(findOptions);
-  }
-
-  async getById(
-    id: number,
-    options?: {
-      relations?: FindOptionsRelations<Mark>;
-      select?: FindOptionsSelect<Mark>;
-    }
-  ) {
-    const mark = await this.getOne({ id }, options);
-    if (!mark) throw new BadRequest(`Mark with id ${id} does not exist`);
-    return mark;
+      take: 10,
+      skip: getPaginationOffset(options?.filters.page || 1),
+    });
+    return plainToInstance(MarkDto, marks, {
+      exposeUnsetFields: false,
+    });
   }
 
   async delete(id: number) {
-    const mark = await this.getById(id);
+    const mark = await this.markRepository.findOne({ where: { id } });
+    if (!mark)
+      throw new createError.NotFound(`Mark with id ${id} does not exist`);
     await this.markRepository.remove(mark);
     return { message: `Mark with id ${id} was deleted successfully` };
   }

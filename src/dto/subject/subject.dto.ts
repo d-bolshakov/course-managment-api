@@ -1,13 +1,19 @@
-import { IsString, MinLength } from "class-validator";
+import { Expose, Type } from "class-transformer";
+import { CourseDto } from "../course/course.dto.js";
+import { TeacherDto } from "../teacher/teacher.dto.js";
 
 export class SubjectDto {
+  @Expose()
   readonly id: number;
 
-  @IsString({
-    message: "title should be a string",
-  })
-  @MinLength(2, {
-    message: "title should be longer than 2 characters",
-  })
-  public title: string;
+  @Expose()
+  readonly title: string;
+
+  @Expose()
+  @Type(() => CourseDto)
+  readonly courses: CourseDto[];
+
+  @Expose()
+  @Type(() => TeacherDto)
+  readonly teachers: TeacherDto[];
 }

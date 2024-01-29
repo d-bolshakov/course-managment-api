@@ -1,7 +1,7 @@
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 import { DataSource } from "typeorm";
-import { Teacher } from "../../entities/Teacher.entity";
-import { Course } from "../../entities/Course.entity";
+import { Teacher } from "../../entities/Teacher.entity.js";
+import { Course } from "../../entities/Course.entity.js";
 import { getDateWithOffset, getRandomInt } from "./utils";
 
 export default class CourseSeeder implements Seeder {
