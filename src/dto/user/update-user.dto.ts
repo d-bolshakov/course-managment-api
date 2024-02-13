@@ -41,10 +41,4 @@ export class UpdateUserDto {
     }
   )
   readonly email: string;
-
-  @Expose()
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => UpdateTeacherDto)
-  teacherProfile?: UpdateTeacherDto;
 }

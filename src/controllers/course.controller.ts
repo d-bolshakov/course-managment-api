@@ -1,12 +1,18 @@
-import { courseService } from "../services/course.service.js";
-import { NextFunction, Request, Response } from "express";
+import { inject, injectable } from "tsyringe";
+import type { NextFunction, Request, Response } from "express";
+import type { ICourseService } from "../interfaces/services/course-service.interface";
 
-class CourseController {
+@injectable()
+export class CourseController {
+  constructor(
+    @inject("course-service") private courseService: ICourseService
+  ) {}
+
   async create({ body, user }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await courseService.create(
-        body,
-        user?.teacherProfile.id!
+      const response = await this.courseService.create(
+        user?.teacherProfile.id!,
+        body
       );
       res.status(201).json(response);
     } catch (e) {
@@ -20,7 +26,9 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const response = await courseService.getFullDataById(Number(courseId));
+      const response = await this.courseService.getFullDataById(
+        Number(courseId)
+      );
       res.status(200).json(response);
     } catch (e) {
       next(e);
@@ -29,7 +37,7 @@ class CourseController {
 
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await courseService.getMany({
+      const response = await this.courseService.getMany({
         filters: query as any,
       });
       res.status(200).json(response);
@@ -44,7 +52,7 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      const response = await courseService.update(Number(courseId), body);
+      const response = await this.courseService.update(Number(courseId), body);
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -57,10 +65,9 @@ class CourseController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(courseService.delete(Number(courseId)));
+      res.status(201).json(this.courseService.delete(Number(courseId)));
     } catch (e) {
       next(e);
     }
   }
 }
-export const courseController = new CourseController();

@@ -41,6 +41,7 @@
     "http-errors": "^2.0.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.8.0",
     "typeorm": "^0.3.17",
     "typeorm-extension": "^3.0.1",
     "uuid": "^9.0.1"

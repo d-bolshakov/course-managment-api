@@ -1,7 +1,13 @@
-import { submissionService } from "../services/submission.service.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { inject, injectable } from "tsyringe";
+import type { ISubmissionService } from "../interfaces/services/submission-service.interface";
 
-class SubmissionController {
+@injectable()
+export class SubmissionController {
+  constructor(
+    @inject("submission-service")
+    private submissionService: ISubmissionService
+  ) {}
   async create(
     // @ts-ignore
     { body, user, files: { attachment } }: Request,
@@ -9,10 +15,9 @@ class SubmissionController {
     next: NextFunction
   ) {
     try {
-      console.log(user);
-      const response = await submissionService.create(
-        body,
+      const response = await this.submissionService.create(
         user?.studentProfile.id!,
+        body,
         attachment
       );
       res.status(201).json(response);
@@ -27,7 +32,7 @@ class SubmissionController {
     next: NextFunction
   ) {
     try {
-      const response = await submissionService.getFullDataById(
+      const response = await this.submissionService.getFullDataById(
         Number(submissionId)
       );
       res.status(200).json(response);
@@ -38,7 +43,7 @@ class SubmissionController {
 
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await submissionService.getMany({
+      const response = await this.submissionService.getMany({
         filters: query as any,
       });
       res.status(200).json(response);
@@ -53,7 +58,7 @@ class SubmissionController {
     next: NextFunction
   ) {
     try {
-      const response = await submissionService.getMany({
+      const response = await this.submissionService.getMany({
         filters: query as any,
       });
 
@@ -69,7 +74,7 @@ class SubmissionController {
     next: NextFunction
   ) {
     try {
-      const response = await submissionService.review(
+      const response = await this.submissionService.review(
         Number(submissionId),
         body
       );
@@ -85,10 +90,9 @@ class SubmissionController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(submissionService.delete(Number(submissionId)));
+      res.status(201).json(this.submissionService.delete(Number(submissionId)));
     } catch (e) {
       next(e);
     }
   }
 }
-export const submissionController = new SubmissionController();

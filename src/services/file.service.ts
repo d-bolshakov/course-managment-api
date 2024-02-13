@@ -1,87 +1,66 @@
-import { AppDataSource } from "../db/data-source.js";
-import { writeFile, open, mkdir } from "fs/promises";
-import path from "path";
-import { UploadedFile } from "express-fileupload";
 import { v4 } from "uuid";
 import createError from "http-errors";
-import { plainToInstance } from "class-transformer";
-import { File } from "../entities/File.entity.js";
-import { FileDto } from "../dto/file/file.dto.js";
-import { fileURLToPath } from "url";
+import type { IFileService } from "../interfaces/services/file-service.interface.js";
+import { CreateFileMetadataDto } from "../dto/file-metadata/create-file-metadata.dto.js";
+import type { UploadedFile } from "express-fileupload";
+import { FileMetadataDto } from "../dto/file-metadata/file-metadata.dto.js";
+import { inject, injectable } from "tsyringe";
+import type { IFileMetadataRepository } from "../interfaces/repositories/file-metadata-repository.interface.js";
+import type { IFileStorageRepository } from "../interfaces/repositories/file-storage-repository.interface.js";
 
-class FileService {
-  private fileRepository = AppDataSource.getRepository(File);
-  private basePath = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    "..",
-    "static",
-    "attachments"
-  );
+@injectable()
+export class FileService implements IFileService {
+  constructor(
+    @inject("file-metadata-repository")
+    private fileMetadataRepository: IFileMetadataRepository,
+    @inject("file-storage-repository")
+    private fileStorageRepository: IFileStorageRepository
+  ) {}
 
-  async create(file: UploadedFile | UploadedFile[]) {
-    if (Array.isArray(file)) return this.createMany(file);
+  async create(file: UploadedFile) {
+    const originalFilename = file.name;
     const ext = "." + file.name.split(".")[1];
     const id = v4();
-    try {
-      await mkdir(this.basePath, { recursive: true });
-      await writeFile(path.join(this.basePath, id + ext), file.data);
-    } catch (err) {
-      throw createError.InternalServerError(
-        `Error occured during saving '${file.name}': ${err}`
-      );
-    }
-    const fileEntity = this.fileRepository.create([
-      {
-        id,
-        filename: file.name,
-        mimetype: file.mimetype,
-      },
-    ]);
-    await this.fileRepository.save(fileEntity);
-    return plainToInstance(FileDto, fileEntity, {
-      exposeUnsetFields: false,
+    file.name = id + ext;
+    await this.fileStorageRepository.create(file);
+    const savedRecord = await this.fileMetadataRepository.create({
+      id,
+      filename: originalFilename,
+      mimetype: file.mimetype,
     });
+    return savedRecord as FileMetadataDto;
   }
 
   async createMany(files: UploadedFile[]) {
-    await mkdir(this.basePath, { recursive: true });
-    const fileEntities = await Promise.all(
-      files.map(async (file) => {
-        const ext = "." + file.name.split(".")[1];
-        const id = v4();
-        try {
-          await writeFile(path.join(this.basePath, id + ext), file.data);
-        } catch (err) {
-          throw createError.InternalServerError(
-            `Error occured during saving '${file.name}': ${err}`
-          );
-        }
-        return this.fileRepository.create({
+    const savedToDisk: CreateFileMetadataDto[] = [];
+    for (const file of files) {
+      const originalFilename = file.name;
+      const ext = "." + file.name.split(".")[1];
+      const id = v4();
+      file.name = id + ext;
+      const { success: isSaved } = await this.fileStorageRepository.create(
+        file
+      );
+      if (isSaved)
+        savedToDisk.push({
           id,
-          filename: file.name,
+          filename: originalFilename,
           mimetype: file.mimetype,
         });
-      })
-    );
-    await this.fileRepository.save(fileEntities);
-    return plainToInstance(FileDto, fileEntities, {
-      exposeUnsetFields: false,
-    });
+    }
+    return this.fileMetadataRepository.create(savedToDisk);
   }
 
-  async getOne(id: string) {
-    const fileEntity = await this.fileRepository.findOne({ where: { id } });
-    if (!fileEntity)
+  async getById(id: string) {
+    const fileRecord = await this.fileMetadataRepository.getById(id);
+    if (!fileRecord)
       throw createError.NotFound(`File with id ${id} does not exist`);
-    const ext = "." + fileEntity.filename.split(".")[1];
-    const fd = await open(path.join(this.basePath, id + ext));
-    const stream = fd.createReadStream();
+    const ext = "." + fileRecord.filename.split(".")[1];
+    const { stream } = await this.fileStorageRepository.getByFilename(id + ext);
     return {
-      filename: fileEntity.filename,
-      mimetype: fileEntity.mimetype,
+      filename: fileRecord.filename,
+      mimetype: fileRecord.mimetype,
       stream,
     };
   }
 }
-
-export const fileService = new FileService();

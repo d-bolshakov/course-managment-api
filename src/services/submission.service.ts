@@ -1,44 +1,48 @@
-import { AppDataSource } from "../db/data-source.js";
 import createError from "http-errors";
-import { FindOptionsSelect, FindOptionsWhere, IsNull } from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-
-import { UploadedFile } from "express-fileupload";
+import type { UploadedFile } from "express-fileupload";
 import { plainToInstance } from "class-transformer";
-import { CreateReviewDto } from "../dto/review/create-review.dto.js";
+import { ReviewSubmissionDto } from "../dto/submission/review-submission.dto.js";
 import { CreateSubmissionDto } from "../dto/submission/create-submission.dto.js";
-import {
-  FilterSubmissionDto,
-  FilterSubmissionstatus,
-} from "../dto/submission/filter-submission.dto.js";
+import { FilterSubmissionDto } from "../dto/submission/filter-submission.dto.js";
 import { SubmissionDto } from "../dto/submission/submission.dto.js";
-import { Submission } from "../entities/Submission.entity.js";
-import { assignmentService } from "./assignment.service.js";
-import { attachmentService } from "./attachment.service.js";
-import { reviewService } from "./review.service.js";
+import type { ISubmissionService } from "../interfaces/services/submission-service.interface.js";
+import { inject, injectable } from "tsyringe";
+import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
+import type { ISubmissionRepository } from "../interfaces/repositories/submission-repository.interface.js";
+import type { IReviewService } from "../interfaces/services/review-service.interface.js";
+import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
 
-class SubmissionService {
-  private submissionRepository = AppDataSource.getRepository(Submission);
+@injectable()
+export class SubmissionService implements ISubmissionService {
+  constructor(
+    @inject("submission-repository")
+    private submissionRepository: ISubmissionRepository,
+    @inject("assignment-repository")
+    private assignmentRepository: IAssignmentRepository,
+    @inject("review-service")
+    private reviewService: IReviewService,
+    @inject("submission-attachment-service")
+    private attachmentService: IAttachmentService
+  ) {}
 
   async create(
-    dto: CreateSubmissionDto,
     studentId: number,
+    dto: CreateSubmissionDto,
     attachment?: UploadedFile | UploadedFile[]
   ) {
-    if (!(await assignmentService.isActive(dto.assignmentId)))
+    if (!(await this.assignmentRepository.isActive(dto.assignmentId)))
       throw createError.BadRequest(
         "Could not create submission for an inactive assignment"
       );
-    const submission = this.submissionRepository.create({
+    const submission = await this.submissionRepository.create({
       ...dto,
       studentId,
       assignmentId: dto.assignmentId,
     });
-    const saved = await this.submissionRepository.save(submission);
     let savedAttachments;
     if (attachment)
-      savedAttachments = await attachmentService.createForSubmission(
-        saved.id,
+      savedAttachments = await this.attachmentService.create(
+        submission.id,
         attachment
       );
     return plainToInstance(
@@ -50,53 +54,8 @@ class SubmissionService {
     );
   }
 
-  async getMany(options: { filters: FilterSubmissionDto }) {
-    const { assignmentId, courseId, status } = options.filters;
-    const conditions: FindOptionsWhere<Submission> = {};
-    if (assignmentId) conditions.assignment = { id: assignmentId };
-    if (courseId) conditions.assignment = { course: { id: courseId } };
-    if (status === FilterSubmissionstatus.SUMBITTED)
-      conditions.reviewId = IsNull();
-    else if (
-      status === FilterSubmissionstatus.ACCEPTED ||
-      status === FilterSubmissionstatus.REJECTED
-    )
-      conditions.review = { status: status as any };
-    const submissions = await this.submissionRepository.find({
-      where: conditions,
-      relations: {
-        assignment: {
-          course: true,
-        },
-        student: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        reviewId: true,
-        assignment: {
-          id: true,
-          courseId: true,
-          course: {
-            id: true,
-            title: true,
-          },
-        },
-        student: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(SubmissionDto, submissions, {
-      exposeUnsetFields: false,
-    });
+  async getMany(options?: { filters: FilterSubmissionDto }) {
+    return this.submissionRepository.getMany(options?.filters);
   }
 
   async getSubmissionsOfTeacher(
@@ -105,56 +64,10 @@ class SubmissionService {
       filters: FilterSubmissionDto;
     }
   ) {
-    const conditions: FindOptionsWhere<Submission> = {
-      assignment: { course: { teacherId } },
-    };
-    if (options?.filters.assignmentId)
-      conditions.assignmentId = options.filters.assignmentId;
-    if (options?.filters.courseId)
-      // @ts-expect-error
-      conditions.assignment!.courseId = options.filters.courseId;
-    if (options?.filters.status === FilterSubmissionstatus.SUMBITTED)
-      conditions.reviewId = IsNull();
-    else if (
-      options?.filters.status === FilterSubmissionstatus.ACCEPTED ||
-      options?.filters.status === FilterSubmissionstatus.REJECTED
-    )
-      conditions.review = { status: options.filters.status as any };
-    const submissions = await this.submissionRepository.find({
-      relations: {
-        assignment: {
-          course: true,
-        },
-        student: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        reviewId: true,
-        assignment: {
-          id: true,
-          courseId: true,
-          course: {
-            id: true,
-            title: true,
-          },
-        },
-        student: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(SubmissionDto, submissions, {
-      exposeUnsetFields: false,
-    });
+    return this.submissionRepository.getSubmissionsOfTeacher(
+      teacherId,
+      options?.filters
+    );
   }
 
   async getSubmissionsOfStudent(
@@ -163,147 +76,52 @@ class SubmissionService {
       filters: FilterSubmissionDto;
     }
   ) {
-    const conditions: FindOptionsWhere<Submission> = {
-      assignment: { course: { enrollments: { studentId } } },
-    };
-    if (options?.filters.assignmentId)
-      conditions.assignmentId = options.filters.assignmentId;
-    if (options?.filters.courseId)
-      // @ts-expect-error
-      conditions.assignment!.courseId = options.filters.courseId;
-    if (options?.filters.status === FilterSubmissionstatus.SUMBITTED)
-      conditions.reviewId = IsNull();
-    else if (
-      options?.filters.status === FilterSubmissionstatus.ACCEPTED ||
-      options?.filters.status === FilterSubmissionstatus.REJECTED
-    )
-      conditions.review = { status: options.filters.status as any };
-    const submissions = await this.submissionRepository.find({
-      relations: {
-        assignment: {
-          course: true,
-        },
-        student: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        reviewId: true,
-        assignment: {
-          id: true,
-          courseId: true,
-          course: {
-            id: true,
-            title: true,
-          },
-        },
-        student: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(SubmissionDto, submissions, {
-      exposeUnsetFields: false,
-    });
+    return this.submissionRepository.getSubmissionsOfStudent(
+      studentId,
+      options?.filters
+    );
   }
 
   async getFullDataById(id: number) {
-    const submission = await this.submissionRepository.findOne({
-      where: { id },
-      relations: {
-        assignment: {
-          course: true,
-        },
-        student: {
-          user: true,
-        },
-        review: {
-          mark: true,
-        },
-        attachments: true,
-      },
-      select: {
-        id: true,
-        text: true,
-        comment: true,
-        createdAt: true,
-        assignment: {
-          id: true,
-          title: true,
-          course: {
-            id: true,
-            title: true,
-          },
-        },
-        student: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-        review: {
-          id: true,
-          status: true,
-          createdAt: true,
-          comment: true,
-          mark: {
-            id: true,
-            mark: true,
-          },
-        },
-        attachments: {
-          id: true,
-          fileId: true,
-        },
-      },
-    });
+    const submission = await this.submissionRepository.getFullDataById(id);
     if (!submission)
-      throw new createError.NotFound(`Submission with id ${id} does not exist`);
+      throw createError.NotFound(`Submission with id ${id} does not exist`);
     return plainToInstance(SubmissionDto, submission, {
       exposeUnsetFields: false,
     });
   }
 
-  async review(id: number, dto: CreateReviewDto) {
-    const submission = await this.submissionRepository.findOne({
-      where: { id },
-    });
+  async review(id: number, dto: ReviewSubmissionDto) {
+    const submission = await this.submissionRepository.getById(id);
     if (!submission)
-      throw new createError.NotFound(`Submission with id ${id} does not exist`);
+      throw createError.NotFound(`Submission with id ${id} does not exist`);
     if (submission.reviewId)
       throw createError.BadRequest(
         `Submission with id ${id} has review already`
       );
-    const review = await reviewService.create(dto);
-    submission.reviewId = review.id;
-    await this.submissionRepository.save(submission);
-    return plainToInstance(
-      SubmissionDto,
-      { ...submission, review },
-      {
-        exposeUnsetFields: false,
-      }
+    const review = await this.reviewService.create(dto);
+    const { success: isUpdated } = await this.submissionRepository.updateById(
+      id,
+      { reviewId: review.id }
     );
+    if (!isUpdated)
+      throw createError.InternalServerError(
+        `Something went wrong during updating submission with id ${id}`
+      );
+    return review;
   }
 
   async delete(id: number) {
-    const submission = await this.submissionRepository.findOne({
-      where: { id },
-    });
-    if (!submission)
-      throw new createError.NotFound(`Submission with id ${id} does not exist`);
-    await this.submissionRepository.remove(submission);
+    const exists = await this.submissionRepository.existsWithId(id);
+    if (!exists)
+      throw createError.NotFound(`Submission with id ${id} does not exist`);
+    const { success: isDeleted } = await this.submissionRepository.deleteById(
+      id
+    );
+    if (!isDeleted)
+      throw createError.InternalServerError(
+        `Something went wrong during deleteding submission with id ${id}`
+      );
     return { message: `Submission with id ${id} was deleted successfully` };
   }
 }
-
-export const submissionService = new SubmissionService();

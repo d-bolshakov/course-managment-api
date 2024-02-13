@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "./loaders/di-registry.loader.js";
 import express from "express";
 import cors from "cors";
 import session from "express-session";
@@ -7,8 +8,6 @@ import { TypeormStore } from "connect-typeorm";
 import { AppDataSource } from "./db/data-source.js";
 import { Session } from "./entities/Session.entity.js";
 import { ErrorHandlerMiddleware } from "./middleware/error-handler.middleware.js";
-
-import fileUpload from "express-fileupload";
 import { AssignmentRouter } from "./routes/assignment.routes.js";
 import { AuthRouter } from "./routes/auth.routes.js";
 import { CourseRouter } from "./routes/course.routes.js";
@@ -23,7 +22,6 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(fileUpload());
 
 const sessionRepository = AppDataSource.getRepository(Session);
 app.use(

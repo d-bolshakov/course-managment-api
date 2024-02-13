@@ -1,49 +1,34 @@
-import { AppDataSource } from "../db/data-source.js";
 import createError from "http-errors";
-import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-import { markService } from "./mark.service.js";
-import { plainToInstance } from "class-transformer";
-import { CreateReviewDto } from "../dto/review/create-review.dto.js";
-import { ReviewDto } from "../dto/review/review.dto.js";
-import { Review, ReviewStatus } from "../entities/Review.entity.js";
-import { FindOptionsWhere } from "typeorm";
+import { ReviewSubmissionDto } from "../dto/submission/review-submission.dto.js";
+import { ReviewStatus } from "../entities/Review.entity.js";
+import type { IReviewService } from "../interfaces/services/review-service.interface.js";
+import { inject, injectable } from "tsyringe";
+import type { IReviewRepository } from "../interfaces/repositories/review-repository.interface.js";
+import type { IMarkService } from "../interfaces/services/mark-service.interface.js";
 
-class ReviewService {
-  private reviewRepository = AppDataSource.getRepository(Review);
+@injectable()
+export class ReviewService implements IReviewService {
+  constructor(
+    @inject("review-repository") private reviewRepository: IReviewRepository,
+    @inject("mark-service") private markService: IMarkService
+  ) {}
 
-  async create(dto: CreateReviewDto) {
-    const review = new Review();
-    review.status = dto.status;
-    review.comment = dto.comment;
-    if (dto.status === ReviewStatus.ACCEPTED)
-      review.markId = (await markService.create({ mark: dto.mark })).id;
-    await this.reviewRepository.save(review);
-    return plainToInstance(ReviewDto, review, {
-      exposeUnsetFields: false,
-    });
-  }
-
-  async getMany(options: { filters: any }) {
-    const conditions: FindOptionsWhere<Review> = {};
-    const reviews = await this.reviewRepository.find({
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(ReviewDto, reviews, {
-      exposeUnsetFields: false,
+  async create(dto: ReviewSubmissionDto) {
+    let mark;
+    if (dto.status === ReviewStatus.ACCEPTED && dto.mark)
+      mark = await this.markService.create({ mark: dto.mark });
+    return this.reviewRepository.create({
+      status: dto.status,
+      comment: dto.comment,
+      markId: mark?.id,
     });
   }
 
   async delete(id: number) {
-    const review = await this.reviewRepository.findOne({
-      where: { id },
-    });
-    if (!review)
-      throw new createError.NotFound(`Review with id ${id} does not exist`);
-    await this.reviewRepository.remove(review);
+    const exists = await this.reviewRepository.existsWithId(id);
+    if (!exists)
+      throw createError.NotFound(`Review with id ${id} does not exist`);
+    await this.reviewRepository.deleteById(id);
     return { message: `Review with id ${id} was deleted successfully` };
   }
 }
-
-export const reviewService = new ReviewService();

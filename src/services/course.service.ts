@@ -1,254 +1,85 @@
-import { AppDataSource } from "../db/data-source.js";
 import createError from "http-errors";
-import {
-  FindManyOptions,
-  FindOptionsRelations,
-  FindOptionsSelect,
-  FindOptionsWhere,
-  LessThan,
-  MoreThan,
-  MoreThanOrEqual,
-  QueryBuilder,
-} from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-import { plainToInstance } from "class-transformer";
 import { CourseDto } from "../dto/course/course.dto.js";
 import { CreateCourseDto } from "../dto/course/create-course.dto.js";
 import { FilterCourseDto } from "../dto/course/filter-course.dto.js";
-import { FilterStudentCourseDto } from "../dto/course/filter-student-course.dto.js";
-import {
-  FilterTeacherCourseDto,
-  FilterTeacherCourseStatus,
-} from "../dto/course/filter-teacher-course.dto.js";
 import { UpdateCourseDto } from "../dto/course/update-course.dto.js";
-import { Course } from "../entities/Course.entity.js";
-import { teacherService } from "./teacher.service.js";
+import type { ICourseService } from "../interfaces/services/course-service.interface.js";
+import { inject, injectable } from "tsyringe";
+import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
+import type { ITeacherSubjectRepository } from "../interfaces/repositories/teacher-subject-repository.interface.js";
 
-class CourseService {
-  private courseRepository = AppDataSource.getRepository(Course);
+@injectable()
+export class CourseService implements ICourseService {
+  constructor(
+    @inject("course-repository") private courseRepository: ICourseRepository,
+    @inject("teacher-subject-repository")
+    private teacherSubjectRepository: ITeacherSubjectRepository
+  ) {}
 
-  async create(dto: CreateCourseDto, teacherId: number) {
-    if (!(await teacherService.hasSubject(teacherId, dto.subjectId)))
+  async create(teacherId: number, dto: CreateCourseDto) {
+    if (
+      !(await this.teacherSubjectRepository.teacherHasSubject(
+        teacherId,
+        dto.subjectId
+      ))
+    )
       throw createError.BadRequest(
         `Teacher with id ${teacherId} does not have subject ${dto.subjectId} on his subjects' list`
       );
-    const course = this.courseRepository.create({
-      ...dto,
-      teacherId,
-    });
-    await this.courseRepository.save(course);
-    return plainToInstance(CourseDto, course, {
-      exposeUnsetFields: false,
-    });
+    const course = this.courseRepository.create(teacherId, dto);
+    return course;
   }
 
   async getMany(options: { filters: FilterCourseDto }) {
-    const conditions: FindOptionsWhere<Course> = {};
-    const { subjectId, teacherId } = options.filters;
-    if (subjectId) conditions.subject = { id: subjectId };
-    if (teacherId) conditions.teacher = { id: teacherId };
-    conditions.startsAt = MoreThanOrEqual(new Date());
-    const courses = await this.courseRepository.find({
-      where: conditions,
-      relations: {
-        subject: true,
-        teacher: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        teacher: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-        subject: {
-          id: true,
-          title: true,
-        },
-      },
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(CourseDto, courses, {
-      exposeUnsetFields: false,
-    });
+    return this.courseRepository.getMany(options.filters);
   }
 
   async getCoursesOfTeacher(
     teacherId: number,
-    options?: { filters: FilterTeacherCourseDto }
+    options?: { filters: FilterCourseDto }
   ) {
-    const conditions: FindOptionsWhere<Course> = { teacherId };
-    if (options?.filters.subjectId)
-      conditions.subjectId = options.filters.subjectId;
-    if (options?.filters.status) {
-      if (options.filters.status === FilterTeacherCourseStatus.ACTIVE) {
-        conditions.startsAt = LessThan(new Date());
-        conditions.endsAt = MoreThan(new Date());
-      }
-      if (options.filters.status === FilterTeacherCourseStatus.PAST)
-        conditions.endsAt = LessThan(new Date());
-      if (options.filters.status === FilterTeacherCourseStatus.FUTURE)
-        conditions.startsAt = MoreThan(new Date());
-    }
-    const findOptions: FindManyOptions<Course> = {
-      relations: {
-        subject: true,
-        teacher: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        teacher: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-        subject: {
-          id: true,
-          title: true,
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    };
-    const courses = await this.courseRepository.find(findOptions);
-    return plainToInstance(CourseDto, courses, {
-      exposeUnsetFields: false,
-    });
+    return this.courseRepository.getMany({ ...options!.filters, teacherId });
   }
 
   async getCoursesOfStudent(
     studentId: number,
-    options?: { filters: FilterStudentCourseDto }
+    options?: { filters: FilterCourseDto }
   ) {
-    const conditions: FindOptionsWhere<Course> = { enrollments: { studentId } };
-    if (options?.filters.teacherId)
-      conditions.teacherId = options.filters.teacherId;
-    if (options?.filters.subjectId)
-      conditions.subjectId = options.filters.subjectId;
-    if (options?.filters.status) {
-      if (options.filters.status === FilterTeacherCourseStatus.ACTIVE) {
-        conditions.startsAt = LessThan(new Date());
-        conditions.endsAt = MoreThan(new Date());
-      } else if (options.filters.status === FilterTeacherCourseStatus.PAST)
-        conditions.endsAt = LessThan(new Date());
-      else if (options.filters.status === FilterTeacherCourseStatus.FUTURE)
-        conditions.startsAt = MoreThan(new Date());
-    }
-    const findOptions: FindManyOptions<Course> = {
-      relations: {
-        subject: true,
-        teacher: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        teacher: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-        subject: {
-          id: true,
-          title: true,
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    };
-    const courses = await this.courseRepository.find(findOptions);
-    return plainToInstance(CourseDto, courses, {
-      exposeUnsetFields: false,
-    });
+    return this.courseRepository.getMany({ ...options!.filters, studentId });
   }
 
-  async getFullDataById(id: number) {
-    const course = await this.courseRepository.findOne({
-      where: { id },
-      relations: {
-        subject: true,
-        teacher: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        subject: {
-          id: true,
-          title: true,
-        },
-        startsAt: true,
-        endsAt: true,
-        teacher: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
+  async getFullDataById(id: number): Promise<CourseDto> {
+    const course = await this.courseRepository.getFullDataById(id);
     if (!course)
-      throw new createError.NotFound(`Course with id ${id} does not exist`);
-    return plainToInstance(CourseDto, course, {
-      exposeUnsetFields: false,
-    });
+      throw createError.NotFound(`Course with id ${id} does not exist`);
+    return course;
   }
 
   async update(id: number, dto: UpdateCourseDto) {
-    const course = await this.courseRepository.findOne({
-      where: { id },
-    });
+    const course = await this.courseRepository.getById(id);
     if (!course)
-      throw new createError.NotFound(`Course with id ${id} does not exist`);
+      throw createError.NotFound(`Course with id ${id} does not exist`);
     if (course.endsAt < new Date())
-      throw new createError.BadRequest(
-        `Course with id ${id} has already ended`
+      throw createError.BadRequest(`Course with id ${id} has already ended`);
+    const { success: isUpdated } = await this.courseRepository.updateById(
+      id,
+      dto
+    );
+    if (!isUpdated)
+      throw createError.InternalServerError(
+        `Something went wrong during deleteding assignment with id ${id}`
       );
-    course.startsAt = dto.startsAt;
-    course.endsAt = dto.endsAt;
-    course.maxStudents = dto.maxStudents;
-    await this.courseRepository.update({ id }, dto);
-    return plainToInstance(CourseDto, course, {
-      exposeUnsetFields: false,
-    });
+    return this.courseRepository.getById(id);
   }
 
   async delete(id: number) {
-    const course = await this.courseRepository.findOne({
-      where: { id },
-    });
-    if (!course)
-      throw new createError.NotFound(`Course with id ${id} does not exist`);
-    await this.courseRepository.remove(course);
+    if (!(await this.courseRepository.existsWithId(id)))
+      throw createError.NotFound(`Course with id ${id} does not exist`);
+    const { success: isDeleted } = await this.courseRepository.deleteById(id);
+    if (!isDeleted)
+      throw createError.InternalServerError(
+        `Something went wrong during deleteding course with id ${id}`
+      );
     return { message: `Course with id ${id} was deleted successfully` };
   }
-
-  async isActive(id: number) {
-    return this.courseRepository
-      .createQueryBuilder("c")
-      .where("c.id = :id", { id })
-      .andWhere("c.startsAt < CURRENT_TIMESTAMP")
-      .andWhere("c.endsAt > CURRENT_TIMESTAMP")
-      .getExists();
-  }
 }
-
-export const courseService = new CourseService();

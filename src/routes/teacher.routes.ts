@@ -1,8 +1,6 @@
 import { Router } from "express";
-
 import { AccessMiddleware } from "../middleware/access.middleware.js";
 import { TeacherAccessStrategy } from "../middleware/access-strategies/teacher.access-strategy.js";
-import { teacherController } from "../controllers/teacher.controller.js";
 import { FilterAssignmentDto } from "../dto/assignment/filter-assignment.dto.js";
 import { FilterTeacherCourseDto } from "../dto/course/filter-teacher-course.dto.js";
 import { FilterSubmissionDto } from "../dto/submission/filter-submission.dto.js";
@@ -11,18 +9,22 @@ import { UpdateTeacherDto } from "../dto/teacher/update-teacher.dto.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
 import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
+import { container } from "tsyringe";
+import type { TeacherController } from "../controllers/teacher.controller.js";
 
 export const TeacherRouter = Router();
+
+const controller = container.resolve<TeacherController>("teacher-controller");
 
 TeacherRouter.get(
   "/",
   DtoValidationMiddleware(FilterTeacherDto, "query"),
-  teacherController.getMany
+  controller.getMany.bind(controller)
 );
 TeacherRouter.get(
   "/:teacherId",
   IdValidationMiddleware("teacherId"),
-  teacherController.getOne
+  controller.getOne.bind(controller)
 );
 
 TeacherRouter.get(
@@ -30,7 +32,7 @@ TeacherRouter.get(
   IdValidationMiddleware("teacherId"),
   AuthMiddleware(),
   DtoValidationMiddleware(FilterTeacherCourseDto, "query"),
-  teacherController.getCoursesOfTeacher
+  controller.getCoursesOfTeacher.bind(controller)
 );
 TeacherRouter.get(
   "/:teacherId/assignments",
@@ -41,7 +43,7 @@ TeacherRouter.get(
     propertyLocation: "params",
   }),
   DtoValidationMiddleware(FilterAssignmentDto, "query"),
-  teacherController.getAssignmentsOfTeacher
+  controller.getAssignmentsOfTeacher.bind(controller)
 );
 TeacherRouter.get(
   "/:teacherId/submissions",
@@ -52,7 +54,7 @@ TeacherRouter.get(
     propertyLocation: "params",
   }),
   DtoValidationMiddleware(FilterSubmissionDto, "query"),
-  teacherController.getSubmissionsOfTeacher
+  controller.getSubmissionsOfTeacher.bind(controller)
 );
 TeacherRouter.put(
   "/:teacherId",
@@ -67,21 +69,21 @@ TeacherRouter.put(
     { passOnRedirect: true }
   ),
   DtoValidationMiddleware(UpdateTeacherDto, "body"),
-  teacherController.update
+  controller.update.bind(controller)
 );
-TeacherRouter.delete(
-  "/:teacherId",
-  IdValidationMiddleware("teacherId"),
-  AuthMiddleware({ passOnRedirect: true }),
-  AccessMiddleware(
-    new TeacherAccessStrategy(),
-    {
-      property: "teacherId",
-      propertyLocation: "params",
-    },
-    {
-      passOnRedirect: true,
-    }
-  ),
-  teacherController.delete
-);
+// TeacherRouter.delete(
+//   "/:teacherId",
+//   IdValidationMiddleware("teacherId"),
+//   AuthMiddleware({ passOnRedirect: true }),
+//   AccessMiddleware(
+//     new TeacherAccessStrategy(),
+//     {
+//       property: "teacherId",
+//       propertyLocation: "params",
+//     },
+//     {
+//       passOnRedirect: true,
+//     }
+//   ),
+//   teacherController.delete.bind(controller)
+// );

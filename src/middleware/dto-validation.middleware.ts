@@ -1,5 +1,5 @@
 import { validate, ValidationError } from "class-validator";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { plainToInstance } from "class-transformer";
 import createError from "http-errors";
 

@@ -1,14 +1,19 @@
-import { enrollmentService } from "../services/enrollment.service.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { inject, injectable } from "tsyringe";
+import type { IEnrollmentService } from "../interfaces/services/enrollment-service.interface";
 
-class EnrollmentController {
+@injectable()
+export class EnrollmentController {
+  constructor(
+    @inject("enrollment-service") private enrollmentService: IEnrollmentService
+  ) {}
   async create(
     { user, params: { courseId } }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const response = await enrollmentService.create(
+      const response = await this.enrollmentService.create(
         Number(courseId),
         user?.studentProfile.id!
       );
@@ -24,7 +29,9 @@ class EnrollmentController {
     next: NextFunction
   ) {
     try {
-      const response = await enrollmentService.getById(Number(enrollmentId));
+      const response = await this.enrollmentService.getById(
+        Number(enrollmentId)
+      );
       res.status(200).json(response);
     } catch (e) {
       next(e);
@@ -33,7 +40,7 @@ class EnrollmentController {
 
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await enrollmentService.getMany({
+      const response = await this.enrollmentService.getMany({
         filters: query as any,
       });
       res.status(200).json(response);
@@ -48,7 +55,7 @@ class EnrollmentController {
     next: NextFunction
   ) {
     try {
-      const response = await enrollmentService.getMany({
+      const response = await this.enrollmentService.getMany({
         filters: {
           ...query,
           courseId: Number(courseId),
@@ -67,7 +74,7 @@ class EnrollmentController {
     next: NextFunction
   ) {
     try {
-      const response = await enrollmentService.update(
+      const response = await this.enrollmentService.update(
         Number(enrollmentId),
         body
       );
@@ -83,10 +90,9 @@ class EnrollmentController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(enrollmentService.delete(Number(enrollmentId)));
+      res.status(201).json(this.enrollmentService.delete(Number(enrollmentId)));
     } catch (e) {
       next(e);
     }
   }
 }
-export const enrollmentController = new EnrollmentController();

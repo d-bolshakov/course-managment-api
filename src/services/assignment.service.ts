@@ -1,53 +1,46 @@
-import { AppDataSource } from "../db/data-source.js";
 import createError from "http-errors";
-import { Assignment } from "../entities/Assignment.entity.js";
-import { courseService } from "./course.service.js";
-import { FindOptionsWhere, LessThanOrEqual, MoreThan, Not } from "typeorm";
-import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-
-import { UploadedFile } from "express-fileupload";
-import { attachmentService } from "./attachment.service.js";
+import type { UploadedFile } from "express-fileupload";
 import { plainToInstance } from "class-transformer";
 import { AssignmentDto } from "../dto/assignment/assignment.dto.js";
 import { CreateAssignmentDto } from "../dto/assignment/create-assignment.dto.js";
-import {
-  FilterAssignmentDto,
-  FilterAssignmentStatus,
-} from "../dto/assignment/filter-assignment.dto.js";
-import {
-  FilterStudentAssignmentDto,
-  FilterStudentAssignmentCompletion,
-} from "../dto/assignment/filter-student-assignment.dto.js";
+import { FilterAssignmentDto } from "../dto/assignment/filter-assignment.dto.js";
+import { FilterStudentAssignmentDto } from "../dto/assignment/filter-student-assignment.dto.js";
 import { UpdateAssignmentDto } from "../dto/assignment/update-assignment.dto.js";
+import type { IAssignmentService } from "../interfaces/services/assignment-service.interface.js";
+import { inject, injectable } from "tsyringe";
+import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
+import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
+import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
 
-class AssignmentService {
-  private assignmentRepository = AppDataSource.getRepository(Assignment);
+@injectable()
+export class AssignmentService implements IAssignmentService {
+  constructor(
+    @inject("assignment-repository")
+    private assignmentRepository: IAssignmentRepository,
+    @inject("course-repository") private courseRepository: ICourseRepository,
+    @inject("assignment-attachment-service")
+    private attachmentService: IAttachmentService
+  ) {}
 
   async create(
     dto: CreateAssignmentDto,
     attachment?: UploadedFile | UploadedFile[]
   ) {
-    const { title, text, deadline, courseId } = dto;
-    if (!(await courseService.isActive(courseId)))
-      throw new createError.BadRequest(
-        `Creating assignments for the course with id ${courseId} is not available`
+    console.log(attachment);
+    if (!(await this.courseRepository.isActive(dto.courseId)))
+      throw createError.BadRequest(
+        `Creating assignments for the course with id ${dto.courseId} is not available`
       );
-    const assignment = this.assignmentRepository.create({
-      courseId,
-      title,
-      text,
-      deadline,
-    });
-    const saved = await this.assignmentRepository.save(assignment);
+    const saved = await this.assignmentRepository.create(dto);
     let savedAttachments;
     if (attachment)
-      savedAttachments = await attachmentService.createForAssignment(
+      savedAttachments = await this.attachmentService.create(
         saved.id,
         attachment
       );
     return plainToInstance(
       AssignmentDto,
-      { ...assignment, attachments: savedAttachments },
+      { ...saved, attachments: savedAttachments },
       {
         exposeUnsetFields: false,
       }
@@ -55,34 +48,7 @@ class AssignmentService {
   }
 
   async getMany(options: { filters: FilterAssignmentDto }) {
-    const conditions: FindOptionsWhere<Assignment> = {};
-    const { courseId, status } = options?.filters;
-    if (courseId) conditions.course = { id: courseId };
-    if (status) {
-      if (status === FilterAssignmentStatus.ACTIVE)
-        conditions.deadline = MoreThan(new Date());
-      else if (status === FilterAssignmentStatus.INACTIVE)
-        conditions.deadline = LessThanOrEqual(new Date());
-    }
-    const assignments = await this.assignmentRepository.find({
-      where: conditions,
-      relations: {
-        course: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        course: {
-          id: true,
-          title: true,
-        },
-      },
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(AssignmentDto, assignments, {
-      exposeUnsetFields: false,
-    });
+    return this.assignmentRepository.getMany(options.filters);
   }
 
   async getAssignmentsOfTeacher(
@@ -91,34 +57,10 @@ class AssignmentService {
       filters: FilterAssignmentDto;
     }
   ) {
-    const conditions: FindOptionsWhere<Assignment> = { course: { teacherId } };
-    if (options?.filters.courseId)
-      conditions.courseId = options.filters.courseId;
-    if (options?.filters.status) {
-      if (options.filters.status === FilterAssignmentStatus.ACTIVE)
-        conditions.deadline = MoreThan(new Date());
-      else if (options.filters.status === FilterAssignmentStatus.INACTIVE)
-        conditions.deadline = LessThanOrEqual(new Date());
-    }
-    const assignments = await this.assignmentRepository.find({
-      relations: {
-        course: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        course: {
-          id: true,
-          title: true,
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(AssignmentDto, assignments, {
-      exposeUnsetFields: false,
-    });
+    return this.assignmentRepository.getAssignmentsOfTeacher(
+      teacherId,
+      options?.filters
+    );
   }
 
   async getAssignmentsOfStudent(
@@ -127,117 +69,49 @@ class AssignmentService {
       filters: FilterStudentAssignmentDto;
     }
   ) {
-    const conditions: FindOptionsWhere<Assignment> = {
-      course: { enrollments: { studentId } },
-    };
-    if (options?.filters.courseId)
-      conditions.courseId = options.filters.courseId;
-    if (options?.filters.status) {
-      if (options.filters.status === FilterAssignmentStatus.ACTIVE)
-        conditions.deadline = MoreThan(new Date());
-      else if (options.filters.status === FilterAssignmentStatus.INACTIVE)
-        conditions.deadline = LessThanOrEqual(new Date());
-    }
-    if (options?.filters.completion) {
-      if (
-        options.filters.completion ===
-        FilterStudentAssignmentCompletion.COMPLETE
-      )
-        conditions.submissions = { studentId };
-      else if (
-        options.filters.completion ===
-        FilterStudentAssignmentCompletion.INCOMPLETE
-      )
-        conditions.submissions = { studentId: Not(studentId) };
-    }
-    const assignments = await this.assignmentRepository.find({
-      relations: {
-        course: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        course: {
-          id: true,
-          title: true,
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(options?.filters.page || 1),
-    });
-    return plainToInstance(AssignmentDto, assignments, {
-      exposeUnsetFields: false,
-    });
+    return this.assignmentRepository.getAssignmentsOfStudent(
+      studentId,
+      options?.filters
+    );
   }
 
   async getFullDataById(id: number) {
-    const assignment = await this.assignmentRepository.findOne({
-      where: { id },
-      relations: {
-        attachments: true,
-        course: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        text: true,
-        deadline: true,
-        createdAt: true,
-        attachments: {
-          id: true,
-          fileId: true,
-        },
-        course: {
-          id: true,
-          title: true,
-        },
-      },
-    });
+    const assignment = await this.assignmentRepository.getFullDataById(id);
     if (!assignment)
-      throw new createError.BadRequest(
-        `Assignment with id ${id} does not exist`
-      );
+      throw createError.NotFound(`Assignment with id ${id} does not exist`);
     return plainToInstance(AssignmentDto, assignment, {
       exposeUnsetFields: false,
     });
   }
 
   async update(id: number, dto: UpdateAssignmentDto) {
-    const { deadline, text, title } = dto;
-    const assignment = await this.assignmentRepository.findOne({
-      where: { id },
-    });
+    const assignment = await this.assignmentRepository.getById(id);
     if (!assignment)
-      throw new createError.NotFound(`Assignment with id ${id} does not exist`);
-    if (assignment.deadline! < new Date())
-      throw new createError.BadRequest(`Could not update inactive assignment`);
-    assignment.deadline = deadline;
-    assignment.text = text;
-    assignment.title = title;
-    await this.assignmentRepository.save(assignment);
-    return plainToInstance(AssignmentDto, assignment, {
-      exposeUnsetFields: false,
-    });
+      throw createError.NotFound(`Assignment with id ${id} does not exist`);
+    if (assignment.deadline < new Date())
+      throw createError.BadRequest(`Could not update inactive assignment`);
+    const { success: isUpdated } = await this.assignmentRepository.updateById(
+      id,
+      dto
+    );
+    if (!isUpdated)
+      throw createError.InternalServerError(
+        `Something went wrong during deleteding assignment with id ${id}`
+      );
+    return this.assignmentRepository.getById(id);
   }
 
   async delete(id: number) {
-    const assignment = await this.assignmentRepository.findOne({
-      where: { id },
-    });
+    const assignment = await this.assignmentRepository.existsWithId(id);
     if (!assignment)
-      throw new createError.NotFound(`Assignment with id ${id} does not exist`);
-    await this.assignmentRepository.remove(assignment);
+      throw createError.NotFound(`Assignment with id ${id} does not exist`);
+    const { success: isDeleted } = await this.assignmentRepository.deleteById(
+      id
+    );
+    if (!isDeleted)
+      throw createError.InternalServerError(
+        `Something went wrong during deleteding assignment with id ${id}`
+      );
     return { message: `Assignment with id ${id} was deleted successfully` };
   }
-
-  async isActive(id: number) {
-    return this.assignmentRepository
-      .createQueryBuilder("a")
-      .where("a.id = :id", { id })
-      .andWhere("a.deadline > CURRENT_TIMESTAMP")
-      .getExists();
-  }
 }
-
-export const assignmentService = new AssignmentService();

@@ -1,7 +1,7 @@
 import { Expose, Type } from "class-transformer";
 import { AttachmentDto } from "../attachment/attachment.dto.js";
 
-export class FileDto {
+export class FileMetadataDto {
   @Expose()
   readonly id: string;
 

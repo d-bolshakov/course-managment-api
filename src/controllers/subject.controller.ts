@@ -1,10 +1,16 @@
-import { subjectService } from "../services/subject.service.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { inject, injectable } from "tsyringe";
+import type { ISubjectService } from "../interfaces/services/subject-service.interface";
 
-class SubjectController {
+@injectable()
+export class SubjectController {
+  constructor(
+    @inject("subject-service") private subjectService: ISubjectService
+  ) {}
+
   async create({ body }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await subjectService.create(body);
+      const response = await this.subjectService.create(body);
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -13,7 +19,7 @@ class SubjectController {
 
   async getOne({ params: { id } }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await subjectService.getById(Number(id));
+      const response = await this.subjectService.getById(Number(id));
       res.status(200).json(response);
     } catch (e) {
       next(e);
@@ -22,7 +28,7 @@ class SubjectController {
 
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await subjectService.getMany({
+      const response = await this.subjectService.getMany({
         filters: query as any,
       });
       res.status(200).json(response);
@@ -37,7 +43,7 @@ class SubjectController {
     next: NextFunction
   ) {
     try {
-      const response = await subjectService.update(Number(id), body);
+      const response = await this.subjectService.update(Number(id), body);
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -46,10 +52,9 @@ class SubjectController {
 
   async delete({ params: { id } }: Request, res: Response, next: NextFunction) {
     try {
-      res.status(201).json(await subjectService.delete(Number(id)));
+      res.status(201).json(await this.subjectService.delete(Number(id)));
     } catch (e) {
       next(e);
     }
   }
 }
-export const subjectController = new SubjectController();

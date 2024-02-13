@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 import { IsOptional, IsString } from "class-validator";
 
 export class UpdateSubmissionDto {
@@ -7,12 +7,15 @@ export class UpdateSubmissionDto {
   @IsString({
     message: "comment should be a string",
   })
-  readonly comment: string;
+  readonly comment?: string;
 
   @Expose()
   @IsOptional()
   @IsString({
     message: "text should be a string",
   })
-  readonly text: string;
+  readonly text?: string;
+
+  @Exclude()
+  readonly reviewId?: number;
 }

@@ -1,5 +1,4 @@
-import { UserDto } from "../../dto";
-import { User } from "../../entities/User.entity.js";
+import { UserDto } from "../../dto/user/user.dto";
 
 declare global {
   namespace Express {

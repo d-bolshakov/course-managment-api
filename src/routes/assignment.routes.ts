@@ -1,9 +1,10 @@
 import { Router } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { AccessMiddleware } from "../middleware/access.middleware.js";
 import { AssignmentAccessStrategy } from "../middleware/access-strategies/assignment.access-strategy.js";
 import { CourseAccessStrategy } from "../middleware/access-strategies/course.access-strategy.js";
 import { SubmissionRouter } from "./submission.routes.js";
-import { assignmentController } from "../controllers/assignment.controller.js";
+import { AssignmentController } from "../controllers/assignment.controller.js";
 import { CreateAssignmentDto } from "../dto/assignment/create-assignment.dto.js";
 import { FilterAssignmentDto } from "../dto/assignment/filter-assignment.dto.js";
 import { UpdateAssignmentDto } from "../dto/assignment/update-assignment.dto.js";
@@ -12,19 +13,26 @@ import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
 import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
+import upload from "express-fileupload";
+import { container } from "tsyringe";
 
 export const AssignmentRouter = Router({ mergeParams: true });
+
+const controller = container.resolve<AssignmentController>(
+  "assignment-controller"
+);
 
 AssignmentRouter.post(
   "/",
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),
+  upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
   DtoValidationMiddleware(CreateAssignmentDto, "body"),
   AccessMiddleware(new CourseAccessStrategy(), {
     property: "courseId",
     propertyLocation: "body",
   }),
-  assignmentController.create
+  controller.create.bind(controller)
 );
 AssignmentRouter.get(
   "/",
@@ -34,7 +42,7 @@ AssignmentRouter.get(
     property: "courseId",
     propertyLocation: "query",
   }),
-  assignmentController.getAssignmentsByCourse
+  controller.getAssignmentsByCourse.bind(controller)
 );
 AssignmentRouter.get(
   "/:assignmentId",
@@ -44,7 +52,7 @@ AssignmentRouter.get(
     property: "assignmentId",
     propertyLocation: "params",
   }),
-  assignmentController.getOne
+  controller.getOne.bind(controller)
 );
 AssignmentRouter.patch(
   "/:assignmentId",
@@ -56,7 +64,7 @@ AssignmentRouter.patch(
     propertyLocation: "params",
   }),
   DtoValidationMiddleware(UpdateAssignmentDto, "body"),
-  assignmentController.update
+  controller.update.bind(controller)
 );
 AssignmentRouter.delete(
   "/:assignmentId",
@@ -66,7 +74,7 @@ AssignmentRouter.delete(
     property: "assignmentId",
     propertyLocation: "params",
   }),
-  assignmentController.delete
+  controller.delete.bind(controller)
 );
 AssignmentRouter.use(
   "/:assignmentId/submissions",

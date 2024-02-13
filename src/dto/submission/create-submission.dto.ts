@@ -1,7 +1,18 @@
 import { Expose, Type } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateSubmissionDto {
+  @Expose()
+  @IsOptional()
+  @IsNumber(
+    {},
+    {
+      message: "studentId should be a number",
+    }
+  )
+  @Type(() => Number)
+  readonly studentId?: number;
+
   @Expose()
   @IsNumber(
     {},

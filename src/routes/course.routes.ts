@@ -1,10 +1,9 @@
 import { Router } from "express";
-
 import { AccessMiddleware } from "../middleware/access.middleware.js";
 import { CourseAccessStrategy } from "../middleware/access-strategies/course.access-strategy.js";
 import { EnrollmentRouter } from "./enrollment.routes.js";
-import { courseController } from "../controllers/course.controller.js";
-import { enrollmentController } from "../controllers/enrollment.controller.js";
+import { CourseController } from "../controllers/course.controller.js";
+import { EnrollmentController } from "../controllers/enrollment.controller.js";
 import { CreateCourseDto } from "../dto/course/create-course.dto.js";
 import { FilterCourseDto } from "../dto/course/filter-course.dto.js";
 import { UpdateCourseDto } from "../dto/course/update-course.dto.js";
@@ -14,25 +13,32 @@ import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
 import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
+import { container } from "tsyringe";
 
 export const CourseRouter = Router();
 
+const courseController =
+  container.resolve<CourseController>("course-controller");
+const enrollmentController = container.resolve<EnrollmentController>(
+  "enrollment-controller"
+);
+
 CourseRouter.post(
   "/",
-  AuthMiddleware(),
+  AuthMiddleware({ loadProfile: true }),
   RoleMiddleware({ target: [Role.TEACHER] }),
   DtoValidationMiddleware(CreateCourseDto, "body"),
-  courseController.create
+  courseController.create.bind(courseController)
 );
 CourseRouter.get(
   "/",
   DtoValidationMiddleware(FilterCourseDto, "query"),
-  courseController.getMany
+  courseController.getMany.bind(courseController)
 );
 CourseRouter.get(
   "/:courseId",
   IdValidationMiddleware("courseId"),
-  courseController.getOne
+  courseController.getOne.bind(courseController)
 );
 CourseRouter.patch(
   "/:courseId",
@@ -43,7 +49,7 @@ CourseRouter.patch(
     propertyLocation: "params",
   }),
   DtoValidationMiddleware(UpdateCourseDto, "body"),
-  courseController.update
+  courseController.update.bind(courseController)
 );
 CourseRouter.delete(
   "/:courseId",
@@ -53,14 +59,14 @@ CourseRouter.delete(
     property: "courseId",
     propertyLocation: "params",
   }),
-  courseController.delete
+  courseController.delete.bind(courseController)
 );
 CourseRouter.post(
   "/:courseId/enrollments/",
   IdValidationMiddleware("courseId"),
-  AuthMiddleware(),
+  AuthMiddleware({ loadProfile: true }),
   RoleMiddleware({ target: [Role.STUDENT] }),
-  enrollmentController.create
+  enrollmentController.create.bind(enrollmentController)
 );
 CourseRouter.get(
   "/:courseId/enrollments/",
@@ -72,6 +78,6 @@ CourseRouter.get(
     property: "courseId",
     propertyLocation: "params",
   }),
-  enrollmentController.getEnrollmentsByCourse
+  enrollmentController.getEnrollmentsByCourse.bind(enrollmentController)
 );
 CourseRouter.use("/:courseId/enrollments", EnrollmentRouter);

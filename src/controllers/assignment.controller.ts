@@ -1,7 +1,13 @@
-import { assignmentService } from "../services/assignment.service.js";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { inject, injectable } from "tsyringe";
+import type { IAssignmentService } from "../interfaces/services/assignment-service.interface";
 
-class AssignmentController {
+@injectable()
+export class AssignmentController {
+  constructor(
+    @inject("assignment-service") private assignmentService: IAssignmentService
+  ) {}
+
   async create(
     // @ts-ignore
 
@@ -10,7 +16,10 @@ class AssignmentController {
     next: NextFunction
   ) {
     try {
-      const response = await assignmentService.create(body, attachment as any);
+      const response = await this.assignmentService.create(
+        body,
+        attachment as any
+      );
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -23,7 +32,7 @@ class AssignmentController {
     next: NextFunction
   ) {
     try {
-      const response = await assignmentService.getFullDataById(
+      const response = await this.assignmentService.getFullDataById(
         Number(assignmentId)
       );
       console.log(response);
@@ -35,7 +44,7 @@ class AssignmentController {
 
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await assignmentService.getMany({
+      const response = await this.assignmentService.getMany({
         filters: query as any,
       });
       res.status(200).json(response);
@@ -50,7 +59,7 @@ class AssignmentController {
     next: NextFunction
   ) {
     try {
-      const response = await assignmentService.getMany({
+      const response = await this.assignmentService.getMany({
         filters: {
           ...query,
           courseId,
@@ -69,7 +78,7 @@ class AssignmentController {
     next: NextFunction
   ) {
     try {
-      const response = await assignmentService.update(
+      const response = await this.assignmentService.update(
         Number(assignmentId),
         body
       );
@@ -85,10 +94,9 @@ class AssignmentController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(assignmentService.delete(Number(assignmentId)));
+      res.status(201).json(this.assignmentService.delete(Number(assignmentId)));
     } catch (e) {
       next(e);
     }
   }
 }
-export const assignmentController = new AssignmentController();

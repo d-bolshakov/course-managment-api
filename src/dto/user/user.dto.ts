@@ -31,5 +31,5 @@ export class UserDto {
 
   @Expose()
   @Type(() => TeacherDto)
-  readonly teacherProfile: TeacherDto;
+  readonly teacherProfile: () => TeacherDto;
 }

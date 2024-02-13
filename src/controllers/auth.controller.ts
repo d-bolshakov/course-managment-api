@@ -1,10 +1,16 @@
-import { Request, Response, NextFunction } from "express";
-import { authService } from "../services/auth.service.js";
+import type { Request, Response, NextFunction } from "express";
+import createError from "http-errors";
+import { inject, injectable } from "tsyringe";
+import type { IUserService } from "../interfaces/services/user-service.interface.js";
 
-class AuthController {
+@injectable()
+export class AuthController {
+  constructor(@inject("user-service") private userService: IUserService) {}
+
   async login({ body, session }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await authService.login(body, session);
+      const response = await this.userService!.login(body);
+      session.user = { id: response!.id };
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -17,7 +23,8 @@ class AuthController {
     next: NextFunction
   ) {
     try {
-      const response = await authService.registration(body, session);
+      const response = await this.userService!.create(body);
+      session.user = { id: response.id };
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -26,11 +33,12 @@ class AuthController {
 
   async logout({ session }: Request, res: Response, next: NextFunction) {
     try {
-      res.status(201).json(await authService.logout(session));
+      session.destroy((err) => {
+        throw createError.InternalServerError(err);
+      });
+      res.status(201).json({ message: "Logged out successfully" });
     } catch (e) {
       next(e);
     }
   }
 }
-
-export const authController = new AuthController();

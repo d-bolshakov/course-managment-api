@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { AssignmentDto } from "../assignment/assignment.dto.js";
-import { FileDto } from "../file/file.dto.js";
+import { FileMetadataDto } from "../file-metadata/file-metadata.dto.js";
 import { SubmissionDto } from "../submission/submission.dto.js";
 
 export class AttachmentDto {
@@ -25,6 +25,6 @@ export class AttachmentDto {
   readonly submission: () => SubmissionDto;
 
   @Expose()
-  @Type(() => FileDto)
-  readonly file: FileDto;
+  @Type(() => FileMetadataDto)
+  readonly file: FileMetadataDto;
 }

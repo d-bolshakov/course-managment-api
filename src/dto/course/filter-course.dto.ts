@@ -1,5 +1,11 @@
 import { Expose, Type } from "class-transformer";
-import { IsNumber, IsOptional } from "class-validator";
+import { IsEnum, IsNumber, IsOptional } from "class-validator";
+
+export enum FilterCourseStatus {
+  ACTIVE = "active",
+  PAST = "past",
+  FUTURE = "future",
+}
 
 export class FilterCourseDto {
   @Expose()
@@ -23,5 +29,14 @@ export class FilterCourseDto {
   @IsOptional()
   @IsNumber({}, { message: "teacherId should be a number" })
   @Type(() => Number)
-  readonly teacherId: number;
+  teacherId?: number;
+
+  @Expose()
+  @IsOptional()
+  studentId?: number;
+
+  @Expose()
+  @IsOptional()
+  @IsEnum(FilterCourseStatus, { message: "Invalid status" })
+  readonly status: FilterCourseStatus;
 }

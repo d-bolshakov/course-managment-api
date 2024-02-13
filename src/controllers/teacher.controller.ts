@@ -1,13 +1,21 @@
-import { courseService } from "../services/course.service.js";
-import { teacherService } from "../services/teacher.service.js";
-import { NextFunction, Request, Response } from "express";
-import { assignmentService } from "../services/assignment.service.js";
-import { submissionService } from "../services/submission.service.js";
+import type { NextFunction, Request, Response } from "express";
+import { inject, injectable } from "tsyringe";
+import type { ITeacherService } from "../interfaces/services/teacher-service.interface.js";
+import type { ICourseService } from "../interfaces/services/course-service.interface.js";
+import type { IAssignmentService } from "../interfaces/services/assignment-service.interface.js";
+import type { ISubmissionService } from "../interfaces/services/submission-service.interface.js";
 
-class TeacherController {
+@injectable()
+export class TeacherController {
+  constructor(
+    @inject("teacher-service") private teacherService: ITeacherService,
+    @inject("course-service") private courseService: ICourseService,
+    @inject("assignment-service") private assignmentService: IAssignmentService,
+    @inject("submission-service") private submissionService: ISubmissionService
+  ) {}
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const response = await teacherService.getFullDataById(
+      const response = await this.teacherService.getFullDataById(
         Number(req.params.teacherId)
       );
       res.status(200).json(response);
@@ -18,7 +26,7 @@ class TeacherController {
 
   async getCoursesOfTeacher(req: Request, res: Response, next: NextFunction) {
     try {
-      const response = await courseService.getCoursesOfTeacher(
+      const response = await this.courseService.getCoursesOfTeacher(
         Number(req.params.teacherId),
         { filters: req.query as any }
       );
@@ -34,7 +42,7 @@ class TeacherController {
     next: NextFunction
   ) {
     try {
-      const response = await assignmentService.getAssignmentsOfTeacher(
+      const response = await this.assignmentService.getAssignmentsOfTeacher(
         Number(req.params.teacherId),
         { filters: req.query as any }
       );
@@ -50,7 +58,7 @@ class TeacherController {
     next: NextFunction
   ) {
     try {
-      const response = await submissionService.getSubmissionsOfTeacher(
+      const response = await this.submissionService.getSubmissionsOfTeacher(
         Number(req.params.teacherId),
         { filters: req.query as any }
       );
@@ -62,7 +70,7 @@ class TeacherController {
 
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
-      const response = await teacherService.getMany({
+      const response = await this.teacherService.getMany({
         filters: query as any,
       });
       res.status(200).json(response);
@@ -77,7 +85,10 @@ class TeacherController {
     next: NextFunction
   ) {
     try {
-      const response = await teacherService.update(Number(teacherId), body);
+      const response = await this.teacherService.update(
+        Number(teacherId),
+        body
+      );
       res.status(201).json(response);
     } catch (e) {
       next(e);
@@ -90,10 +101,9 @@ class TeacherController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(await teacherService.delete(Number(teacherId)));
+      res.status(201).json(await this.teacherService.delete(Number(teacherId)));
     } catch (e) {
       next(e);
     }
   }
 }
-export const teacherController = new TeacherController();
