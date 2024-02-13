@@ -7,6 +7,8 @@ import type { ICourseService } from "../interfaces/services/course-service.inter
 import { inject, injectable } from "tsyringe";
 import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
 import type { ITeacherSubjectRepository } from "../interfaces/repositories/teacher-subject-repository.interface.js";
+import type { FilterTeacherCourseDto } from "../dto/course/filter-teacher-course.dto.js";
+import type { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto.js";
 
 @injectable()
 export class CourseService implements ICourseService {
@@ -30,20 +32,20 @@ export class CourseService implements ICourseService {
     return course;
   }
 
-  async getMany(options: { filters: FilterCourseDto }) {
+  async getMany(options: { filters: FilterBaseCourseDto }) {
     return this.courseRepository.getMany(options.filters);
   }
 
   async getCoursesOfTeacher(
     teacherId: number,
-    options?: { filters: FilterCourseDto }
+    options?: { filters: FilterTeacherCourseDto }
   ) {
     return this.courseRepository.getMany({ ...options!.filters, teacherId });
   }
 
   async getCoursesOfStudent(
     studentId: number,
-    options?: { filters: FilterCourseDto }
+    options?: { filters: FilterBaseCourseDto }
   ) {
     return this.courseRepository.getMany({ ...options!.filters, studentId });
   }

@@ -13,13 +13,5 @@ export interface ISubmissionRepository {
   getById(id: number): Promise<SubmissionDto | null>;
   getFullDataById(id: number): Promise<SubmissionDto | null>;
   getMany(filters?: FilterSubmissionDto): Promise<SubmissionDto[]>;
-  getSubmissionsOfTeacher(
-    teacherId: number,
-    filters?: FilterSubmissionDto
-  ): Promise<SubmissionDto[]>;
-  getSubmissionsOfStudent(
-    studentId: number,
-    filters?: FilterSubmissionDto
-  ): Promise<SubmissionDto[]>;
   existsWithId(id: number): Promise<boolean>;
 }

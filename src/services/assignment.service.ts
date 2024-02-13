@@ -3,7 +3,6 @@ import type { UploadedFile } from "express-fileupload";
 import { plainToInstance } from "class-transformer";
 import { AssignmentDto } from "../dto/assignment/assignment.dto.js";
 import { CreateAssignmentDto } from "../dto/assignment/create-assignment.dto.js";
-import { FilterAssignmentDto } from "../dto/assignment/filter-assignment.dto.js";
 import { FilterStudentAssignmentDto } from "../dto/assignment/filter-student-assignment.dto.js";
 import { UpdateAssignmentDto } from "../dto/assignment/update-assignment.dto.js";
 import type { IAssignmentService } from "../interfaces/services/assignment-service.interface.js";
@@ -11,6 +10,7 @@ import { inject, injectable } from "tsyringe";
 import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
 import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
 import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
+import type { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
 
 @injectable()
 export class AssignmentService implements IAssignmentService {
@@ -47,20 +47,20 @@ export class AssignmentService implements IAssignmentService {
     );
   }
 
-  async getMany(options: { filters: FilterAssignmentDto }) {
+  async getMany(options: { filters: FilterBaseAssignmentDto }) {
     return this.assignmentRepository.getMany(options.filters);
   }
 
   async getAssignmentsOfTeacher(
     teacherId: number,
     options?: {
-      filters: FilterAssignmentDto;
+      filters: FilterBaseAssignmentDto;
     }
   ) {
-    return this.assignmentRepository.getAssignmentsOfTeacher(
+    return this.assignmentRepository.getMany({
+      ...options?.filters,
       teacherId,
-      options?.filters
-    );
+    });
   }
 
   async getAssignmentsOfStudent(
@@ -69,10 +69,10 @@ export class AssignmentService implements IAssignmentService {
       filters: FilterStudentAssignmentDto;
     }
   ) {
-    return this.assignmentRepository.getAssignmentsOfStudent(
+    return this.assignmentRepository.getMany({
+      ...options?.filters,
       studentId,
-      options?.filters
-    );
+    });
   }
 
   async getFullDataById(id: number) {

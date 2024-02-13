@@ -1,13 +1,8 @@
 import { IsEnum, IsNumber, IsOptional } from "class-validator";
 import { Expose, Type } from "class-transformer";
+import { FilterSubmissionstatus } from "./filter-submission.dto.js";
 
-export enum FilterSubmissionstatus {
-  SUMBITTED = "submitted",
-  ACCEPTED = "accepted",
-  REJECTED = "rejected",
-}
-
-export class FilterSubmissionDto {
+export class FilterBaseSubmissionDto {
   @Expose()
   @IsOptional()
   @IsNumber({}, { message: "page should be a number" })
@@ -25,18 +20,6 @@ export class FilterSubmissionDto {
   @IsNumber({}, { message: "assignmentId should be a number" })
   @Type(() => Number)
   readonly assignmentId?: number;
-
-  @Expose()
-  @IsOptional()
-  @IsNumber({}, { message: "teacherId should be a number" })
-  @Type(() => Number)
-  readonly teacherId?: number;
-
-  @Expose()
-  @IsOptional()
-  @IsNumber({}, { message: "studentId should be a number" })
-  @Type(() => Number)
-  readonly studentId?: number;
 
   @Expose()
   @IsOptional()

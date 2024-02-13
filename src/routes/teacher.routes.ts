@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { AccessMiddleware } from "../middleware/access.middleware.js";
 import { TeacherAccessStrategy } from "../middleware/access-strategies/teacher.access-strategy.js";
-import { FilterAssignmentDto } from "../dto/assignment/filter-assignment.dto.js";
 import { FilterTeacherCourseDto } from "../dto/course/filter-teacher-course.dto.js";
-import { FilterSubmissionDto } from "../dto/submission/filter-submission.dto.js";
 import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
 import { UpdateTeacherDto } from "../dto/teacher/update-teacher.dto.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
@@ -11,6 +9,8 @@ import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware
 import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { container } from "tsyringe";
 import type { TeacherController } from "../controllers/teacher.controller.js";
+import { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
+import { FilterBaseSubmissionDto } from "../dto/submission/filter-base-submission.dto.js";
 
 export const TeacherRouter = Router();
 
@@ -42,7 +42,7 @@ TeacherRouter.get(
     property: "teacherId",
     propertyLocation: "params",
   }),
-  DtoValidationMiddleware(FilterAssignmentDto, "query"),
+  DtoValidationMiddleware(FilterBaseAssignmentDto, "query"),
   controller.getAssignmentsOfTeacher.bind(controller)
 );
 TeacherRouter.get(
@@ -53,7 +53,7 @@ TeacherRouter.get(
     property: "teacherId",
     propertyLocation: "params",
   }),
-  DtoValidationMiddleware(FilterSubmissionDto, "query"),
+  DtoValidationMiddleware(FilterBaseSubmissionDto, "query"),
   controller.getSubmissionsOfTeacher.bind(controller)
 );
 TeacherRouter.put(

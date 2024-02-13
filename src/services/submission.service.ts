@@ -64,10 +64,10 @@ export class SubmissionService implements ISubmissionService {
       filters: FilterSubmissionDto;
     }
   ) {
-    return this.submissionRepository.getSubmissionsOfTeacher(
+    return this.submissionRepository.getMany({
+      ...options?.filters,
       teacherId,
-      options?.filters
-    );
+    });
   }
 
   async getSubmissionsOfStudent(
@@ -76,10 +76,10 @@ export class SubmissionService implements ISubmissionService {
       filters: FilterSubmissionDto;
     }
   ) {
-    return this.submissionRepository.getSubmissionsOfStudent(
+    return this.submissionRepository.getMany({
+      ...options?.filters,
       studentId,
-      options?.filters
-    );
+    });
   }
 
   async getFullDataById(id: number) {

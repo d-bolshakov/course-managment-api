@@ -23,20 +23,20 @@ export class FilterCourseDto {
     }
   )
   @Type(() => Number)
-  readonly subjectId: number;
+  readonly subjectId?: number;
 
   @Expose()
   @IsOptional()
   @IsNumber({}, { message: "teacherId should be a number" })
   @Type(() => Number)
-  teacherId?: number;
+  readonly teacherId?: number;
 
   @Expose()
   @IsOptional()
-  studentId?: number;
+  readonly studentId?: number;
 
   @Expose()
   @IsOptional()
   @IsEnum(FilterCourseStatus, { message: "Invalid status" })
-  readonly status: FilterCourseStatus;
+  readonly status?: FilterCourseStatus;
 }

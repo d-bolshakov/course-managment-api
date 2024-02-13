@@ -1,6 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import type { NextFunction, Request, Response } from "express";
 import type { ICourseService } from "../interfaces/services/course-service.interface";
+import type { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto";
 
 @injectable()
 export class CourseController {
@@ -38,7 +39,7 @@ export class CourseController {
   async getMany({ query }: Request, res: Response, next: NextFunction) {
     try {
       const response = await this.courseService.getMany({
-        filters: query as any,
+        filters: query as FilterBaseCourseDto,
       });
       res.status(200).json(response);
     } catch (e) {

@@ -17,6 +17,8 @@ import {
 } from "../dto/assignment/filter-student-assignment.dto.js";
 import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
 import { injectable } from "tsyringe";
+import { EnrollmentStatus } from "../entities/Enrollment.entity.js";
+import { ReviewStatus } from "../entities/Review.entity.js";
 
 @injectable()
 export class AssignmentRepository implements IAssignmentRepository {
@@ -84,6 +86,28 @@ export class AssignmentRepository implements IAssignmentRepository {
 
   async getMany(filters?: FilterAssignmentDto) {
     const conditions: FindOptionsWhere<Assignment> = {};
+    if (filters?.teacherId)
+      conditions.course = { teacherId: filters.teacherId };
+    if (filters?.studentId) {
+      conditions.course = {
+        enrollments: {
+          studentId: filters.studentId,
+          status: EnrollmentStatus.ENROLLED,
+        },
+      };
+      switch (filters.completion) {
+        case FilterStudentAssignmentCompletion.COMPLETE:
+          conditions.submissions = {
+            studentId: filters.studentId,
+            review: { status: ReviewStatus.ACCEPTED },
+          };
+          break;
+
+        case FilterStudentAssignmentCompletion.INCOMPLETE:
+          conditions.submissions = { studentId: Not(filters.studentId) };
+          break;
+      }
+    }
     if (filters?.courseId) conditions.courseId = filters?.courseId;
     if (filters?.status) {
       if (filters?.status === FilterAssignmentStatus.ACTIVE)
@@ -104,82 +128,6 @@ export class AssignmentRepository implements IAssignmentRepository {
           title: true,
         },
       },
-      take: 10,
-      skip: getPaginationOffset(filters?.page || 1),
-    });
-    return plainToInstance(AssignmentDto, assignments, {
-      exposeUnsetFields: false,
-    });
-  }
-
-  async getAssignmentsOfTeacher(
-    teacherId: number,
-    filters?: FilterAssignmentDto
-  ) {
-    const conditions: FindOptionsWhere<Assignment> = { course: { teacherId } };
-    if (filters?.courseId) conditions.courseId = filters.courseId;
-    if (filters?.status) {
-      if (filters.status === FilterAssignmentStatus.ACTIVE)
-        conditions.deadline = MoreThan(new Date());
-      else if (filters.status === FilterAssignmentStatus.INACTIVE)
-        conditions.deadline = LessThanOrEqual(new Date());
-    }
-    const assignments = await this.assignmentRepo.find({
-      relations: {
-        course: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        course: {
-          id: true,
-          title: true,
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(filters?.page || 1),
-    });
-    return plainToInstance(AssignmentDto, assignments, {
-      exposeUnsetFields: false,
-    });
-  }
-
-  async getAssignmentsOfStudent(
-    studentId: number,
-    filters?: FilterStudentAssignmentDto
-  ) {
-    const conditions: FindOptionsWhere<Assignment> = {
-      course: { enrollments: { studentId } },
-    };
-    if (filters?.courseId) conditions.courseId = filters.courseId;
-    if (filters?.status) {
-      if (filters?.status === FilterAssignmentStatus.ACTIVE)
-        conditions.deadline = MoreThan(new Date());
-      else if (filters.status === FilterAssignmentStatus.INACTIVE)
-        conditions.deadline = LessThanOrEqual(new Date());
-    }
-    if (filters?.completion) {
-      if (filters.completion === FilterStudentAssignmentCompletion.COMPLETE)
-        conditions.submissions = { studentId };
-      else if (
-        filters.completion === FilterStudentAssignmentCompletion.INCOMPLETE
-      )
-        conditions.submissions = { studentId: Not(studentId) };
-    }
-    const assignments = await this.assignmentRepo.find({
-      relations: {
-        course: true,
-      },
-      select: {
-        id: true,
-        title: true,
-        course: {
-          id: true,
-          title: true,
-        },
-      },
-      where: conditions,
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });

@@ -15,6 +15,7 @@ import { IdValidationMiddleware } from "../middleware/id-validation.middleware.j
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import upload from "express-fileupload";
 import { container } from "tsyringe";
+import { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
 
 export const AssignmentRouter = Router({ mergeParams: true });
 
@@ -36,7 +37,7 @@ AssignmentRouter.post(
 );
 AssignmentRouter.get(
   "/",
-  DtoValidationMiddleware(FilterAssignmentDto, "query"),
+  DtoValidationMiddleware(FilterBaseAssignmentDto, "query"),
   AuthMiddleware(),
   AccessMiddleware(new CourseAccessStrategy(), {
     property: "courseId",

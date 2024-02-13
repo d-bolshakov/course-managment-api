@@ -94,9 +94,15 @@ export class SubmissionRepository implements ISubmissionRepository {
 
   async getMany(filters?: FilterSubmissionDto) {
     const conditions: FindOptionsWhere<Submission> = {};
+    if (filters?.teacherId)
+      conditions.assignment = { course: { teacherId: filters.teacherId } };
+    else if (filters?.studentId) conditions.studentId = filters.studentId;
     if (filters?.assignmentId) conditions.assignmentId = filters.assignmentId;
     if (filters?.courseId)
-      conditions.assignment = { courseId: filters.courseId };
+      conditions.assignment = {
+        ...(conditions.assignment as any),
+        courseId: filters.courseId,
+      };
     if (filters?.status === FilterSubmissionstatus.SUMBITTED)
       conditions.reviewId = IsNull();
     else if (
@@ -133,116 +139,6 @@ export class SubmissionRepository implements ISubmissionRepository {
           },
         },
       },
-      take: 10,
-      skip: getPaginationOffset(filters?.page || 1),
-    });
-    return plainToInstance(SubmissionDto, submissions, {
-      exposeUnsetFields: false,
-    });
-  }
-
-  async getSubmissionsOfTeacher(
-    teacherId: number,
-    filters?: FilterSubmissionDto
-  ) {
-    const conditions: FindOptionsWhere<Submission> = {
-      assignment: { course: { teacherId } },
-    };
-    if (filters?.assignmentId) conditions.assignmentId = filters.assignmentId;
-    if (filters?.courseId)
-      // @ts-expect-error
-      conditions.assignment!.courseId = options.filters.courseId;
-    if (filters?.status === FilterSubmissionstatus.SUMBITTED)
-      conditions.reviewId = IsNull();
-    else if (
-      filters?.status === FilterSubmissionstatus.ACCEPTED ||
-      filters?.status === FilterSubmissionstatus.REJECTED
-    )
-      conditions.review = { status: filters.status as any };
-    const submissions = await this.submissionRepo.find({
-      relations: {
-        assignment: {
-          course: true,
-        },
-        student: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        reviewId: true,
-        assignment: {
-          id: true,
-          courseId: true,
-          course: {
-            id: true,
-            title: true,
-          },
-        },
-        student: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-      where: conditions,
-      take: 10,
-      skip: getPaginationOffset(filters?.page || 1),
-    });
-    return plainToInstance(SubmissionDto, submissions, {
-      exposeUnsetFields: false,
-    });
-  }
-
-  async getSubmissionsOfStudent(
-    studentId: number,
-    filters?: FilterSubmissionDto
-  ) {
-    const conditions: FindOptionsWhere<Submission> = {
-      assignment: { course: { enrollments: { studentId } } },
-    };
-    if (filters?.assignmentId) conditions.assignmentId = filters.assignmentId;
-    if (filters?.courseId)
-      // @ts-expect-error
-      conditions.assignment!.courseId = options.filters.courseId;
-    if (filters?.status === FilterSubmissionstatus.SUMBITTED)
-      conditions.reviewId = IsNull();
-    else if (
-      filters?.status === FilterSubmissionstatus.ACCEPTED ||
-      filters?.status === FilterSubmissionstatus.REJECTED
-    )
-      conditions.review = { status: filters.status as any };
-    const submissions = await this.submissionRepo.find({
-      relations: {
-        assignment: {
-          course: true,
-        },
-        student: {
-          user: true,
-        },
-      },
-      select: {
-        id: true,
-        reviewId: true,
-        assignment: {
-          id: true,
-          courseId: true,
-          course: {
-            id: true,
-            title: true,
-          },
-        },
-        student: {
-          id: true,
-          user: {
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-      where: conditions,
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
