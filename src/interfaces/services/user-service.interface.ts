@@ -7,8 +7,6 @@ export interface IUserService {
 
   login(dto: LoginUserDto): Promise<UserDto | null>;
 
-  getFullDataById(id: number): Promise<UserDto>;
-
   getMany(): Promise<UserDto[]>;
 
   getById(id: number): Promise<UserDto>;

@@ -19,7 +19,7 @@ export interface ICourseService {
     options: { filters: FilterBaseCourseDto }
   ): Promise<CourseDto[]>;
 
-  getFullDataById(id: number): Promise<CourseDto>;
+  getById(id: number): Promise<CourseDto>;
 
   update(id: number, dto: UpdateCourseDto): Promise<CourseDto | null>;
 

@@ -14,12 +14,8 @@ export class StudentRepository implements IStudentRepository {
     const student = await this.studentRepo.save(dto);
     return plainToInstance(StudentDto, student, { exposeUnsetFields: false });
   }
-  async getById(id: number) {
-    const student = await this.studentRepo.findOne({ where: { id } });
-    return plainToInstance(StudentDto, student, { exposeUnsetFields: false });
-  }
 
-  async getFullDataById(id: number) {
+  async getById(id: number) {
     const student = await this.studentRepo.findOne({
       relations: {
         user: true,

@@ -8,6 +8,5 @@ export interface ITeacherRepository {
   updateById(id: number, dto: UpdateTeacherDto): Promise<{ success: boolean }>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<TeacherDto | null>;
-  getFullDataById(id: number): Promise<TeacherDto | null>;
   getMany(filters?: FilterTeacherDto): Promise<TeacherDto[]>;
 }

@@ -11,7 +11,6 @@ export interface IAssignmentRepository {
   ): Promise<{ success: boolean }>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<AssignmentDto | null>;
-  getFullDataById(id: number): Promise<AssignmentDto | null>;
   getMany(filters?: FilterAssignmentDto): Promise<AssignmentDto[]>;
   existsWithId(id: number): Promise<boolean>;
   isActive(id: number): Promise<boolean>;

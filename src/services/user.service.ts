@@ -7,7 +7,7 @@ import { UpdateUserDto } from "../dto/user/update-user.dto.js";
 import type { IUserService } from "../interfaces/services/user-service.interface.js";
 import bcrypt from "bcryptjs";
 import { LoginUserDto } from "../dto/user/login-user.dto.js";
-import { inject, injectable, singleton } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
 import type { ITeacherService } from "../interfaces/services/teacher-service.interface.js";
 import type { IStudentService } from "../interfaces/services/student-service.interface.js";
@@ -55,7 +55,7 @@ export class UserService implements IUserService {
       throw createError.NotFound(`User with email ${dto.email} does not exist`);
     const isPassValid = await bcrypt.compare(dto.password, user.password);
     if (!isPassValid) throw createError.BadRequest("Invalid password");
-    return this.userRepository.getFullDataById(user.id);
+    return this.userRepository.getById(user.id);
   }
 
   async getFullDataById(id: number) {

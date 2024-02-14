@@ -25,7 +25,7 @@ export interface IAssignmentService {
     options?: { filters: FilterStudentAssignmentDto }
   ): Promise<AssignmentDto[]>;
 
-  getFullDataById(id: number): Promise<AssignmentDto>;
+  getById(id: number): Promise<AssignmentDto>;
 
   update(id: number, dto: UpdateAssignmentDto): Promise<AssignmentDto | null>;
 

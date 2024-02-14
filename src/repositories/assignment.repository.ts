@@ -51,12 +51,6 @@ export class AssignmentRepository implements IAssignmentRepository {
     }
   }
   async getById(id: number) {
-    const assignment = await this.assignmentRepo.findOne({ where: { id } });
-    return plainToInstance(AssignmentDto, assignment, {
-      exposeUnsetFields: false,
-    });
-  }
-  async getFullDataById(id: number) {
     const assignment = await this.assignmentRepo.findOne({
       where: { id },
       relations: {

@@ -27,9 +27,7 @@ export class CourseController {
     next: NextFunction
   ) {
     try {
-      const response = await this.courseService.getFullDataById(
-        Number(courseId)
-      );
+      const response = await this.courseService.getById(Number(courseId));
       res.status(200).json(response);
     } catch (e) {
       next(e);

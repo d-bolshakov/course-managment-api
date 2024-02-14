@@ -36,8 +36,11 @@ export class TeacherService implements ITeacherService {
     });
   }
 
-  async getFullDataById(id: number) {
-    return this.teacherRepository.getFullDataById(id);
+  async getById(id: number) {
+    const teacher = await this.teacherRepository.getById(id);
+    if (!teacher)
+      throw createError.NotFound(`Teacher with id ${id} does not exist`);
+    return teacher;
   }
 
   async update(id: number, dto: UpdateTeacherDto) {
@@ -56,6 +59,6 @@ export class TeacherService implements ITeacherService {
       throw createError.InternalServerError(
         `Something went wrong during deleteding assignment with id ${id}`
       );
-    return this.teacherRepository.getFullDataById(id);
+    return this.teacherRepository.getById(id);
   }
 }

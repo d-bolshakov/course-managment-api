@@ -36,10 +36,6 @@ export class UserRepository implements IUserRepository {
     }
   }
   async getById(id: number) {
-    const user = await this.userRepo.findOne({ where: { id } });
-    return plainToInstance(UserDto, user, { exposeUnsetFields: false });
-  }
-  async getFullDataById(id: number) {
     const user = await this.userRepo.findOne({
       where: { id },
       select: {

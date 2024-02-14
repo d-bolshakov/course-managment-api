@@ -11,7 +11,6 @@ export interface IUserRepository {
   ): Promise<{ success: boolean }>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<UserDto | null>;
-  getFullDataById(id: number): Promise<UserDto | null>;
   getAuthDataByEmail(email: string): Promise<AuthDto | null>;
   getMany(): Promise<UserDto[]>;
   existsWithEmail(email: string): Promise<boolean>;

@@ -75,8 +75,8 @@ export class AssignmentService implements IAssignmentService {
     });
   }
 
-  async getFullDataById(id: number) {
-    const assignment = await this.assignmentRepository.getFullDataById(id);
+  async getById(id: number) {
+    const assignment = await this.assignmentRepository.getById(id);
     if (!assignment)
       throw createError.NotFound(`Assignment with id ${id} does not exist`);
     return plainToInstance(AssignmentDto, assignment, {

@@ -50,8 +50,8 @@ export class CourseService implements ICourseService {
     return this.courseRepository.getMany({ ...options!.filters, studentId });
   }
 
-  async getFullDataById(id: number): Promise<CourseDto> {
-    const course = await this.courseRepository.getFullDataById(id);
+  async getById(id: number): Promise<CourseDto> {
+    const course = await this.courseRepository.getById(id);
     if (!course)
       throw createError.NotFound(`Course with id ${id} does not exist`);
     return course;

@@ -82,8 +82,8 @@ export class SubmissionService implements ISubmissionService {
     });
   }
 
-  async getFullDataById(id: number) {
-    const submission = await this.submissionRepository.getFullDataById(id);
+  async getById(id: number) {
+    const submission = await this.submissionRepository.getById(id);
     if (!submission)
       throw createError.NotFound(`Submission with id ${id} does not exist`);
     return plainToInstance(SubmissionDto, submission, {

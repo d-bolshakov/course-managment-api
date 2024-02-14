@@ -32,7 +32,7 @@ export class AssignmentController {
     next: NextFunction
   ) {
     try {
-      const response = await this.assignmentService.getFullDataById(
+      const response = await this.assignmentService.getById(
         Number(assignmentId)
       );
       console.log(response);

@@ -25,7 +25,7 @@ export interface ISubmissionService {
     options?: { filters: FilterBaseSubmissionDto }
   ): Promise<SubmissionDto[]>;
 
-  getFullDataById(id: number): Promise<SubmissionDto>;
+  getById(id: number): Promise<SubmissionDto>;
 
   review(id: number, dto: ReviewSubmissionDto): Promise<ReviewDto>;
 

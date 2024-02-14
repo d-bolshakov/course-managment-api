@@ -45,13 +45,6 @@ export class SubmissionRepository implements ISubmissionRepository {
     }
   }
   async getById(id: number) {
-    const submission = await this.submissionRepo.findOne({ where: { id } });
-    return plainToInstance(SubmissionDto, submission, {
-      exposeUnsetFields: false,
-    });
-  }
-
-  async getFullDataById(id: number) {
     const submission = await this.submissionRepo.findOne({
       where: { id },
       relations: {

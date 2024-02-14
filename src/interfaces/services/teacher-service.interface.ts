@@ -8,7 +8,7 @@ export interface ITeacherService {
 
   getMany(options?: { filters?: FilterTeacherDto }): Promise<TeacherDto[]>;
 
-  getFullDataById(id: number): Promise<TeacherDto>;
+  getById(id: number): Promise<TeacherDto>;
 
   update(id: number, dto: UpdateTeacherDto): Promise<TeacherDto>;
 }

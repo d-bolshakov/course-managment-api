@@ -22,8 +22,8 @@ export class StudentService implements IStudentService {
     return this.studentRepository.getMany(options?.filters);
   }
 
-  async getFullDataById(id: number) {
-    const student = await this.studentRepository.getFullDataById(id);
+  async getById(id: number) {
+    const student = await this.studentRepository.getById(id);
     if (!student)
       throw createError.NotFound(`Student with id ${id} does not exist`);
     return student;

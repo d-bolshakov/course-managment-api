@@ -43,12 +43,8 @@ export class CourseRepository implements ICourseRepository {
       return { success: false };
     }
   }
-  async getById(id: number) {
-    const course = await this.courseRepo.findOne({ where: { id } });
-    return plainToInstance(CourseDto, course, { exposeUnsetFields: false });
-  }
 
-  async getFullDataById(id: number) {
+  async getById(id: number) {
     const course = await this.courseRepo.findOne({
       where: { id },
       relations: {

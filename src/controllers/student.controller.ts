@@ -16,7 +16,7 @@ export class StudentController {
 
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const response = await this.studentService.getFullDataById(
+      const response = await this.studentService.getById(
         Number(req.params.studentId)
       );
       res.status(200).json(response);

@@ -52,12 +52,8 @@ export class TeacherRepository implements ITeacherRepository {
       return { success: false };
     }
   }
-  async getById(id: number): Promise<TeacherDto | null> {
-    const teacher = await this.teacherRepo.findOne({ where: { id } });
-    return plainToInstance(TeacherDto, teacher, { exposeUnsetFields: false });
-  }
 
-  async getFullDataById(id: number) {
+  async getById(id: number) {
     const teacher = await this.teacherRepo.findOne({
       where: { id },
       relations: {

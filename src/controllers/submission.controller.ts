@@ -32,7 +32,7 @@ export class SubmissionController {
     next: NextFunction
   ) {
     try {
-      const response = await this.submissionService.getFullDataById(
+      const response = await this.submissionService.getById(
         Number(submissionId)
       );
       res.status(200).json(response);

@@ -15,7 +15,7 @@ export class TeacherController {
   ) {}
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const response = await this.teacherService.getFullDataById(
+      const response = await this.teacherService.getById(
         Number(req.params.teacherId)
       );
       res.status(200).json(response);

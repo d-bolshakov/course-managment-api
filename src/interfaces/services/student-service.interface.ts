@@ -5,5 +5,5 @@ export interface IStudentService {
 
   getMany(options?: { filters: { page: number } }): Promise<StudentDto[]>;
 
-  getFullDataById(id: number): Promise<StudentDto>;
+  getById(id: number): Promise<StudentDto>;
 }

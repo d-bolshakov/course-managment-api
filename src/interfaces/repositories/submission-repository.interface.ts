@@ -11,7 +11,6 @@ export interface ISubmissionRepository {
   ): Promise<{ success: boolean }>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<SubmissionDto | null>;
-  getFullDataById(id: number): Promise<SubmissionDto | null>;
   getMany(filters?: FilterSubmissionDto): Promise<SubmissionDto[]>;
   existsWithId(id: number): Promise<boolean>;
 }
