@@ -62,6 +62,7 @@ export class TeacherRepository implements ITeacherRepository {
       },
       select: {
         id: true,
+        userId: true,
         user: {
           firstName: true,
           lastName: true,
@@ -103,5 +104,12 @@ export class TeacherRepository implements ITeacherRepository {
     return plainToInstance(TeacherDto, teachers, {
       exposeUnsetFields: false,
     });
+  }
+
+  async existsWithId(id: number) {
+    return this.teacherRepo
+      .createQueryBuilder()
+      .where("id = :id", { id })
+      .getExists();
   }
 }

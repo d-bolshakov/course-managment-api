@@ -59,13 +59,11 @@ export class EnrollmentService implements IEnrollmentService {
   async delete(id: number) {
     if (!(await this.enrollmentRepository.existsWithId(id)))
       throw createError.NotFound(`Enrollment with id ${id} does not exist`);
-    const { success: isDeleted } = await this.enrollmentRepository.deleteById(
-      id
-    );
-    if (!isDeleted)
+    const result = await this.enrollmentRepository.deleteById(id);
+    if (!result.success)
       throw createError.InternalServerError(
         `Something went wrong during deleteding enrollment with id ${id}`
       );
-    return { message: `Enrollment with id ${id} was deleted successfully` };
+    return result;
   }
 }

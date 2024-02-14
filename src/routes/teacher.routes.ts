@@ -11,11 +11,19 @@ import { container } from "tsyringe";
 import type { TeacherController } from "../controllers/teacher.controller.js";
 import { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
 import { FilterBaseSubmissionDto } from "../dto/submission/filter-base-submission.dto.js";
+import { CreateTeacherDto } from "../dto/teacher/create-teacher.dto.js";
+import { CreateTeacherRequestBodyDto } from "../dto/teacher/create-teacher-request-body.dto.js";
 
 export const TeacherRouter = Router();
 
 const controller = container.resolve<TeacherController>("teacher-controller");
 
+TeacherRouter.post(
+  "/",
+  AuthMiddleware(),
+  DtoValidationMiddleware(CreateTeacherRequestBodyDto, "body"),
+  controller.create.bind(controller)
+);
 TeacherRouter.get(
   "/",
   DtoValidationMiddleware(FilterTeacherDto, "query"),
@@ -71,19 +79,19 @@ TeacherRouter.put(
   DtoValidationMiddleware(UpdateTeacherDto, "body"),
   controller.update.bind(controller)
 );
-// TeacherRouter.delete(
-//   "/:teacherId",
-//   IdValidationMiddleware("teacherId"),
-//   AuthMiddleware({ passOnRedirect: true }),
-//   AccessMiddleware(
-//     new TeacherAccessStrategy(),
-//     {
-//       property: "teacherId",
-//       propertyLocation: "params",
-//     },
-//     {
-//       passOnRedirect: true,
-//     }
-//   ),
-//   teacherController.delete.bind(controller)
-// );
+TeacherRouter.delete(
+  "/:teacherId",
+  IdValidationMiddleware("teacherId"),
+  AuthMiddleware({ passOnRedirect: true }),
+  AccessMiddleware(
+    new TeacherAccessStrategy(),
+    {
+      property: "teacherId",
+      propertyLocation: "params",
+    },
+    {
+      passOnRedirect: true,
+    }
+  ),
+  controller.delete.bind(controller)
+);

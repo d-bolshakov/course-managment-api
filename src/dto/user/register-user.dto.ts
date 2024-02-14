@@ -1,17 +1,5 @@
-import {
-  IsString,
-  IsEmail,
-  MinLength,
-  IsEnum,
-  NotEquals,
-  ValidateIf,
-  IsNotEmpty,
-  IsDefined,
-  ValidateNested,
-} from "class-validator";
-import { Role } from "../../entities/User.entity.js";
-import { Expose, Transform, Type } from "class-transformer";
-import { CreateTeacherDto } from "../teacher/create-teacher.dto.js";
+import { IsString, IsEmail, MinLength } from "class-validator";
+import { Expose } from "class-transformer";
 
 export class RegisterUserDto {
   @Expose()
@@ -52,16 +40,4 @@ export class RegisterUserDto {
     message: "passwword should be minimum of 6 characters",
   })
   readonly password: string;
-
-  @Expose()
-  @IsEnum(Role, { message: "invalid role" })
-  @NotEquals(Role.ADMIN, { message: "invalid role" })
-  readonly role: Role;
-
-  @Expose()
-  @ValidateIf((obj: any, value: any) => obj.role === Role.TEACHER)
-  @IsDefined({ message: "teacherProfile should be defined" })
-  @ValidateNested()
-  @Type(() => CreateTeacherDto)
-  teacherProfile: CreateTeacherDto;
 }

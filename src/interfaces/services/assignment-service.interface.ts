@@ -29,5 +29,5 @@ export interface IAssignmentService {
 
   update(id: number, dto: UpdateAssignmentDto): Promise<AssignmentDto | null>;
 
-  delete(id: number): Promise<{ message: string }>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

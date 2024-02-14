@@ -18,7 +18,11 @@ export class MarkService implements IMarkService {
     const exists = await this.markRepository.existsWithId(id);
     if (!exists)
       throw createError.NotFound(`Mark with id ${id} does not exist`);
-    await this.markRepository.deleteById(id);
-    return { message: `Mark with id ${id} was deleted successfully` };
+    const result = await this.markRepository.deleteById(id);
+    if (!result.success)
+      throw createError.InternalServerError(
+        `Something went wrong during deleting mark with id ${id}`
+      );
+    return result;
   }
 }

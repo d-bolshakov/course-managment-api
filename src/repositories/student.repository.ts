@@ -23,8 +23,8 @@ export class StudentRepository implements IStudentRepository {
       where: { id },
       select: {
         id: true,
+        userId: true,
         user: {
-          id: true,
           firstName: true,
           lastName: true,
           email: true,
@@ -54,6 +54,7 @@ export class StudentRepository implements IStudentRepository {
       exposeUnsetFields: false,
     });
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.studentRepo.delete({ id });
@@ -64,10 +65,18 @@ export class StudentRepository implements IStudentRepository {
       return { success: false };
     }
   }
+
   async existsWithUserId(userId: number) {
     return this.studentRepo
+      .createQueryBuilder("s")
+      .where("s.userId = :userId", { userId })
+      .getExists();
+  }
+
+  async existsWithId(id: number) {
+    return this.studentRepo
       .createQueryBuilder()
-      .where("userId = :userId", { userId })
+      .where("id = :id", { id })
       .getExists();
   }
 }

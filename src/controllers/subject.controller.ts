@@ -52,7 +52,7 @@ export class SubjectController {
 
   async delete({ params: { id } }: Request, res: Response, next: NextFunction) {
     try {
-      res.status(201).json(await this.subjectService.delete(Number(id)));
+      res.status(201).json(this.subjectService.delete(Number(id)));
     } catch (e) {
       next(e);
     }

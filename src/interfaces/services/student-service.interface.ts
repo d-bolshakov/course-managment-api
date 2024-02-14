@@ -6,4 +6,6 @@ export interface IStudentService {
   getMany(options?: { filters: { page: number } }): Promise<StudentDto[]>;
 
   getById(id: number): Promise<StudentDto>;
+
+  delete(id: number): Promise<{ success: boolean }>;
 }

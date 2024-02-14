@@ -1,7 +1,6 @@
 import createError from "http-errors";
 import { CourseDto } from "../dto/course/course.dto.js";
 import { CreateCourseDto } from "../dto/course/create-course.dto.js";
-import { FilterCourseDto } from "../dto/course/filter-course.dto.js";
 import { UpdateCourseDto } from "../dto/course/update-course.dto.js";
 import type { ICourseService } from "../interfaces/services/course-service.interface.js";
 import { inject, injectable } from "tsyringe";
@@ -77,11 +76,11 @@ export class CourseService implements ICourseService {
   async delete(id: number) {
     if (!(await this.courseRepository.existsWithId(id)))
       throw createError.NotFound(`Course with id ${id} does not exist`);
-    const { success: isDeleted } = await this.courseRepository.deleteById(id);
-    if (!isDeleted)
+    const result = await this.courseRepository.deleteById(id);
+    if (!result.success)
       throw createError.InternalServerError(
         `Something went wrong during deleteding course with id ${id}`
       );
-    return { message: `Course with id ${id} was deleted successfully` };
+    return result;
   }
 }

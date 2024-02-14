@@ -23,5 +23,5 @@ export interface ICourseService {
 
   update(id: number, dto: UpdateCourseDto): Promise<CourseDto | null>;
 
-  delete(id: number): Promise<{ message: string }>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

@@ -7,5 +7,5 @@ export interface IAttachmentService {
     file: UploadedFile | UploadedFile[]
   ): Promise<AttachmentDto | AttachmentDto[]>;
 
-  delete(id: number): Promise<any>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

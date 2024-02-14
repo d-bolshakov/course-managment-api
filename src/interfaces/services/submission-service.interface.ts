@@ -29,5 +29,5 @@ export interface ISubmissionService {
 
   review(id: number, dto: ReviewSubmissionDto): Promise<ReviewDto>;
 
-  delete(id: number): Promise<{ message: string }>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

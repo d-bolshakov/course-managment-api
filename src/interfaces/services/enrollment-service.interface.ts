@@ -10,5 +10,5 @@ export interface IEnrollmentService {
 
   update(id: number, dto: any): Promise<EnrollmentDto | null>;
 
-  delete(id: number): Promise<{ message: string }>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

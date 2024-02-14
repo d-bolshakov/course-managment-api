@@ -4,7 +4,7 @@ import { UserDto } from "../../dto/user/user.dto";
 import { User } from "../../entities/User.entity";
 
 export interface IUserRepository {
-  create(item: Partial<User>): Promise<UserDto | null>;
+  create(item: Partial<User>): Promise<UserDto>;
   updateById(
     id: number,
     updateDto: UpdateUserDto

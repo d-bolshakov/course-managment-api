@@ -9,4 +9,5 @@ export interface ITeacherRepository {
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<TeacherDto | null>;
   getMany(filters?: FilterTeacherDto): Promise<TeacherDto[]>;
+  existsWithId(id: number): Promise<boolean>;
 }

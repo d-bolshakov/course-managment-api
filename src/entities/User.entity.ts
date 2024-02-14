@@ -34,7 +34,7 @@ export class User {
   @Column("varchar", { length: 100, nullable: false })
   password: string;
 
-  @Column("enum", { enum: Role, default: Role.STUDENT, nullable: false })
+  @Column("enum", { enum: Role, nullable: true })
   role: Role;
 
   @OneToOne(() => Student, (student: Student) => student.user, {

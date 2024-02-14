@@ -11,5 +11,5 @@ export interface ISubjectService {
 
   update(id: number, dto: UpdateSubjectDto): Promise<SubjectDto | null>;
 
-  delete(id: number): Promise<{ message: string }>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

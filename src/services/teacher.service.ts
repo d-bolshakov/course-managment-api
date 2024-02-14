@@ -8,32 +8,35 @@ import type { ITeacherService } from "../interfaces/services/teacher-service.int
 import { inject, injectable } from "tsyringe";
 import type { ITeacherRepository } from "../interfaces/repositories/teacher-repository.interface.js";
 import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
+import type { IUserService } from "../interfaces/services/user-service.interface.js";
+import { Role } from "../entities/User.entity.js";
 
 @injectable()
 export class TeacherService implements ITeacherService {
   constructor(
     @inject("teacher-repository") private teacherRepository: ITeacherRepository,
-    @inject("subject-repository") private subjectRepository: ISubjectRepository
+    @inject("subject-repository") private subjectRepository: ISubjectRepository,
+    @inject("user-service") private userService: IUserService
   ) {}
 
   async create(dto: CreateTeacherDto) {
     const subjects = await this.subjectRepository.getManyByIds(dto.subjectIds);
     if (!subjects) throw createError.NotFound("invalid subjects");
     const teacher = await this.teacherRepository.create(dto);
-    return plainToInstance(
-      TeacherDto,
-      { ...teacher, subjects },
-      {
-        exposeUnsetFields: false,
-      }
+    const { success: isUserRoleUpdated } = await this.userService.updateRole(
+      dto.userId,
+      Role.TEACHER
     );
+    if (!isUserRoleUpdated)
+      throw createError.InternalServerError(
+        "Somethhing went wrong during creating teacher"
+      );
+
+    return this.teacherRepository.getById(teacher.id);
   }
 
   async getMany(options?: { filters?: FilterTeacherDto }) {
-    const teachers = await this.teacherRepository.getMany(options?.filters);
-    return plainToInstance(TeacherDto, teachers, {
-      exposeUnsetFields: false,
-    });
+    return this.teacherRepository.getMany(options?.filters);
   }
 
   async getById(id: number) {
@@ -60,5 +63,18 @@ export class TeacherService implements ITeacherService {
         `Something went wrong during deleteding assignment with id ${id}`
       );
     return this.teacherRepository.getById(id);
+  }
+
+  async delete(id: number) {
+    const teacher = await this.teacherRepository.getById(id);
+    if (!teacher)
+      throw createError.NotFound(`Teacher with id ${id} does not exist`);
+    const result = await this.teacherRepository.deleteById(id);
+    if (!result.success)
+      throw createError.InternalServerError(
+        `Something went wrong during deleting teacher with id ${id}`
+      );
+    await this.userService.updateRole(teacher.userId, null);
+    return result;
   }
 }

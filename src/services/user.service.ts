@@ -9,15 +9,11 @@ import bcrypt from "bcryptjs";
 import { LoginUserDto } from "../dto/user/login-user.dto.js";
 import { inject, injectable } from "tsyringe";
 import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
-import type { ITeacherService } from "../interfaces/services/teacher-service.interface.js";
-import type { IStudentService } from "../interfaces/services/student-service.interface.js";
 
 @injectable()
 export class UserService implements IUserService {
   constructor(
-    @inject("user-repository") private userRepository: IUserRepository,
-    @inject("teacher-service") private teacherService: ITeacherService,
-    @inject("student-service") private studentService: IStudentService
+    @inject("user-repository") private userRepository: IUserRepository
   ) {}
 
   async create(dto: RegisterUserDto) {
@@ -29,24 +25,9 @@ export class UserService implements IUserService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       password: await bcrypt.hash(dto.password, 3),
-      role: dto.role,
       email: dto.email,
     });
-    let studentProfile, teacherProfile;
-    if (user!.role === Role.STUDENT)
-      studentProfile = await this.studentService.create(user!.id);
-    else if (user!.role === Role.TEACHER)
-      teacherProfile = await this.teacherService.create({
-        userId: user!.id,
-        subjectIds: dto.teacherProfile.subjectIds,
-      });
-    return plainToInstance(
-      UserDto,
-      { ...user, studentProfile, teacherProfile },
-      {
-        exposeUnsetFields: false,
-      }
-    );
+    return user;
   }
 
   async login(dto: LoginUserDto) {
@@ -95,15 +76,19 @@ export class UserService implements IUserService {
     return this.userRepository.getById(id);
   }
 
+  async updateRole(id: number, role: Role | null) {
+    return this.userRepository.updateById(id, { role });
+  }
+
   async delete(id: number) {
     const exists = await this.userRepository.existsWithId(id);
     if (!exists)
       throw createError.NotFound(`User with id ${id} does not exist`);
-    const { success: isDeleted } = await this.userRepository.deleteById(id);
-    if (!isDeleted)
+    const result = await this.userRepository.deleteById(id);
+    if (!result.success)
       throw createError.InternalServerError(
-        `Something went wrong during deleteding user with id ${id}`
+        `Something went wrong during deleting user with id ${id}`
       );
-    return { message: `User with id ${id} was deleted successfully` };
+    return result;
   }
 }

@@ -50,11 +50,11 @@ export class SubjectService implements ISubjectService {
     const subject = await this.subjectRepository.existsWithId(id);
     if (!subject)
       throw createError.NotFound(`Subject with id ${id} does not exist`);
-    const { success: isDeleted } = await this.subjectRepository.deleteById(id);
-    if (!isDeleted)
+    const result = await this.subjectRepository.deleteById(id);
+    if (!result.success)
       throw createError.InternalServerError(
         `Something went wrong during deleteding subject with id ${id}`
       );
-    return { message: `Subject with id  ${id} was deleted successfully` };
+    return result;
   }
 }

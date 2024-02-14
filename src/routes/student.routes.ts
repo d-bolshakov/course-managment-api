@@ -15,6 +15,8 @@ export const StudentRouter = Router();
 
 const controller = container.resolve<StudentController>("student-controller");
 
+StudentRouter.post("/", AuthMiddleware(), controller.create.bind(controller));
+
 StudentRouter.get(
   "/",
   DtoValidationMiddleware(FilterTeacherDto, "query"),
@@ -54,24 +56,13 @@ StudentRouter.get(
   DtoValidationMiddleware(FilterBaseSubmissionDto, "query"),
   controller.getSubmissionsOfStudent.bind(controller)
 );
-// StudentRouter.put(
-//   "/:studentId",
-//   IdValidationMiddleware("studentId"),
-//   AuthMiddleware(),
-//   AccessMiddleware(new StudentAccessStrategy(), {
-//     property: "studentId",
-//     propertyLocation: "params",
-//   }),
-//   DtoValidationMiddleware(UpdateTeacherDto, "body"),
-//   controller.update.bind(controller)
-// );
-// StudentRouter.delete(
-//   "/:studentId",
-//   IdValidationMiddleware("studentId"),
-//   AuthMiddleware(),
-//   AccessMiddleware(new StudentAccessStrategy(), {
-//     property: "studentId",
-//     propertyLocation: "params",
-//   }),
-//   controller.delete.bind(controller)
-// );
+StudentRouter.delete(
+  "/:studentId",
+  IdValidationMiddleware("studentId"),
+  AuthMiddleware(),
+  AccessMiddleware(new StudentAccessStrategy(), {
+    property: "studentId",
+    propertyLocation: "params",
+  }),
+  controller.delete.bind(controller)
+);

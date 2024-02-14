@@ -1,12 +1,6 @@
-import { Expose, Type } from "class-transformer";
-import {
-  IsString,
-  IsEmail,
-  MinLength,
-  IsOptional,
-  ValidateNested,
-} from "class-validator";
-import { UpdateTeacherDto } from "../teacher/update-teacher.dto";
+import { Expose } from "class-transformer";
+import { IsString, IsEmail, MinLength, IsOptional } from "class-validator";
+import type { Role } from "../../entities/User.entity";
 
 export class UpdateUserDto {
   @Expose()
@@ -17,7 +11,7 @@ export class UpdateUserDto {
   @MinLength(2, {
     message: "firstName should be longer than 2 characters",
   })
-  readonly firstName: string;
+  readonly firstName?: string;
 
   @Expose()
   @IsOptional()
@@ -27,7 +21,7 @@ export class UpdateUserDto {
   @MinLength(2, {
     message: "firstName should be longer than 2 characters",
   })
-  readonly lastName: string;
+  readonly lastName?: string;
 
   @Expose()
   @IsOptional()
@@ -40,5 +34,9 @@ export class UpdateUserDto {
       message: "email is not valid",
     }
   )
-  readonly email: string;
+  readonly email?: string;
+
+  @Expose()
+  @IsOptional()
+  readonly role?: Role | null;
 }

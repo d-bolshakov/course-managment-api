@@ -6,4 +6,5 @@ export interface IStudentRepository {
   getMany(filters?: { page: number }): Promise<StudentDto[]>;
   deleteById(id: number): Promise<{ success: boolean }>;
   existsWithUserId(userId: number): Promise<boolean>;
+  existsWithId(id: number): Promise<boolean>;
 }

@@ -4,5 +4,5 @@ import { ReviewDto } from "../../dto/review/review.dto";
 export interface IReviewService {
   create(dto: CreateReviewDto): Promise<ReviewDto>;
 
-  delete(id: number): Promise<{ message: string }>;
+  delete(id: number): Promise<{ success: boolean }>;
 }

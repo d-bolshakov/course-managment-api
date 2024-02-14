@@ -105,13 +105,11 @@ export class AssignmentService implements IAssignmentService {
     const assignment = await this.assignmentRepository.existsWithId(id);
     if (!assignment)
       throw createError.NotFound(`Assignment with id ${id} does not exist`);
-    const { success: isDeleted } = await this.assignmentRepository.deleteById(
-      id
-    );
-    if (!isDeleted)
+    const result = await this.assignmentRepository.deleteById(id);
+    if (!result.success)
       throw createError.InternalServerError(
         `Something went wrong during deleteding assignment with id ${id}`
       );
-    return { message: `Assignment with id ${id} was deleted successfully` };
+    return result;
   }
 }

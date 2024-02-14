@@ -28,7 +28,11 @@ export class ReviewService implements IReviewService {
     const exists = await this.reviewRepository.existsWithId(id);
     if (!exists)
       throw createError.NotFound(`Review with id ${id} does not exist`);
-    await this.reviewRepository.deleteById(id);
-    return { message: `Review with id ${id} was deleted successfully` };
+    const result = await this.reviewRepository.deleteById(id);
+    if (!result.success)
+      throw createError.InternalServerError(
+        `Something went wrong during deleting review with id ${id}`
+      );
+    return result;
   }
 }

@@ -11,4 +11,6 @@ export interface ITeacherService {
   getById(id: number): Promise<TeacherDto>;
 
   update(id: number, dto: UpdateTeacherDto): Promise<TeacherDto>;
+
+  delete(id: number): Promise<{ success: boolean }>;
 }

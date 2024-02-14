@@ -13,6 +13,14 @@ export class StudentController {
     @inject("assignment-service") private assignmentService: IAssignmentService,
     @inject("submission-service") private submissionService: ISubmissionService
   ) {}
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const response = await this.studentService.create(req.user!.id);
+      res.status(201).json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
 
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
@@ -80,17 +88,15 @@ export class StudentController {
     }
   }
 
-  // async delete(
-  //   { params: { studentId } }: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ) {
-  //   try {
-  //     res
-  //       .status(201)
-  //       .json(await this.studentService.delete(Number(studentId)));
-  //   } catch (e) {
-  //     next(e);
-  //   }
-  // }
+  async delete(
+    { params: { studentId } }: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      res.status(201).json(this.studentService.delete(Number(studentId)));
+    } catch (e) {
+      next(e);
+    }
+  }
 }

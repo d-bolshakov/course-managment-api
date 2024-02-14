@@ -115,13 +115,11 @@ export class SubmissionService implements ISubmissionService {
     const exists = await this.submissionRepository.existsWithId(id);
     if (!exists)
       throw createError.NotFound(`Submission with id ${id} does not exist`);
-    const { success: isDeleted } = await this.submissionRepository.deleteById(
-      id
-    );
-    if (!isDeleted)
+    const result = await this.submissionRepository.deleteById(id);
+    if (!result.success)
       throw createError.InternalServerError(
         `Something went wrong during deleteding submission with id ${id}`
       );
-    return { message: `Submission with id ${id} was deleted successfully` };
+    return result;
   }
 }

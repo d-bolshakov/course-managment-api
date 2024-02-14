@@ -13,6 +13,19 @@ export class TeacherController {
     @inject("assignment-service") private assignmentService: IAssignmentService,
     @inject("submission-service") private submissionService: ISubmissionService
   ) {}
+
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const response = await this.teacherService.create({
+        ...req.body,
+        userId: req.user!.id,
+      });
+      res.status(201).json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const response = await this.teacherService.getById(
@@ -101,7 +114,7 @@ export class TeacherController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(await this.teacherService.delete(Number(teacherId)));
+      res.status(201).json(this.teacherService.delete(Number(teacherId)));
     } catch (e) {
       next(e);
     }
