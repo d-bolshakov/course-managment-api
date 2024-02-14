@@ -33,10 +33,13 @@ export class MarkRepository implements IMarkRepository {
     });
   }
   async getMany() {
-    const marks = await this.markRepo.find();
-    return plainToInstance(MarkDto, marks, {
-      exposeUnsetFields: false,
-    });
+    const [marks, count] = await this.markRepo.findAndCount();
+    return {
+      marks: plainToInstance(MarkDto, marks, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
   async existsWithId(id: number) {
     return this.markRepo

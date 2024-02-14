@@ -6,6 +6,9 @@ import { UpdateUserDto } from "../dto/user/update-user.dto.js";
 import { AuthDto } from "../dto/user/auth.dto.js";
 import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
 import { injectable } from "tsyringe";
+import type { FilterUserDto } from "../dto/user/filter-user.dto.js";
+import type { FindOptionsWhere } from "typeorm";
+import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -60,9 +63,32 @@ export class UserRepository implements IUserRepository {
     });
     return plainToInstance(AuthDto, auth);
   }
-  async getMany(): Promise<UserDto[]> {
-    const users = await this.userRepo.find();
-    return plainToInstance(UserDto, users, { exposeUnsetFields: false });
+  async getMany(filters?: FilterUserDto) {
+    const conditions: FindOptionsWhere<User> = {};
+    if (filters?.role) conditions.role = filters.role;
+    if (filters?.emailConfirmed)
+      conditions.isEmailConfirmed = filters.emailConfirmed;
+    const [users, count] = await this.userRepo.findAndCount({
+      where: conditions,
+      take: 10,
+      skip: getPaginationOffset(filters?.page || 1),
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        isEmailConfirmed: true,
+        role: true,
+      },
+      loadRelationIds: {
+        disableMixedMap: true,
+        relations: ["studentProfile", "teacherProfile"],
+      },
+    });
+    return {
+      users: plainToInstance(UserDto, users, { exposeUnsetFields: false }),
+      count,
+    };
   }
   async existsWithEmail(email: string) {
     return this.userRepo

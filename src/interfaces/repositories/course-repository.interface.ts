@@ -11,7 +11,9 @@ export interface ICourseRepository {
   ): Promise<{ success: boolean }>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<CourseDto | null>;
-  getMany(filters?: FilterCourseDto): Promise<CourseDto[]>;
+  getMany(
+    filters?: FilterCourseDto
+  ): Promise<{ courses: CourseDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
   isActive(id: number): Promise<boolean>;
   isEnrollmentAvailable(id: number): Promise<boolean>;

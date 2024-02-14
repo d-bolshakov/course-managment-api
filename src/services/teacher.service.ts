@@ -60,7 +60,7 @@ export class TeacherService implements ITeacherService {
     );
     if (!isUpdated)
       throw createError.InternalServerError(
-        `Something went wrong during deleteding assignment with id ${id}`
+        `Something went wrong during updating teacher with id ${id}`
       );
     return this.teacherRepository.getById(id);
   }

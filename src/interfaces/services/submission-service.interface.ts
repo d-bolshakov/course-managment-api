@@ -13,17 +13,19 @@ export interface ISubmissionService {
     attachment?: UploadedFile | UploadedFile[]
   ): Promise<SubmissionDto>;
 
-  getMany(options: { filters: FilterSubmissionDto }): Promise<SubmissionDto[]>;
+  getMany(options: {
+    filters: FilterSubmissionDto;
+  }): Promise<{ submissions: SubmissionDto[]; count: number }>;
 
   getSubmissionsOfTeacher(
     teacherId: number,
     options?: { filters: FilterBaseSubmissionDto }
-  ): Promise<SubmissionDto[]>;
+  ): Promise<{ submissions: SubmissionDto[]; count: number }>;
 
   getSubmissionsOfStudent(
     studentId: number,
     options?: { filters: FilterBaseSubmissionDto }
-  ): Promise<SubmissionDto[]>;
+  ): Promise<{ submissions: SubmissionDto[]; count: number }>;
 
   getById(id: number): Promise<SubmissionDto>;
 

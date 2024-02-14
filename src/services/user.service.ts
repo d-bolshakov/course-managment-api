@@ -9,6 +9,7 @@ import bcrypt from "bcryptjs";
 import { LoginUserDto } from "../dto/user/login-user.dto.js";
 import { inject, injectable } from "tsyringe";
 import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
+import type { FilterUserDto } from "../dto/user/filter-user.dto.js";
 
 @injectable()
 export class UserService implements IUserService {
@@ -47,11 +48,8 @@ export class UserService implements IUserService {
     });
   }
 
-  async getMany() {
-    const users = await this.userRepository.getMany();
-    return plainToInstance(UserDto, users, {
-      exposeUnsetFields: false,
-    });
+  async getMany(options?: { filters?: FilterUserDto }) {
+    return this.userRepository.getMany(options?.filters);
   }
 
   async getById(id: number) {

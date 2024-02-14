@@ -7,17 +7,19 @@ import { UpdateCourseDto } from "../../dto/course/update-course.dto";
 export interface ICourseService {
   create(teacherId: number, dto: CreateCourseDto): Promise<CourseDto>;
 
-  getMany(options: { filters: FilterBaseCourseDto }): Promise<CourseDto[]>;
+  getMany(options: {
+    filters: FilterBaseCourseDto;
+  }): Promise<{ courses: CourseDto[]; count: number }>;
 
   getCoursesOfTeacher(
     teacherId: number,
     options: { filters: FilterTeacherCourseDto }
-  ): Promise<CourseDto[]>;
+  ): Promise<{ courses: CourseDto[]; count: number }>;
 
   getCoursesOfStudent(
     studentId: number,
     options: { filters: FilterBaseCourseDto }
-  ): Promise<CourseDto[]>;
+  ): Promise<{ courses: CourseDto[]; count: number }>;
 
   getById(id: number): Promise<CourseDto>;
 

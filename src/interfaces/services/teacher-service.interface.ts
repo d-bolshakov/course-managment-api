@@ -6,7 +6,9 @@ import { UpdateTeacherDto } from "../../dto/teacher/update-teacher.dto";
 export interface ITeacherService {
   create(dto: CreateTeacherDto): Promise<TeacherDto>;
 
-  getMany(options?: { filters?: FilterTeacherDto }): Promise<TeacherDto[]>;
+  getMany(options?: {
+    filters?: FilterTeacherDto;
+  }): Promise<{ teachers: TeacherDto[]; count: number }>;
 
   getById(id: number): Promise<TeacherDto>;
 

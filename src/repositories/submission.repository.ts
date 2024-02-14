@@ -103,7 +103,7 @@ export class SubmissionRepository implements ISubmissionRepository {
       filters?.status === FilterSubmissionstatus.REJECTED
     )
       conditions.review = { status: filters?.status as any };
-    const submissions = await this.submissionRepo.find({
+    const [submissions, count] = await this.submissionRepo.findAndCount({
       where: conditions,
       relations: {
         assignment: {
@@ -135,9 +135,12 @@ export class SubmissionRepository implements ISubmissionRepository {
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
-    return plainToInstance(SubmissionDto, submissions, {
-      exposeUnsetFields: false,
-    });
+    return {
+      submissions: plainToInstance(SubmissionDto, submissions, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
 
   async existsWithId(id: number) {

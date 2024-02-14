@@ -13,17 +13,17 @@ export interface IAssignmentService {
 
   getMany(options: {
     filters: FilterBaseAssignmentDto;
-  }): Promise<AssignmentDto[]>;
+  }): Promise<{ assignments: AssignmentDto[]; count: number }>;
 
   getAssignmentsOfTeacher(
     teacherId: number,
     options?: { filters: FilterBaseAssignmentDto }
-  ): Promise<AssignmentDto[]>;
+  ): Promise<{ assignments: AssignmentDto[]; count: number }>;
 
   getAssignmentsOfStudent(
     studentId: number,
     options?: { filters: FilterStudentAssignmentDto }
-  ): Promise<AssignmentDto[]>;
+  ): Promise<{ assignments: AssignmentDto[]; count: number }>;
 
   getById(id: number): Promise<AssignmentDto>;
 

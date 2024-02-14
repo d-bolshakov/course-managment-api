@@ -15,6 +15,7 @@ import { StudentRouter } from "./routes/student.routes.js";
 import { SubjectRouter } from "./routes/subject.routes.js";
 import { SubmissionRouter } from "./routes/submission.routes.js";
 import { TeacherRouter } from "./routes/teacher.routes.js";
+import { UserRouter } from "./routes/user.routes.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -40,6 +41,7 @@ app.use(
 );
 
 app.use("/auth/", AuthRouter);
+app.use("/users/", UserRouter);
 app.use("/subjects/", SubjectRouter);
 app.use("/teachers/", TeacherRouter);
 app.use("/students/", StudentRouter);

@@ -20,7 +20,7 @@ export class TeacherSubjectRepository implements ITeacherSubjectRepository {
       const { affected } = await AppDataSource.createQueryBuilder()
         .delete()
         .from("teacher_subject")
-        .where("teacherId  = :id", { teacherId })
+        .where("teacherId  = :teacherId", { teacherId })
         .execute();
       if (!affected) return { success: false };
       return { success: true };

@@ -50,7 +50,7 @@ export class EnrollmentRepository implements IEnrollmentRepository {
     const conditions: FindOptionsWhere<Enrollment> = {};
     if (filters?.courseId) conditions.courseId = filters.courseId;
     if (filters?.status) conditions.status = filters.status;
-    const enrollments = await this.enrollmentRepo.find({
+    const [enrollments, count] = await this.enrollmentRepo.findAndCount({
       where: conditions,
       relations: {
         course: true,
@@ -77,9 +77,12 @@ export class EnrollmentRepository implements IEnrollmentRepository {
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
-    return plainToInstance(EnrollmentDto, enrollments, {
-      exposeUnsetFields: false,
-    });
+    return {
+      enrollments: plainToInstance(EnrollmentDto, enrollments, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
   async existsWithId(id: number) {
     return this.enrollmentRepo

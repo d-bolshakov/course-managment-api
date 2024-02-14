@@ -7,6 +7,7 @@ import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { UpdateSubjectDto } from "../dto/subject/update-subject.dto.js";
 import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
 import { injectable } from "tsyringe";
+import type { FilterSubjectDto } from "../dto/subject/filter-subject.dto.js";
 
 @injectable()
 export class SubjectRepository implements ISubjectRepository {
@@ -48,12 +49,17 @@ export class SubjectRepository implements ISubjectRepository {
     });
   }
 
-  async getMany(filters?: { page: number }) {
-    const subjects = await this.subjectRepo.find({
+  async getMany(filters?: FilterSubjectDto) {
+    const [subjects, count] = await this.subjectRepo.findAndCount({
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
-    return plainToInstance(SubjectDto, subjects, { exposeUnsetFields: false });
+    return {
+      subjects: plainToInstance(SubjectDto, subjects, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
 
   async getManyByIds(ids: number[]) {

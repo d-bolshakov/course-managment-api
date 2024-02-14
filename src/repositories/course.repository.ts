@@ -92,7 +92,7 @@ export class CourseRepository implements ICourseRepository {
       if (filters.status === FilterCourseStatus.FUTURE)
         conditions.startsAt = MoreThan(new Date());
     }
-    const courses = await this.courseRepo.find({
+    const [courses, count] = await this.courseRepo.findAndCount({
       where: conditions,
       relations: {
         subject: true,
@@ -118,7 +118,12 @@ export class CourseRepository implements ICourseRepository {
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
-    return plainToInstance(CourseDto, courses, { exposeUnsetFields: false });
+    return {
+      courses: plainToInstance(CourseDto, courses, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
 
   async existsWithId(id: number) {

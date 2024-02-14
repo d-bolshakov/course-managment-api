@@ -8,6 +8,7 @@ import { IdValidationMiddleware } from "../middleware/id-validation.middleware.j
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { container } from "tsyringe";
 import type { SubjectController } from "../controllers/subject.controller.js";
+import { FilterSubjectDto } from "../dto/subject/filter-subject.dto.js";
 
 export const SubjectRouter = Router();
 
@@ -20,7 +21,11 @@ SubjectRouter.post(
   DtoValidationMiddleware(CreateSubjectDto, "body"),
   controller.create.bind(controller)
 );
-SubjectRouter.get("/", controller.getMany);
+SubjectRouter.get(
+  "/",
+  DtoValidationMiddleware(FilterSubjectDto, "query"),
+  controller.getMany
+);
 SubjectRouter.get(
   "/:id",
   IdValidationMiddleware(),

@@ -11,6 +11,8 @@ export interface IEnrollmentRepository {
   ): Promise<{ success: boolean }>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<EnrollmentDto | null>;
-  getMany(filters?: FilterEnrollmentDto): Promise<EnrollmentDto[]>;
+  getMany(
+    filters?: FilterEnrollmentDto
+  ): Promise<{ enrollments: EnrollmentDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
 }

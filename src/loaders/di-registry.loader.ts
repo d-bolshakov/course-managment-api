@@ -62,6 +62,7 @@ import { FileService } from "../services/file.service.js";
 import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
 import { AssignmentAttachmentService } from "../services/assignment-attachment.service.js";
 import { SubmissionAttachmentService } from "../services/submission-attachment.service.js";
+import { UserController } from "../controllers/user.controller.js";
 
 container.register<IUserRepository>(
   "user-repository",
@@ -244,6 +245,11 @@ container.register<AssignmentController>(
 container.register<SubmissionController>(
   "submission-controller",
   { useClass: SubmissionController },
+  { lifecycle: Lifecycle.Singleton }
+);
+container.register<UserController>(
+  "user-controller",
+  { useClass: UserController },
   { lifecycle: Lifecycle.Singleton }
 );
 

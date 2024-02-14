@@ -4,6 +4,7 @@ import { UpdateSubjectDto } from "../dto/subject/update-subject.dto.js";
 import type { ISubjectService } from "../interfaces/services/subject-service.interface.js";
 import { inject, injectable } from "tsyringe";
 import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
+import type { FilterSubjectDto } from "../dto/subject/filter-subject.dto.js";
 
 @injectable()
 export class SubjectService implements ISubjectService {
@@ -22,7 +23,7 @@ export class SubjectService implements ISubjectService {
     return subject;
   }
 
-  async getMany(options?: { filters?: { page: number } }) {
+  async getMany(options?: { filters?: FilterSubjectDto }) {
     return this.subjectRepository.getMany(options?.filters);
   }
 

@@ -109,7 +109,7 @@ export class AssignmentRepository implements IAssignmentRepository {
       else if (filters?.status === FilterAssignmentStatus.INACTIVE)
         conditions.deadline = LessThanOrEqual(new Date());
     }
-    const assignments = await this.assignmentRepo.find({
+    const [assignments, count] = await this.assignmentRepo.findAndCount({
       where: conditions,
       relations: {
         course: true,
@@ -125,9 +125,12 @@ export class AssignmentRepository implements IAssignmentRepository {
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
-    return plainToInstance(AssignmentDto, assignments, {
-      exposeUnsetFields: false,
-    });
+    return {
+      assignments: plainToInstance(AssignmentDto, assignments, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
 
   async existsWithId(id: number) {

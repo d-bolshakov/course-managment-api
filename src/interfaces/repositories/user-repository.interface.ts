@@ -1,4 +1,5 @@
 import { AuthDto } from "../../dto/user/auth.dto";
+import type { FilterUserDto } from "../../dto/user/filter-user.dto";
 import { UpdateUserDto } from "../../dto/user/update-user.dto";
 import { UserDto } from "../../dto/user/user.dto";
 import { User } from "../../entities/User.entity";
@@ -12,7 +13,9 @@ export interface IUserRepository {
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<UserDto | null>;
   getAuthDataByEmail(email: string): Promise<AuthDto | null>;
-  getMany(): Promise<UserDto[]>;
+  getMany(
+    filters?: FilterUserDto
+  ): Promise<{ users: UserDto[]; count: number }>;
   existsWithEmail(email: string): Promise<boolean>;
   existsWithId(id: number): Promise<boolean>;
 }

@@ -33,10 +33,13 @@ export class ReviewRepository implements IReviewRepository {
     });
   }
   async getMany() {
-    const reviews = await this.reviewRepo.find();
-    return plainToInstance(ReviewDto, reviews, {
-      exposeUnsetFields: false,
-    });
+    const [reviews, count] = await this.reviewRepo.findAndCount();
+    return {
+      reviews: plainToInstance(ReviewDto, reviews, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
   async existsWithId(id: number) {
     return this.reviewRepo

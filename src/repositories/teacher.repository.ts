@@ -100,10 +100,13 @@ export class TeacherRepository implements ITeacherRepository {
             subjects: { id: filters.subjectId as number },
           };
     }
-    const teachers = await this.teacherRepo.find(findOptions);
-    return plainToInstance(TeacherDto, teachers, {
-      exposeUnsetFields: false,
-    });
+    const [teachers, count] = await this.teacherRepo.findAndCount(findOptions);
+    return {
+      teachers: plainToInstance(TeacherDto, teachers, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
 
   async existsWithId(id: number) {

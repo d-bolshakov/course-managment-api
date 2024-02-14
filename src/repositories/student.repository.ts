@@ -37,7 +37,7 @@ export class StudentRepository implements IStudentRepository {
   }
 
   async getMany(filters?: { page: number }) {
-    const students = await this.studentRepo.find({
+    const [students, count] = await this.studentRepo.findAndCount({
       relations: { user: true },
       select: {
         id: true,
@@ -50,9 +50,12 @@ export class StudentRepository implements IStudentRepository {
       take: 10,
       skip: getPaginationOffset(filters?.page || 1),
     });
-    return plainToInstance(StudentDto, students, {
-      exposeUnsetFields: false,
-    });
+    return {
+      students: plainToInstance(StudentDto, students, {
+        exposeUnsetFields: false,
+      }),
+      count,
+    };
   }
 
   async deleteById(id: number) {

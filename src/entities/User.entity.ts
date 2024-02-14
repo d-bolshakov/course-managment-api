@@ -35,7 +35,7 @@ export class User {
   password: string;
 
   @Column("enum", { enum: Role, nullable: true })
-  role: Role;
+  role: Role | null;
 
   @OneToOne(() => Student, (student: Student) => student.user, {
     cascade: true,

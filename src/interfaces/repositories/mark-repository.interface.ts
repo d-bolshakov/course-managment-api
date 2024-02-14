@@ -5,6 +5,6 @@ export interface IMarkRepository {
   create(dto: CreateMarkDto): Promise<MarkDto>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<MarkDto | null>;
-  getMany(): Promise<MarkDto[]>;
+  getMany(): Promise<{ marks: MarkDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
 }

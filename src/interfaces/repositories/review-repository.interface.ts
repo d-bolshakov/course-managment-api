@@ -5,6 +5,6 @@ export interface IReviewRepository {
   create(dto: CreateReviewDto): Promise<ReviewDto>;
   deleteById(id: number): Promise<{ success: boolean }>;
   getById(id: number): Promise<ReviewDto | null>;
-  getMany(): Promise<ReviewDto[]>;
+  getMany(): Promise<{ reviews: ReviewDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
 }
