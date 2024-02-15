@@ -94,7 +94,7 @@ export class StudentController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.studentService.delete(Number(studentId)));
+      res.status(201).json(await this.studentService.delete(Number(studentId)));
     } catch (e) {
       next(e);
     }

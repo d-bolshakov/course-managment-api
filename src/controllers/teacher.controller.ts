@@ -114,7 +114,7 @@ export class TeacherController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.teacherService.delete(Number(teacherId)));
+      res.status(201).json(await this.teacherService.delete(Number(teacherId)));
     } catch (e) {
       next(e);
     }

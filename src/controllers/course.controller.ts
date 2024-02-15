@@ -12,6 +12,7 @@ export class CourseController {
   async create({ body, user }: Request, res: Response, next: NextFunction) {
     try {
       const response = await this.courseService.create(
+        // @ts-expect-error
         user?.teacherProfile.id!,
         body
       );
@@ -64,7 +65,7 @@ export class CourseController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.courseService.delete(Number(courseId)));
+      res.status(201).json(await this.courseService.delete(Number(courseId)));
     } catch (e) {
       next(e);
     }

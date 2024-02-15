@@ -15,6 +15,7 @@ export class EnrollmentController {
     try {
       const response = await this.enrollmentService.create(
         Number(courseId),
+        // @ts-expect-error
         user?.studentProfile.id!
       );
       res.status(201).json(response);
@@ -90,7 +91,9 @@ export class EnrollmentController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.enrollmentService.delete(Number(enrollmentId)));
+      res
+        .status(201)
+        .json(await this.enrollmentService.delete(Number(enrollmentId)));
     } catch (e) {
       next(e);
     }

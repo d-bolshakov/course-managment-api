@@ -47,7 +47,7 @@ export class UserController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.userService.delete(Number(userId)));
+      res.status(201).json(await this.userService.delete(Number(userId)));
     } catch (e) {
       next(e);
     }

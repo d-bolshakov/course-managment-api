@@ -11,7 +11,7 @@ export class AuthController {
     try {
       const response = await this.userService!.login(body);
       session.user = { id: response!.id };
-      res.status(201).json(response);
+      res.status(200).json(response);
     } catch (e) {
       next(e);
     }

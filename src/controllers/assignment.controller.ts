@@ -89,7 +89,9 @@ export class AssignmentController {
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.assignmentService.delete(Number(assignmentId)));
+      res
+        .status(201)
+        .json(await this.assignmentService.delete(Number(assignmentId)));
     } catch (e) {
       next(e);
     }
