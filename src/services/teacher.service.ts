@@ -32,7 +32,7 @@ export class TeacherService implements ITeacherService {
         "Somethhing went wrong during creating teacher"
       );
 
-    return this.teacherRepository.getById(teacher.id);
+    return this.getById(teacher.id);
   }
 
   async getMany(options?: { filters?: FilterTeacherDto }) {
@@ -62,7 +62,7 @@ export class TeacherService implements ITeacherService {
       throw createError.InternalServerError(
         `Something went wrong during updating teacher with id ${id}`
       );
-    return this.teacherRepository.getById(id);
+    return this.getById(id);
   }
 
   async delete(id: number) {

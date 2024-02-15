@@ -35,19 +35,8 @@ export class AssignmentService implements IAssignmentService {
         `Creating assignments for the course with id ${dto.courseId} is not available`
       );
     const saved = await this.assignmentRepository.create(dto);
-    let savedAttachments;
-    if (attachment)
-      savedAttachments = await this.attachmentService.create(
-        saved.id,
-        attachment
-      );
-    return plainToInstance(
-      AssignmentDto,
-      { ...saved, attachments: savedAttachments },
-      {
-        exposeUnsetFields: false,
-      }
-    );
+    if (attachment) await this.attachmentService.create(saved.id, attachment);
+    return this.getById(saved.id);
   }
 
   async getMany(options: { filters: FilterBaseAssignmentDto }) {
@@ -82,9 +71,7 @@ export class AssignmentService implements IAssignmentService {
     const assignment = await this.assignmentRepository.getById(id);
     if (!assignment)
       throw createError.NotFound(`Assignment with id ${id} does not exist`);
-    return plainToInstance(AssignmentDto, assignment, {
-      exposeUnsetFields: false,
-    });
+    return assignment;
   }
 
   async update(

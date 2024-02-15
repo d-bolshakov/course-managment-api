@@ -41,19 +41,9 @@ export class SubmissionService implements ISubmissionService {
       studentId,
       assignmentId: dto.assignmentId,
     });
-    let savedAttachments;
     if (attachment)
-      savedAttachments = await this.attachmentService.create(
-        submission.id,
-        attachment
-      );
-    return plainToInstance(
-      SubmissionDto,
-      { ...submission, attachments: savedAttachments },
-      {
-        exposeUnsetFields: false,
-      }
-    );
+      await this.attachmentService.create(submission.id, attachment);
+    return this.getById(submission.id);
   }
 
   async getMany(options?: { filters: FilterSubmissionDto }) {
@@ -88,9 +78,7 @@ export class SubmissionService implements ISubmissionService {
     const submission = await this.submissionRepository.getById(id);
     if (!submission)
       throw createError.NotFound(`Submission with id ${id} does not exist`);
-    return plainToInstance(SubmissionDto, submission, {
-      exposeUnsetFields: false,
-    });
+    return submission;
   }
 
   async review(id: number, dto: ReviewSubmissionDto) {

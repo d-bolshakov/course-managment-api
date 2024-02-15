@@ -22,7 +22,7 @@ export class StudentService implements IStudentService {
       );
     const student = await this.studentRepository.create({ userId });
     await this.userService.updateRole(userId, Role.STUDENT);
-    return this.studentRepository.getById(student.id);
+    return this.getById(student.id);
   }
 
   async getMany(options?: { filters: { page: number } }) {

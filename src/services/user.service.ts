@@ -40,14 +40,6 @@ export class UserService implements IUserService {
     return this.userRepository.getById(user.id);
   }
 
-  async getFullDataById(id: number) {
-    const user = await this.userRepository.getById(id);
-    if (!user) throw createError.NotFound(`User with id ${id} does not exist`);
-    return plainToInstance(UserDto, user, {
-      exposeUnsetFields: false,
-    });
-  }
-
   async getMany(options?: { filters?: FilterUserDto }) {
     return this.userRepository.getMany(options?.filters);
   }
@@ -55,9 +47,7 @@ export class UserService implements IUserService {
   async getById(id: number) {
     const user = await this.userRepository.getById(id);
     if (!user) throw createError.NotFound(`User with id ${id} does not exist`);
-    return plainToInstance(UserDto, user, {
-      exposeUnsetFields: false,
-    });
+    return user;
   }
 
   async update(id: number, dto: UpdateUserDto) {
@@ -71,7 +61,7 @@ export class UserService implements IUserService {
       throw createError.InternalServerError(
         `Something went wrong during updating user with id ${id}`
       );
-    return this.userRepository.getById(id);
+    return this.getById(id);
   }
 
   async updateRole(id: number, role: Role | null) {
