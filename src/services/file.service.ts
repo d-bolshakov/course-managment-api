@@ -7,6 +7,7 @@ import { FileMetadataDto } from "../dto/file-metadata/file-metadata.dto.js";
 import { inject, injectable } from "tsyringe";
 import type { IFileMetadataRepository } from "../interfaces/repositories/file-metadata-repository.interface.js";
 import type { IFileStorageRepository } from "../interfaces/repositories/file-storage-repository.interface.js";
+import { EventBus } from "../events/event-bus.js";
 
 @injectable()
 export class FileService implements IFileService {
@@ -15,9 +16,12 @@ export class FileService implements IFileService {
     private fileMetadataRepository: IFileMetadataRepository,
     @inject("file-storage-repository")
     private fileStorageRepository: IFileStorageRepository
-  ) {}
+  ) {
+    EventBus.on("file/delete", (id: string | string[]) => this.delete(id));
+  }
 
-  async create(file: UploadedFile) {
+  async create(file: UploadedFile | UploadedFile[]) {
+    if (Array.isArray(file)) return this.createMany(file);
     const originalFilename = file.name;
     const ext = "." + file.name.split(".")[1];
     const id = v4();
@@ -31,7 +35,7 @@ export class FileService implements IFileService {
     return savedRecord as FileMetadataDto;
   }
 
-  async createMany(files: UploadedFile[]) {
+  private async createMany(files: UploadedFile[]) {
     const savedToDisk: CreateFileMetadataDto[] = [];
     for (const file of files) {
       const originalFilename = file.name;
@@ -62,5 +66,58 @@ export class FileService implements IFileService {
       mimetype: fileRecord.mimetype,
       stream,
     };
+  }
+
+  async delete(id: string | string[]) {
+    if (Array.isArray(id)) return this.deleteMany(id);
+    const metadata = await this.fileMetadataRepository.getById(id);
+    if (!metadata)
+      throw createError.NotFound(
+        `Metadata of the file with id ${id} does not exist`
+      );
+    const filename = id + "." + metadata.filename.split(".")[1];
+    const fileExists = await this.fileStorageRepository.existsWithFilename(
+      filename
+    );
+    if (!fileExists)
+      throw createError.NotFound(`File with id ${id} does not exist`);
+    const { success: isFileDeleted } =
+      await this.fileStorageRepository.deleteByFilename(filename);
+    if (!isFileDeleted)
+      throw createError.InternalServerError(
+        `Something went wrong during deleting file ${filename}`
+      );
+    const { deleted: deletedMetadataId } =
+      await this.fileMetadataRepository.deleteById(id);
+    if (!deletedMetadataId.length)
+      throw createError.InternalServerError(
+        `Something went wrong during deleting metadata of file with id ${id}`
+      );
+    return { deleted: deletedMetadataId };
+  }
+
+  private async deleteMany(
+    ids: string[]
+  ): Promise<{ deleted: { id: string }[] }> {
+    const metadata = await this.fileMetadataRepository.getManyById(ids);
+    const deletedFromStorage = [];
+    for (const record of metadata) {
+      const filename = record.id + "." + record.filename.split(".")[1];
+      const exists = await this.fileStorageRepository.existsWithFilename(
+        filename
+      );
+      if (!exists)
+        throw createError.NotFound(`File with id ${record.id} does not exist`);
+      const { success: isDeleted } =
+        await this.fileStorageRepository.deleteByFilename(filename);
+      if (!isDeleted)
+        throw createError.InternalServerError(
+          `Something went wrong during deleting file ${filename}`
+        );
+      deletedFromStorage.push(record.id);
+    }
+    const { deleted: deletedMetadataIds } =
+      await this.fileMetadataRepository.deleteById(deletedFromStorage);
+    return { deleted: deletedMetadataIds };
   }
 }

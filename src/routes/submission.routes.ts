@@ -13,6 +13,7 @@ import { CreateSubmissionDto } from "../dto/submission/create-submission.dto.js"
 import upload from "express-fileupload";
 import { container } from "tsyringe";
 import { FilterBaseSubmissionDto } from "../dto/submission/filter-base-submission.dto.js";
+import { UpdateSubmissionRequestBodyDto } from "../dto/submission/update-submission-request-body.dto.js";
 
 export const SubmissionRouter = Router({ mergeParams: true });
 
@@ -75,4 +76,17 @@ SubmissionRouter.post(
   }),
   DtoValidationMiddleware(ReviewSubmissionDto, "body"),
   controller.review.bind(controller)
+);
+SubmissionRouter.patch(
+  "/:submissionId",
+  IdValidationMiddleware("submissionId"),
+  AuthMiddleware(),
+  RoleMiddleware({ target: [Role.STUDENT] }),
+  AccessMiddleware(new SubmissionAccessStrategy(), {
+    property: "submissionId",
+    propertyLocation: "params",
+  }),
+  DtoValidationMiddleware(UpdateSubmissionRequestBodyDto, "body"),
+  upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
+  controller.update.bind(controller)
 );

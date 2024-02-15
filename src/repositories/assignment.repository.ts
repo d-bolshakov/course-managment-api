@@ -11,10 +11,7 @@ import {
 import { LessThanOrEqual, MoreThan, Not } from "typeorm";
 import type { FindOptionsWhere } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-import {
-  FilterStudentAssignmentCompletion,
-  FilterStudentAssignmentDto,
-} from "../dto/assignment/filter-student-assignment.dto.js";
+import { FilterStudentAssignmentCompletion } from "../dto/assignment/filter-student-assignment.dto.js";
 import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
 import { injectable } from "tsyringe";
 import { EnrollmentStatus } from "../entities/Enrollment.entity.js";
@@ -30,6 +27,7 @@ export class AssignmentRepository implements IAssignmentRepository {
       exposeUnsetFields: false,
     });
   }
+
   async updateById(id: number, updateDto: UpdateAssignmentDto) {
     try {
       const { affected } = await this.assignmentRepo.update({ id }, updateDto);
@@ -40,6 +38,7 @@ export class AssignmentRepository implements IAssignmentRepository {
       return { success: false };
     }
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.assignmentRepo.delete({ id });
@@ -50,6 +49,7 @@ export class AssignmentRepository implements IAssignmentRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const assignment = await this.assignmentRepo.findOne({
       where: { id },
@@ -139,6 +139,7 @@ export class AssignmentRepository implements IAssignmentRepository {
       .where("id = :id", { id })
       .getExists();
   }
+
   async isActive(id: number) {
     return this.assignmentRepo
       .createQueryBuilder()

@@ -7,14 +7,14 @@ export class UpdateAssignmentDto {
   @IsString({
     message: "title should be a string",
   })
-  readonly title: string;
+  readonly title?: string;
 
   @Expose()
   @IsOptional()
   @IsString({
     message: "text should be a string",
   })
-  readonly text: string;
+  readonly text?: string;
 
   @Expose()
   @IsOptional()
@@ -25,5 +25,5 @@ export class UpdateAssignmentDto {
   @MinDate(new Date(), {
     message: "deadline should be later than now",
   })
-  readonly deadline: Date;
+  readonly deadline?: Date;
 }

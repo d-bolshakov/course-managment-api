@@ -5,6 +5,7 @@ import { FilterSubmissionDto } from "../../dto/submission/filter-submission.dto.
 import { ReviewSubmissionDto } from "../../dto/submission/review-submission.dto.js";
 import { ReviewDto } from "../../dto/review/review.dto.js";
 import type { FilterBaseSubmissionDto } from "../../dto/submission/filter-base-submission.dto.js";
+import type { UpdateSubmissionRequestBodyDto } from "../../dto/submission/update-submission-request-body.dto.js";
 
 export interface ISubmissionService {
   create(
@@ -30,6 +31,12 @@ export interface ISubmissionService {
   getById(id: number): Promise<SubmissionDto>;
 
   review(id: number, dto: ReviewSubmissionDto): Promise<ReviewDto>;
+
+  update(
+    id: number,
+    dto: UpdateSubmissionRequestBodyDto,
+    attachment?: UploadedFile | UploadedFile[]
+  ): Promise<SubmissionDto | null>;
 
   delete(id: number): Promise<{ success: boolean }>;
 }

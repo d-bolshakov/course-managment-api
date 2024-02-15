@@ -9,16 +9,16 @@ export class SubmissionController {
     private submissionService: ISubmissionService
   ) {}
   async create(
-    // @ts-ignore
-    { body, user, files: { attachment } }: Request,
+    { body, user, files }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await this.submissionService.create(
-        user?.studentProfile.id!,
+        // @ts-expect-error
+        user?.studentProfile.id,
         body,
-        attachment
+        files?.attachment
       );
       res.status(201).json(response);
     } catch (e) {
@@ -84,13 +84,32 @@ export class SubmissionController {
     }
   }
 
+  async update(
+    { body, params: { submissionId }, files }: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const response = await this.submissionService.update(
+        Number(submissionId),
+        body,
+        files?.attachment
+      );
+      res.status(201).json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async delete(
     { params: { submissionId } }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      res.status(201).json(this.submissionService.delete(Number(submissionId)));
+      res
+        .status(201)
+        .json(await this.submissionService.delete(Number(submissionId)));
     } catch (e) {
       next(e);
     }

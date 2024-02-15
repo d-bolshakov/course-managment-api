@@ -11,6 +11,8 @@ import type { IAssignmentRepository } from "../interfaces/repositories/assignmen
 import type { ISubmissionRepository } from "../interfaces/repositories/submission-repository.interface.js";
 import type { IReviewService } from "../interfaces/services/review-service.interface.js";
 import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
+import type { UpdateSubmissionRequestBodyDto } from "../dto/submission/update-submission-request-body.dto.js";
+import { UpdateSubmissionDto } from "../dto/submission/update-submission.dto.js";
 
 @injectable()
 export class SubmissionService implements ISubmissionService {
@@ -97,7 +99,7 @@ export class SubmissionService implements ISubmissionService {
       throw createError.NotFound(`Submission with id ${id} does not exist`);
     if (submission.reviewId)
       throw createError.BadRequest(
-        `Submission with id ${id} has review already`
+        `Submission with id ${id} is already reviewed`
       );
     const review = await this.reviewService.create(dto);
     const { success: isUpdated } = await this.submissionRepository.updateById(
@@ -109,6 +111,38 @@ export class SubmissionService implements ISubmissionService {
         `Something went wrong during updating submission with id ${id}`
       );
     return review;
+  }
+
+  async update(
+    id: number,
+    dto: UpdateSubmissionRequestBodyDto,
+    attachment?: UploadedFile | UploadedFile[]
+  ) {
+    const submission = await this.submissionRepository.getById(id);
+    if (!submission)
+      throw createError.NotFound(`Submission with id ${id} does not exist`);
+    if (submission.reviewId)
+      throw createError.BadRequest(`Could not update reviewed submission`);
+    this.attachmentService.update(id, {
+      deletedIds: dto.deletedAttachmentIds,
+      new: attachment,
+    });
+    const updateDto = plainToInstance(UpdateSubmissionDto, dto, {
+      excludeExtraneousValues: true,
+      exposeUnsetFields: false,
+    });
+    // check if dto has any defined properties to update
+    if (Object.values(updateDto).some((v) => v)) {
+      const { success: isUpdated } = await this.submissionRepository.updateById(
+        id,
+        updateDto
+      );
+      if (!isUpdated)
+        throw createError.InternalServerError(
+          `Something went wrong during updating submission with id ${id}`
+        );
+    }
+    return this.submissionRepository.getById(id);
   }
 
   async delete(id: number) {

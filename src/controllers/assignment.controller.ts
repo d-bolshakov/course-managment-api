@@ -8,17 +8,11 @@ export class AssignmentController {
     @inject("assignment-service") private assignmentService: IAssignmentService
   ) {}
 
-  async create(
-    // @ts-ignore
-
-    { body, files: { attachment } }: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async create({ body, files }: Request, res: Response, next: NextFunction) {
     try {
       const response = await this.assignmentService.create(
         body,
-        attachment as any
+        files?.attachment
       );
       res.status(201).json(response);
     } catch (e) {
@@ -73,14 +67,15 @@ export class AssignmentController {
   }
 
   async update(
-    { body, params: { assignmentId } }: Request,
+    { body, params: { assignmentId }, files }: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
       const response = await this.assignmentService.update(
         Number(assignmentId),
-        body
+        body,
+        files?.attachment
       );
       res.status(201).json(response);
     } catch (e) {

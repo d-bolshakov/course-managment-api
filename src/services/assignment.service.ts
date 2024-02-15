@@ -11,6 +11,8 @@ import type { IAssignmentRepository } from "../interfaces/repositories/assignmen
 import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
 import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
 import type { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
+import type { UpdateAssignmentRequestBodyDto } from "../dto/assignment/update-assignment-request-body.dto.js";
+import type { ISubmissionRepository } from "../interfaces/repositories/submission-repository.interface.js";
 
 @injectable()
 export class AssignmentService implements IAssignmentService {
@@ -18,6 +20,8 @@ export class AssignmentService implements IAssignmentService {
     @inject("assignment-repository")
     private assignmentRepository: IAssignmentRepository,
     @inject("course-repository") private courseRepository: ICourseRepository,
+    @inject("submission-repository")
+    private submissionRepository: ISubmissionRepository,
     @inject("assignment-attachment-service")
     private attachmentService: IAttachmentService
   ) {}
@@ -26,7 +30,6 @@ export class AssignmentService implements IAssignmentService {
     dto: CreateAssignmentDto,
     attachment?: UploadedFile | UploadedFile[]
   ) {
-    console.log(attachment);
     if (!(await this.courseRepository.isActive(dto.courseId)))
       throw createError.BadRequest(
         `Creating assignments for the course with id ${dto.courseId} is not available`
@@ -84,20 +87,39 @@ export class AssignmentService implements IAssignmentService {
     });
   }
 
-  async update(id: number, dto: UpdateAssignmentDto) {
+  async update(
+    id: number,
+    dto: UpdateAssignmentRequestBodyDto,
+    attachment?: UploadedFile | UploadedFile[]
+  ) {
     const assignment = await this.assignmentRepository.getById(id);
     if (!assignment)
       throw createError.NotFound(`Assignment with id ${id} does not exist`);
     if (assignment.deadline < new Date())
       throw createError.BadRequest(`Could not update inactive assignment`);
-    const { success: isUpdated } = await this.assignmentRepository.updateById(
-      id,
-      dto
-    );
-    if (!isUpdated)
-      throw createError.InternalServerError(
-        `Something went wrong during deleteding assignment with id ${id}`
+    if (await this.submissionRepository.countSubmissionsForAssignment(id))
+      throw createError.BadRequest(
+        "Could not update an assignment that already has any submissions"
       );
+    this.attachmentService.update(id, {
+      deletedIds: dto.deletedAttachmentIds,
+      new: attachment,
+    });
+    const updateDto = plainToInstance(UpdateAssignmentDto, dto, {
+      excludeExtraneousValues: true,
+      exposeUnsetFields: false,
+    });
+    // check if dto has any defined properties to update
+    if (Object.values(updateDto).some((v) => v)) {
+      const { success: isUpdated } = await this.assignmentRepository.updateById(
+        id,
+        updateDto
+      );
+      if (!isUpdated)
+        throw createError.InternalServerError(
+          `Something went wrong during updating assignment with id ${id}`
+        );
+    }
     return this.assignmentRepository.getById(id);
   }
 

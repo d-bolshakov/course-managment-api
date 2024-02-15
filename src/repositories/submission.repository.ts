@@ -24,6 +24,7 @@ export class SubmissionRepository implements ISubmissionRepository {
       exposeUnsetFields: false,
     });
   }
+
   async updateById(id: number, updateDto: UpdateSubmissionDto) {
     try {
       const { affected } = await this.submissionRepo.update({ id }, updateDto);
@@ -34,6 +35,7 @@ export class SubmissionRepository implements ISubmissionRepository {
       return { success: false };
     }
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.submissionRepo.delete({ id });
@@ -44,6 +46,7 @@ export class SubmissionRepository implements ISubmissionRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const submission = await this.submissionRepo.findOne({
       where: { id },
@@ -148,5 +151,9 @@ export class SubmissionRepository implements ISubmissionRepository {
       .createQueryBuilder()
       .where("id = :id", { id })
       .getExists();
+  }
+
+  countSubmissionsForAssignment(assignmentId: number): Promise<number> {
+    return this.submissionRepo.count({ where: { assignmentId } });
   }
 }

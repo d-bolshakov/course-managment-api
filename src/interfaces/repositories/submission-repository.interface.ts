@@ -15,4 +15,5 @@ export interface ISubmissionRepository {
     filters?: FilterSubmissionDto
   ): Promise<{ submissions: SubmissionDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
+  countSubmissionsForAssignment(assignmentId: number): Promise<number>;
 }

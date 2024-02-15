@@ -5,6 +5,7 @@ import { AttachmentDto } from "../dto/attachment/attachment.dto.js";
 import { CreateSubmissionAttachmentDto } from "../dto/attachment/create-submission-attachment.dto.js";
 import type { ISubmissionAttachmentRepository } from "../interfaces/repositories/submission-attachment-repository.interface.js";
 import { injectable } from "tsyringe";
+import { In } from "typeorm";
 
 @injectable()
 export class SubmissionAttachmentRepository
@@ -22,21 +23,30 @@ export class SubmissionAttachmentRepository
       exposeUnsetFields: false,
     });
   }
-  async deleteById(id: number) {
-    try {
-      const { affected } = await this.submissionAttachmentRepo.delete({ id });
-      if (!affected) return { success: false };
-      return { success: true };
-    } catch (err) {
-      console.error(err);
-      return { success: false };
-    }
+  async deleteById(id: number | number[]) {
+    const qb = this.submissionAttachmentRepo
+      .createQueryBuilder()
+      .delete()
+      .returning("*");
+    if (Array.isArray(id)) qb.whereInIds(id);
+    else qb.where("id = :id", { id });
+    const { raw } = await qb.execute();
+    return { deleted: plainToInstance(AttachmentDto, raw as any[]) };
   }
   async getById(id: number) {
     const attachment = await this.submissionAttachmentRepo.findOne({
       where: { id },
     });
     return plainToInstance(AttachmentDto, attachment, {
+      exposeUnsetFields: false,
+    });
+  }
+
+  async getManyById(id: number[]) {
+    const attachments = await this.submissionAttachmentRepo.find({
+      where: { id: In(id) },
+    });
+    return plainToInstance(AttachmentDto, attachments, {
       exposeUnsetFields: false,
     });
   }

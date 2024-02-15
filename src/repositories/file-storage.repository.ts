@@ -2,7 +2,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import type { UploadedFile } from "express-fileupload";
 import { mkdir, open, rm, writeFile, access } from "fs/promises";
-import createError from "http-errors";
 import type { IFileStorageRepository } from "../interfaces/repositories/file-storage-repository.interface";
 import { injectable } from "tsyringe";
 
@@ -30,20 +29,11 @@ export class FileStorageRepository implements IFileStorageRepository {
   }
 
   async getByFilename(filename: string) {
-    try {
-      const filePath = path.join(this.basePath, filename);
-      await access(filePath);
-      const fd = await open(filePath);
-      const stream = fd.createReadStream();
-      return { stream };
-    } catch (err) {
-      // @ts-ignore
-      if (err.code === "ENOENT")
-        throw createError.NotFound(`File with name ${filename} does not exist`);
-      throw createError.InternalServerError(
-        `Error occured during opening '${filename}': ${err}`
-      );
-    }
+    const filePath = path.join(this.basePath, filename);
+    await access(filePath);
+    const fd = await open(filePath);
+    const stream = fd.createReadStream();
+    return { stream };
   }
 
   async deleteByFilename(filename: string) {
@@ -53,12 +43,18 @@ export class FileStorageRepository implements IFileStorageRepository {
       await rm(filePath);
       return { success: true };
     } catch (err) {
-      // @ts-ignore
-      if (err.code === "ENOENT")
-        throw createError.NotFound(`File with name ${filename} does not exist`);
-      throw createError.InternalServerError(
-        `Error occured during deleting '${filename}': ${err}`
-      );
+      console.error(err);
+      return { success: false };
+    }
+  }
+
+  async existsWithFilename(filename: string) {
+    try {
+      const filePath = path.join(this.basePath, filename);
+      await access(filePath);
+      return true;
+    } catch (err) {
+      return false;
     }
   }
 }
