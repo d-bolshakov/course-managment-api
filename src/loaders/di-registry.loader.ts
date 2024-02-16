@@ -65,198 +65,209 @@ import { SubmissionAttachmentService } from "../services/submission-attachment.s
 import { UserController } from "../controllers/user.controller.js";
 import { FileController } from "../controllers/file.controller.js";
 
-container.register<IUserRepository>(
-  "user-repository",
-  { useClass: UserRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IStudentRepository>(
-  "student-repository",
-  { useClass: StudentRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ITeacherRepository>(
-  "teacher-repository",
-  { useClass: TeacherRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ITeacherSubjectRepository>(
-  "teacher-subject-repository",
-  { useClass: TeacherSubjectRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
+const registerRepositories = () => {
+  container.register<IUserRepository>(
+    "user-repository",
+    { useClass: UserRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IStudentRepository>(
+    "student-repository",
+    { useClass: StudentRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ITeacherRepository>(
+    "teacher-repository",
+    { useClass: TeacherRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ITeacherSubjectRepository>(
+    "teacher-subject-repository",
+    { useClass: TeacherSubjectRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ISubjectRepository>(
+    "subject-repository",
+    { useClass: SubjectRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ICourseRepository>(
+    "course-repository",
+    { useClass: CourseRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IEnrollmentRepository>(
+    "enrollment-repository",
+    { useClass: EnrollmentRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IAssignmentRepository>(
+    "assignment-repository",
+    { useClass: AssignmentRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IAssignmentAttachmentRepository>(
+    "assignment-attachment-repository",
+    { useClass: AssignmentAttachmentRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ISubmissionRepository>(
+    "submission-repository",
+    { useClass: SubmissionRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ISubmissionAttachmentRepository>(
+    "submission-attachment-repository",
+    { useClass: SubmissionAttachmentRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IReviewRepository>(
+    "review-repository",
+    { useClass: ReviewRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IMarkRepository>(
+    "mark-repository",
+    { useClass: MarkRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IFileMetadataRepository>(
+    "file-metadata-repository",
+    { useClass: FileMetadataRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IFileStorageRepository>(
+    "file-storage-repository",
+    { useClass: FileStorageRepository },
+    { lifecycle: Lifecycle.Singleton }
+  );
+};
 
-container.register<IUserService>(
-  "user-service",
-  { useClass: UserService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<AuthController>(
-  "auth-controller",
-  { useClass: AuthController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ISubjectRepository>(
-  "subject-repository",
-  { useClass: SubjectRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ICourseRepository>(
-  "course-repository",
-  { useClass: CourseRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IEnrollmentRepository>(
-  "enrollment-repository",
-  { useClass: EnrollmentRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IAssignmentRepository>(
-  "assignment-repository",
-  { useClass: AssignmentRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IAssignmentAttachmentRepository>(
-  "assignment-attachment-repository",
-  { useClass: AssignmentAttachmentRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ISubmissionRepository>(
-  "submission-repository",
-  { useClass: SubmissionRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ISubmissionAttachmentRepository>(
-  "submission-attachment-repository",
-  { useClass: SubmissionAttachmentRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IReviewRepository>(
-  "review-repository",
-  { useClass: ReviewRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IMarkRepository>(
-  "mark-repository",
-  { useClass: MarkRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IFileMetadataRepository>(
-  "file-metadata-repository",
-  { useClass: FileMetadataRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IFileStorageRepository>(
-  "file-storage-repository",
-  { useClass: FileStorageRepository },
-  { lifecycle: Lifecycle.Singleton }
-);
+const registerServices = () => {
+  container.register<IUserService>(
+    "user-service",
+    { useClass: UserService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IStudentService>(
+    "student-service",
+    { useClass: StudentService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ITeacherService>(
+    "teacher-service",
+    { useClass: TeacherService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ISubjectService>(
+    "subject-service",
+    { useClass: SubjectService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ICourseService>(
+    "course-service",
+    { useClass: CourseService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IEnrollmentService>(
+    "enrollment-service",
+    { useClass: EnrollmentService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IAssignmentService>(
+    "assignment-service",
+    { useClass: AssignmentService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IAttachmentService>(
+    "assignment-attachment-service",
+    { useClass: AssignmentAttachmentService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<ISubmissionService>(
+    "submission-service",
+    { useClass: SubmissionService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IAttachmentService>(
+    "submission-attachment-service",
+    { useClass: SubmissionAttachmentService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IReviewService>(
+    "review-service",
+    { useClass: ReviewService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IMarkService>(
+    "mark-service",
+    { useClass: MarkService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<IFileService>(
+    "file-service",
+    { useClass: FileService },
+    { lifecycle: Lifecycle.Singleton }
+  );
+};
 
-container.register<IStudentService>(
-  "student-service",
-  { useClass: StudentService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ITeacherService>(
-  "teacher-service",
-  { useClass: TeacherService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ISubjectService>(
-  "subject-service",
-  { useClass: SubjectService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ICourseService>(
-  "course-service",
-  { useClass: CourseService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IEnrollmentService>(
-  "enrollment-service",
-  { useClass: EnrollmentService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IAssignmentService>(
-  "assignment-service",
-  { useClass: AssignmentService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IAttachmentService>(
-  "assignment-attachment-service",
-  { useClass: AssignmentAttachmentService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<ISubmissionService>(
-  "submission-service",
-  { useClass: SubmissionService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IAttachmentService>(
-  "submission-attachment-service",
-  { useClass: SubmissionAttachmentService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IReviewService>(
-  "review-service",
-  { useClass: ReviewService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IMarkService>(
-  "mark-service",
-  { useClass: MarkService },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<IFileService>(
-  "file-service",
-  { useClass: FileService },
-  { lifecycle: Lifecycle.Singleton }
-);
+const registerControllers = () => {
+  container.register<AuthController>(
+    "auth-controller",
+    { useClass: AuthController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<StudentController>(
+    "student-controller",
+    { useClass: StudentController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<TeacherController>(
+    "teacher-controller",
+    { useClass: TeacherController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<SubjectController>(
+    "subject-controller",
+    { useClass: SubjectController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<CourseController>(
+    "course-controller",
+    { useClass: CourseController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<EnrollmentController>(
+    "enrollment-controller",
+    { useClass: EnrollmentController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<AssignmentController>(
+    "assignment-controller",
+    { useClass: AssignmentController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<SubmissionController>(
+    "submission-controller",
+    { useClass: SubmissionController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<UserController>(
+    "user-controller",
+    { useClass: UserController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+  container.register<FileController>(
+    "file-controller",
+    { useClass: FileController },
+    { lifecycle: Lifecycle.Singleton }
+  );
+};
 
-container.register<StudentController>(
-  "student-controller",
-  { useClass: StudentController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<TeacherController>(
-  "teacher-controller",
-  { useClass: TeacherController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<SubjectController>(
-  "subject-controller",
-  { useClass: SubjectController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<CourseController>(
-  "course-controller",
-  { useClass: CourseController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<EnrollmentController>(
-  "enrollment-controller",
-  { useClass: EnrollmentController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<AssignmentController>(
-  "assignment-controller",
-  { useClass: AssignmentController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<SubmissionController>(
-  "submission-controller",
-  { useClass: SubmissionController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<UserController>(
-  "user-controller",
-  { useClass: UserController },
-  { lifecycle: Lifecycle.Singleton }
-);
-container.register<FileController>(
-  "file-controller",
-  { useClass: FileController },
-  { lifecycle: Lifecycle.Singleton }
-);
+const setupContainer = () => {
+  registerRepositories();
+  registerServices();
+  registerControllers();
+};
 
-// console.log(container._registry._registryMap);
+setupContainer();

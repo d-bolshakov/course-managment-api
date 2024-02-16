@@ -48,7 +48,7 @@ services:
     image: course-management-backend:dev
     volumes:
       - ./src:/app/src
-      - ./src/static:/app/dist/src/static
+      - ./volumes/files/static/:/app/dist/src/static
     expose:
       - '3000'
     ports:
