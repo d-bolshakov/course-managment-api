@@ -5,7 +5,6 @@ import { Role } from "../entities/User.entity.js";
 import { AccessMiddleware } from "../middleware/access.middleware.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { container } from "tsyringe";
 import type { EnrollmentController } from "../controllers/enrollment.controller.js";
@@ -18,7 +17,6 @@ const controller = container.resolve<EnrollmentController>(
 
 EnrollmentRouter.get(
   "/:enrollmentId",
-  IdValidationMiddleware("enrollmentId"),
   AuthMiddleware(),
   AccessMiddleware(new EnrollmentAccessStrategy(), {
     property: "enrollmentId",
@@ -28,7 +26,6 @@ EnrollmentRouter.get(
 );
 EnrollmentRouter.patch(
   "/:enrollmentId",
-  IdValidationMiddleware("enrollmentId"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),
   AccessMiddleware(new EnrollmentAccessStrategy(), {
@@ -40,7 +37,6 @@ EnrollmentRouter.patch(
 );
 EnrollmentRouter.delete(
   "/:enrollmentId",
-  IdValidationMiddleware("enrollmentId"),
   AuthMiddleware(),
   AccessMiddleware(new EnrollmentAccessStrategy(), {
     property: "enrollmentId",

@@ -16,4 +16,6 @@ export interface ISubmissionRepository {
   ): Promise<{ submissions: SubmissionDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
   countSubmissionsForAssignment(assignmentId: number): Promise<number>;
+  studentHasAccess(submissionId: number, studentId: number): Promise<boolean>;
+  teacherHasAccess(submissionId: number, teacherId: number): Promise<boolean>;
 }

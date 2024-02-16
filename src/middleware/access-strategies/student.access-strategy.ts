@@ -1,7 +1,5 @@
-import { AccessStrategy } from "./access-strategy.js";
-import { AppDataSource } from "../../db/data-source.js";
+import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
-import { Student } from "../../entities/Student.entity.js";
 import { Role } from "../../entities/User.entity.js";
 
 export class StudentAccessStrategy implements AccessStrategy {
@@ -9,18 +7,15 @@ export class StudentAccessStrategy implements AccessStrategy {
     user: UserDto,
     resourse: { studentId: number }
   ): Promise<boolean> {
-    if (user.role === Role.ADMIN) return true;
-    const studentRepository = AppDataSource.getRepository(Student);
-    if (user.role === Role.STUDENT) {
-      return studentRepository.exist({
-        where: {
-          id: resourse.studentId,
-          user: {
-            id: user.id,
-          },
-        },
-      });
+    switch (user.role) {
+      case Role.ADMIN:
+        return true;
+
+      case Role.STUDENT:
+        return resourse.studentId === user.studentProfile.id;
+
+      default:
+        return false;
     }
-    return false;
   }
 }

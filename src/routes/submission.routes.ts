@@ -7,7 +7,6 @@ import { ReviewSubmissionDto } from "../dto/submission/review-submission.dto.js"
 import { Role } from "../entities/User.entity.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { CreateSubmissionDto } from "../dto/submission/create-submission.dto.js";
 import upload from "express-fileupload";
@@ -23,7 +22,7 @@ const controller = container.resolve<SubmissionController>(
 
 SubmissionRouter.post(
   "/",
-  AuthMiddleware({ loadProfile: true }),
+  AuthMiddleware(),
   RoleMiddleware({ target: [Role.STUDENT] }),
   upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
   DtoValidationMiddleware(CreateSubmissionDto, "body"),
@@ -46,7 +45,6 @@ SubmissionRouter.get(
 );
 SubmissionRouter.get(
   "/:submissionId",
-  IdValidationMiddleware("submissionId"),
   AuthMiddleware(),
   AccessMiddleware(new SubmissionAccessStrategy(), {
     property: "submissionId",
@@ -56,7 +54,6 @@ SubmissionRouter.get(
 );
 SubmissionRouter.delete(
   "/:submissionId",
-  IdValidationMiddleware("submissionId"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.STUDENT] }),
   AccessMiddleware(new SubmissionAccessStrategy(), {
@@ -67,7 +64,6 @@ SubmissionRouter.delete(
 );
 SubmissionRouter.post(
   "/:submissionId/review",
-  IdValidationMiddleware("submissionId"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),
   AccessMiddleware(new SubmissionAccessStrategy(), {
@@ -79,7 +75,6 @@ SubmissionRouter.post(
 );
 SubmissionRouter.patch(
   "/:submissionId",
-  IdValidationMiddleware("submissionId"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.STUDENT] }),
   AccessMiddleware(new SubmissionAccessStrategy(), {

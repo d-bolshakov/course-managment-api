@@ -69,14 +69,14 @@ export class StudentRepository implements IStudentRepository {
     }
   }
 
-  async existsWithUserId(userId: number) {
+  existsWithUserId(userId: number) {
     return this.studentRepo
       .createQueryBuilder("s")
       .where("s.userId = :userId", { userId })
       .getExists();
   }
 
-  async existsWithId(id: number) {
+  existsWithId(id: number) {
     return this.studentRepo
       .createQueryBuilder()
       .where("id = :id", { id })

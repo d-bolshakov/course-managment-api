@@ -16,6 +16,7 @@ export class MarkRepository implements IMarkRepository {
       exposeUnsetFields: false,
     });
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.markRepo.delete({ id });
@@ -26,12 +27,14 @@ export class MarkRepository implements IMarkRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const mark = await this.markRepo.findOne({ where: { id } });
     return plainToInstance(MarkDto, mark, {
       exposeUnsetFields: false,
     });
   }
+
   async getMany() {
     const [marks, count] = await this.markRepo.findAndCount();
     return {
@@ -41,7 +44,8 @@ export class MarkRepository implements IMarkRepository {
       count,
     };
   }
-  async existsWithId(id: number) {
+
+  existsWithId(id: number) {
     return this.markRepo
       .createQueryBuilder()
       .where("id = :id", { id })

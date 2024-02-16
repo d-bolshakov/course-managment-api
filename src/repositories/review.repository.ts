@@ -16,6 +16,7 @@ export class ReviewRepository implements IReviewRepository {
       exposeUnsetFields: false,
     });
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.reviewRepo.delete({ id });
@@ -26,12 +27,14 @@ export class ReviewRepository implements IReviewRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const review = await this.reviewRepo.findOne({ where: { id } });
     return plainToInstance(ReviewDto, review, {
       exposeUnsetFields: false,
     });
   }
+
   async getMany() {
     const [reviews, count] = await this.reviewRepo.findAndCount();
     return {
@@ -41,7 +44,8 @@ export class ReviewRepository implements IReviewRepository {
       count,
     };
   }
-  async existsWithId(id: number) {
+
+  existsWithId(id: number) {
     return this.reviewRepo
       .createQueryBuilder()
       .where("id = :id", { id })

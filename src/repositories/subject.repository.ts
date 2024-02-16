@@ -17,6 +17,7 @@ export class SubjectRepository implements ISubjectRepository {
     const subject = await this.subjectRepo.save(item);
     return plainToInstance(SubjectDto, subject, { exposeUnsetFields: false });
   }
+
   async updateById(id: number, updateDto: UpdateSubjectDto) {
     try {
       const { affected } = await this.subjectRepo.update({ id }, updateDto);
@@ -27,6 +28,7 @@ export class SubjectRepository implements ISubjectRepository {
       return { success: false };
     }
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.subjectRepo.delete({ id });
@@ -37,6 +39,7 @@ export class SubjectRepository implements ISubjectRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const subject = await this.subjectRepo.findOne({ where: { id } });
     return plainToInstance(SubjectDto, subject, { exposeUnsetFields: false });
@@ -73,7 +76,7 @@ export class SubjectRepository implements ISubjectRepository {
     });
   }
 
-  async existsWithId(id: number | number[]) {
+  existsWithId(id: number | number[]) {
     const qb = this.subjectRepo.createQueryBuilder();
     if (Array.isArray(id)) qb.whereInIds(id);
     else qb.where("id = :id", { id });

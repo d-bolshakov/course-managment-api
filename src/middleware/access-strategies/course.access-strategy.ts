@@ -1,9 +1,8 @@
-import { AccessStrategy } from "./access-strategy.js";
-import { AppDataSource } from "../../db/data-source.js";
+import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
-import { Course } from "../../entities/Course.entity.js";
-import { Enrollment } from "../../entities/Enrollment.entity.js";
 import { Role } from "../../entities/User.entity.js";
+import { container } from "tsyringe";
+import type { ICourseRepository } from "../../interfaces/repositories/course-repository.interface.js";
 
 export class CourseAccessStrategy implements AccessStrategy {
   async hasAccess(
@@ -11,29 +10,23 @@ export class CourseAccessStrategy implements AccessStrategy {
     resourse: { courseId: number }
   ): Promise<boolean> {
     if (user.role === Role.ADMIN) return true;
+    const courseRepository =
+      container.resolve<ICourseRepository>("course-repository");
     if (user.role === Role.TEACHER) {
-      const courseRepository = AppDataSource.getRepository(Course);
-      return courseRepository.exist({
-        where: {
-          id: resourse.courseId,
-          teacher: {
-            user: { id: user.id },
-          },
-        },
-      });
+      if (!user.teacherProfile.id) return false;
+      const hasAccess = await courseRepository.teacherHasAccess(
+        resourse.courseId,
+        user.teacherProfile.id
+      );
+      return hasAccess;
     }
     if (user.role === Role.STUDENT) {
-      const enrollmentRepository = AppDataSource.getRepository(Enrollment);
-      return enrollmentRepository.exist({
-        where: {
-          courseId: resourse.courseId,
-          student: {
-            user: {
-              id: user.id,
-            },
-          },
-        },
-      });
+      if (!user.studentProfile.id) return false;
+      const hasAccess = await courseRepository.studentHasAccess(
+        resourse.courseId,
+        user.studentProfile.id
+      );
+      return hasAccess;
     }
     return false;
   }

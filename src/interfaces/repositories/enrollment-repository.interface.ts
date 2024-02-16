@@ -15,4 +15,6 @@ export interface IEnrollmentRepository {
     filters?: FilterEnrollmentDto
   ): Promise<{ enrollments: EnrollmentDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
+  studentHasAccess(enrollmentId: number, studentId: number): Promise<boolean>;
+  teacherHasAccess(enrollmentId: number, teacherId: number): Promise<boolean>;
 }

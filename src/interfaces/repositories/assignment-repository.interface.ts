@@ -16,4 +16,6 @@ export interface IAssignmentRepository {
   ): Promise<{ assignments: AssignmentDto[]; count: number }>;
   existsWithId(id: number): Promise<boolean>;
   isActive(id: number): Promise<boolean>;
+  studentHasAccess(assignmentId: number, studentId: number): Promise<boolean>;
+  teacherHasAccess(assignmentId: number, teacherId: number): Promise<boolean>;
 }

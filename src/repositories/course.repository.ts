@@ -126,14 +126,14 @@ export class CourseRepository implements ICourseRepository {
     };
   }
 
-  async existsWithId(id: number) {
+  existsWithId(id: number) {
     return this.courseRepo
       .createQueryBuilder()
       .where("id = :id", { id })
       .getExists();
   }
 
-  async isActive(id: number) {
+  isActive(id: number) {
     return this.courseRepo
       .createQueryBuilder("c")
       .where("c.id = :id", { id })
@@ -142,7 +142,7 @@ export class CourseRepository implements ICourseRepository {
       .getExists();
   }
 
-  async isEnrollmentAvailable(id: number) {
+  isEnrollmentAvailable(id: number) {
     return this.courseRepo
       .createQueryBuilder("c")
       .where("c.startsAt > CURRENT_TIMESTAMP")
@@ -152,5 +152,26 @@ export class CourseRepository implements ICourseRepository {
         { courseId: id, enrollmentStatus: EnrollmentStatus.ENROLLED }
       )
       .getExists();
+  }
+
+  studentHasAccess(courseId: number, studentId: number): Promise<boolean> {
+    return this.courseRepo.exist({
+      where: {
+        id: courseId,
+        enrollments: {
+          studentId,
+          status: EnrollmentStatus.ENROLLED,
+        },
+      },
+    });
+  }
+
+  teacherHasAccess(courseId: number, teacherId: number): Promise<boolean> {
+    return this.courseRepo.exist({
+      where: {
+        id: courseId,
+        teacherId,
+      },
+    });
   }
 }

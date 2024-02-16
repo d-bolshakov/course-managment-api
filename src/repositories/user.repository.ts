@@ -18,6 +18,7 @@ export class UserRepository implements IUserRepository {
     const user = await this.userRepo.save(item);
     return plainToInstance(UserDto, user, { exposeUnsetFields: false });
   }
+
   async updateById(id: number, updateDto: UpdateUserDto) {
     try {
       const { affected } = await this.userRepo.update({ id }, updateDto);
@@ -28,6 +29,7 @@ export class UserRepository implements IUserRepository {
       return { success: false };
     }
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.userRepo.delete({ id });
@@ -38,6 +40,7 @@ export class UserRepository implements IUserRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const user = await this.userRepo.findOne({
       where: { id },
@@ -56,6 +59,7 @@ export class UserRepository implements IUserRepository {
     });
     return plainToInstance(UserDto, user, { exposeUnsetFields: false });
   }
+
   async getAuthDataByEmail(email: string) {
     const auth = await this.userRepo.findOne({
       where: { email },
@@ -63,6 +67,7 @@ export class UserRepository implements IUserRepository {
     });
     return plainToInstance(AuthDto, auth);
   }
+
   async getMany(filters?: FilterUserDto) {
     const conditions: FindOptionsWhere<User> = {};
     if (filters?.role) conditions.role = filters.role;
@@ -90,13 +95,15 @@ export class UserRepository implements IUserRepository {
       count,
     };
   }
-  async existsWithEmail(email: string) {
+
+  existsWithEmail(email: string) {
     return this.userRepo
       .createQueryBuilder()
       .where("email = :email", { email })
       .getExists();
   }
-  async existsWithId(id: number) {
+
+  existsWithId(id: number) {
     return this.userRepo
       .createQueryBuilder()
       .where("id = :id", { id })

@@ -8,4 +8,6 @@ export interface IFileMetadataRepository {
   deleteById(id: string | string[]): Promise<{ deleted: { id: string }[] }>;
   getById(id: string): Promise<FileMetadataDto | null>;
   getManyById(ids: string[]): Promise<FileMetadataDto[]>;
+  studentHasAccess(fileId: string, studentId: number): Promise<boolean>;
+  teacherHasAccess(fileId: string, teacherId: number): Promise<boolean>;
 }

@@ -5,7 +5,6 @@ import { FilterStudentAssignmentDto } from "../dto/assignment/filter-student-ass
 import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { container } from "tsyringe";
 import type { StudentController } from "../controllers/student.controller.js";
 import { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto.js";
@@ -22,21 +21,15 @@ StudentRouter.get(
   DtoValidationMiddleware(FilterTeacherDto, "query"),
   controller.getMany.bind(controller)
 );
-StudentRouter.get(
-  "/:studentId",
-  IdValidationMiddleware("studentId"),
-  controller.getOne.bind(controller)
-);
+StudentRouter.get("/:studentId", controller.getOne.bind(controller));
 StudentRouter.get(
   "/:studentId/courses",
-  IdValidationMiddleware("studentId"),
   AuthMiddleware(),
   DtoValidationMiddleware(FilterBaseCourseDto, "query"),
   controller.getCoursesOfStudent.bind(controller)
 );
 StudentRouter.get(
   "/:studentId/assignments",
-  IdValidationMiddleware("studentId"),
   AuthMiddleware(),
   AccessMiddleware(new StudentAccessStrategy(), {
     property: "studentId",
@@ -47,7 +40,6 @@ StudentRouter.get(
 );
 StudentRouter.get(
   "/:studentId/submissions",
-  IdValidationMiddleware("studentId"),
   AuthMiddleware(),
   AccessMiddleware(new StudentAccessStrategy(), {
     property: "studentId",
@@ -58,7 +50,6 @@ StudentRouter.get(
 );
 StudentRouter.delete(
   "/:studentId",
-  IdValidationMiddleware("studentId"),
   AuthMiddleware(),
   AccessMiddleware(new StudentAccessStrategy(), {
     property: "studentId",

@@ -4,7 +4,6 @@ import { UpdateSubjectDto } from "../dto/subject/update-subject.dto.js";
 import { Role } from "../entities/User.entity.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { container } from "tsyringe";
 import type { SubjectController } from "../controllers/subject.controller.js";
@@ -26,14 +25,9 @@ SubjectRouter.get(
   DtoValidationMiddleware(FilterSubjectDto, "query"),
   controller.getMany
 );
-SubjectRouter.get(
-  "/:id",
-  IdValidationMiddleware(),
-  controller.getOne.bind(controller)
-);
+SubjectRouter.get("/:id", controller.getOne.bind(controller));
 SubjectRouter.patch(
   "/:id",
-  IdValidationMiddleware(),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.ADMIN] }),
   DtoValidationMiddleware(UpdateSubjectDto, "body"),
@@ -41,7 +35,6 @@ SubjectRouter.patch(
 );
 SubjectRouter.delete(
   "/:id",
-  IdValidationMiddleware(),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.ADMIN] }),
   controller.delete.bind(controller)

@@ -10,7 +10,6 @@ import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js"
 import { Role } from "../entities/User.entity.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { container } from "tsyringe";
 import { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto.js";
@@ -25,7 +24,7 @@ const enrollmentController = container.resolve<EnrollmentController>(
 
 CourseRouter.post(
   "/",
-  AuthMiddleware({ loadProfile: true }),
+  AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),
   DtoValidationMiddleware(CreateCourseDto, "body"),
   courseController.create.bind(courseController)
@@ -35,14 +34,9 @@ CourseRouter.get(
   DtoValidationMiddleware(FilterBaseCourseDto, "query"),
   courseController.getMany.bind(courseController)
 );
-CourseRouter.get(
-  "/:courseId",
-  IdValidationMiddleware("courseId"),
-  courseController.getOne.bind(courseController)
-);
+CourseRouter.get("/:courseId", courseController.getOne.bind(courseController));
 CourseRouter.patch(
   "/:courseId",
-  IdValidationMiddleware("courseId"),
   AuthMiddleware(),
   AccessMiddleware(new CourseAccessStrategy(), {
     property: "courseId",
@@ -53,7 +47,6 @@ CourseRouter.patch(
 );
 CourseRouter.delete(
   "/:courseId",
-  IdValidationMiddleware("courseId"),
   AuthMiddleware(),
   AccessMiddleware(new CourseAccessStrategy(), {
     property: "courseId",
@@ -63,14 +56,12 @@ CourseRouter.delete(
 );
 CourseRouter.post(
   "/:courseId/enrollments/",
-  IdValidationMiddleware("courseId"),
-  AuthMiddleware({ loadProfile: true }),
+  AuthMiddleware(),
   RoleMiddleware({ target: [Role.STUDENT] }),
   enrollmentController.create.bind(enrollmentController)
 );
 CourseRouter.get(
   "/:courseId/enrollments/",
-  IdValidationMiddleware("courseId"),
   DtoValidationMiddleware(FilterEnrollmentDto, "query"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),

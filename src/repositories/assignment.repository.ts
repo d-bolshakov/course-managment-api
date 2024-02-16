@@ -133,18 +133,42 @@ export class AssignmentRepository implements IAssignmentRepository {
     };
   }
 
-  async existsWithId(id: number) {
+  existsWithId(id: number) {
     return this.assignmentRepo
       .createQueryBuilder()
       .where("id = :id", { id })
       .getExists();
   }
 
-  async isActive(id: number) {
+  isActive(id: number) {
     return this.assignmentRepo
       .createQueryBuilder()
       .where("id = :id", { id })
       .andWhere("deadline > CURRENT_TIMESTAMP")
       .getExists();
+  }
+
+  studentHasAccess(assignmentId: number, studentId: number): Promise<boolean> {
+    return this.assignmentRepo.exist({
+      where: {
+        id: assignmentId,
+        course: {
+          enrollments: {
+            studentId,
+          },
+        },
+      },
+    });
+  }
+
+  teacherHasAccess(assignmentId: number, teacherId: number): Promise<boolean> {
+    return this.assignmentRepo.exist({
+      where: {
+        id: assignmentId,
+        course: {
+          teacherId,
+        },
+      },
+    });
   }
 }

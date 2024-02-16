@@ -38,4 +38,70 @@ export class FileMetadataRepository implements IFileMetadataRepository {
       exposeUnsetFields: false,
     });
   }
+
+  // check if the file belongs to an attachment of a submission that was created by the student
+  // or if the file belongs to an attachment of an assignment that belongs to a course, which the student is enrolled to
+  studentHasAccess(fileId: string, studentId: number): Promise<boolean> {
+    return this.fileRepo.exist({
+      where: [
+        {
+          id: fileId,
+          assignmentAttachment: {
+            assignment: {
+              course: {
+                enrollments: {
+                  studentId,
+                },
+              },
+            },
+          },
+        },
+        {
+          id: fileId,
+          submissionAttachment: {
+            submission: {
+              assignment: {
+                course: {
+                  enrollments: {
+                    studentId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    });
+  }
+
+  // check if the file belongs to an attachment of an assignment that was created by the teacher
+  // of if the file belongs to an attachment of a submission that belongs to an assignment created be the teacher
+  teacherHasAccess(fileId: string, teacherId: number): Promise<boolean> {
+    return this.fileRepo.exist({
+      where: [
+        {
+          id: fileId,
+          assignmentAttachment: {
+            assignment: {
+              course: {
+                teacherId,
+              },
+            },
+          },
+        },
+        {
+          id: fileId,
+          submissionAttachment: {
+            submission: {
+              assignment: {
+                course: {
+                  teacherId,
+                },
+              },
+            },
+          },
+        },
+      ],
+    });
+  }
 }

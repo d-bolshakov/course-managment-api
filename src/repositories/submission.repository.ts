@@ -146,7 +146,7 @@ export class SubmissionRepository implements ISubmissionRepository {
     };
   }
 
-  async existsWithId(id: number) {
+  existsWithId(id: number) {
     return this.submissionRepo
       .createQueryBuilder()
       .where("id = :id", { id })
@@ -155,5 +155,27 @@ export class SubmissionRepository implements ISubmissionRepository {
 
   countSubmissionsForAssignment(assignmentId: number): Promise<number> {
     return this.submissionRepo.count({ where: { assignmentId } });
+  }
+
+  studentHasAccess(submissionId: number, studentId: number): Promise<boolean> {
+    return this.submissionRepo.exist({
+      where: {
+        id: submissionId,
+        studentId,
+      },
+    });
+  }
+
+  teacherHasAccess(submissionId: number, teacherId: number): Promise<boolean> {
+    return this.submissionRepo.exist({
+      where: {
+        id: submissionId,
+        assignment: {
+          course: {
+            teacherId,
+          },
+        },
+      },
+    });
   }
 }

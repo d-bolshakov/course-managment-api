@@ -17,4 +17,6 @@ export interface ICourseRepository {
   existsWithId(id: number): Promise<boolean>;
   isActive(id: number): Promise<boolean>;
   isEnrollmentAvailable(id: number): Promise<boolean>;
+  studentHasAccess(courseId: number, studentId: number): Promise<boolean>;
+  teacherHasAccess(courseId: number, teacherId: number): Promise<boolean>;
 }

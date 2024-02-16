@@ -30,7 +30,7 @@ export class TeacherSubjectRepository implements ITeacherSubjectRepository {
     }
   }
 
-  async teacherHasSubject(teacherId: number, subjectId: number) {
+  teacherHasSubject(teacherId: number, subjectId: number) {
     return AppDataSource.createQueryBuilder()
       .from("teacher_subject", "ts")
       .where("ts.teacherId = :teacherId", { teacherId })

@@ -1,8 +1,8 @@
-import { AccessStrategy } from "./access-strategy.js";
-import { AppDataSource } from "../../db/data-source.js";
+import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
-import { Enrollment } from "../../entities/Enrollment.entity.js";
 import { Role } from "../../entities/User.entity.js";
+import { container } from "tsyringe";
+import type { IEnrollmentRepository } from "../../interfaces/repositories/enrollment-repository.interface.js";
 
 export class EnrollmentAccessStrategy implements AccessStrategy {
   async hasAccess(
@@ -10,30 +10,24 @@ export class EnrollmentAccessStrategy implements AccessStrategy {
     resourse: { enrollmentId: number }
   ): Promise<boolean> {
     if (user.role === Role.ADMIN) return true;
-    const enrollmentRepository = AppDataSource.getRepository(Enrollment);
+    const enrollmentRepository = container.resolve<IEnrollmentRepository>(
+      "enrollment-repository"
+    );
     if (user.role === Role.TEACHER) {
-      return enrollmentRepository.exist({
-        where: {
-          id: resourse.enrollmentId,
-          course: {
-            teacher: {
-              user: { id: user.id },
-            },
-          },
-        },
-      });
+      if (!user.teacherProfile.id) return false;
+      const hasAccess = enrollmentRepository.teacherHasAccess(
+        resourse.enrollmentId,
+        user.teacherProfile.id
+      );
+      return hasAccess;
     }
     if (user.role === Role.STUDENT) {
-      return enrollmentRepository.exist({
-        where: {
-          id: resourse.enrollmentId,
-          student: {
-            user: {
-              id: user.id,
-            },
-          },
-        },
-      });
+      if (!user.studentProfile.id) return false;
+      const hasAccess = enrollmentRepository.studentHasAccess(
+        resourse.enrollmentId,
+        user.studentProfile.id
+      );
+      return hasAccess;
     }
     return false;
   }

@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Enrollment } from "../entities/Enrollment.entity.js";
+import { Enrollment, EnrollmentStatus } from "../entities/Enrollment.entity.js";
 import { EnrollmentDto } from "../dto/enrollment/enrollment.dto.js";
 import { CreateEnrollmentDto } from "../dto/enrollment/create-enrollment.dto.js";
 import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js";
@@ -20,6 +20,7 @@ export class EnrollmentRepository implements IEnrollmentRepository {
       exposeUnsetFields: false,
     });
   }
+
   async updateById(id: number, updateDto: UpdateEnrollmentDto) {
     try {
       const { affected } = await this.enrollmentRepo.update({ id }, updateDto);
@@ -30,6 +31,7 @@ export class EnrollmentRepository implements IEnrollmentRepository {
       return { success: false };
     }
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.enrollmentRepo.delete({ id });
@@ -40,12 +42,14 @@ export class EnrollmentRepository implements IEnrollmentRepository {
       return { success: false };
     }
   }
+
   async getById(id: number) {
     const enrollment = await this.enrollmentRepo.findOne({ where: { id } });
     return plainToInstance(EnrollmentDto, enrollment, {
       exposeUnsetFields: false,
     });
   }
+
   async getMany(filters?: FilterEnrollmentDto) {
     const conditions: FindOptionsWhere<Enrollment> = {};
     if (filters?.courseId) conditions.courseId = filters.courseId;
@@ -84,10 +88,31 @@ export class EnrollmentRepository implements IEnrollmentRepository {
       count,
     };
   }
-  async existsWithId(id: number) {
+
+  existsWithId(id: number) {
     return this.enrollmentRepo
       .createQueryBuilder()
       .where("id = :id", { id })
       .getExists();
+  }
+
+  studentHasAccess(enrollmentId: number, studentId: number): Promise<boolean> {
+    return this.enrollmentRepo.exist({
+      where: {
+        id: enrollmentId,
+        studentId,
+      },
+    });
+  }
+
+  teacherHasAccess(enrollmentId: number, teacherId: number): Promise<boolean> {
+    return this.enrollmentRepo.exist({
+      where: {
+        id: enrollmentId,
+        course: {
+          teacherId,
+        },
+      },
+    });
   }
 }

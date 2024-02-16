@@ -8,7 +8,6 @@ import { CreateAssignmentDto } from "../dto/assignment/create-assignment.dto.js"
 import { Role } from "../entities/User.entity.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import upload from "express-fileupload";
 import { container } from "tsyringe";
@@ -45,7 +44,6 @@ AssignmentRouter.get(
 );
 AssignmentRouter.get(
   "/:assignmentId",
-  IdValidationMiddleware("assignmentId"),
   AuthMiddleware(),
   AccessMiddleware(new AssignmentAccessStrategy(), {
     property: "assignmentId",
@@ -55,7 +53,6 @@ AssignmentRouter.get(
 );
 AssignmentRouter.patch(
   "/:assignmentId",
-  IdValidationMiddleware("assignmentId"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),
   AccessMiddleware(new AssignmentAccessStrategy(), {
@@ -68,7 +65,6 @@ AssignmentRouter.patch(
 );
 AssignmentRouter.delete(
   "/:assignmentId",
-  IdValidationMiddleware("assignmentId"),
   AuthMiddleware(),
   AccessMiddleware(new AssignmentAccessStrategy(), {
     property: "assignmentId",
@@ -76,8 +72,4 @@ AssignmentRouter.delete(
   }),
   controller.delete.bind(controller)
 );
-AssignmentRouter.use(
-  "/:assignmentId/submissions",
-  IdValidationMiddleware("assignmentId"),
-  SubmissionRouter
-);
+AssignmentRouter.use("/:assignmentId/submissions", SubmissionRouter);

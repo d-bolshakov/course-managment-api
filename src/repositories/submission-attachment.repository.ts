@@ -23,6 +23,7 @@ export class SubmissionAttachmentRepository
       exposeUnsetFields: false,
     });
   }
+
   async deleteById(id: number | number[]) {
     const qb = this.submissionAttachmentRepo
       .createQueryBuilder()
@@ -33,6 +34,7 @@ export class SubmissionAttachmentRepository
     const { raw } = await qb.execute();
     return { deleted: plainToInstance(AttachmentDto, raw as any[]) };
   }
+
   async getById(id: number) {
     const attachment = await this.submissionAttachmentRepo.findOne({
       where: { id },

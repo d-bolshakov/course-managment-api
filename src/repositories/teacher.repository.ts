@@ -27,6 +27,7 @@ export class TeacherRepository implements ITeacherRepository {
     );
     return plainToInstance(TeacherDto, teacher, { exposeUnsetFields: false });
   }
+
   async updateById(id: number, dto: UpdateTeacherDto) {
     try {
       const deletedSubjects =
@@ -42,6 +43,7 @@ export class TeacherRepository implements ITeacherRepository {
       return { success: false };
     }
   }
+
   async deleteById(id: number) {
     try {
       const { affected } = await this.teacherRepo.delete({ id });
@@ -109,7 +111,7 @@ export class TeacherRepository implements ITeacherRepository {
     };
   }
 
-  async existsWithId(id: number) {
+  existsWithId(id: number) {
     return this.teacherRepo
       .createQueryBuilder()
       .where("id = :id", { id })

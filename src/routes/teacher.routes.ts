@@ -6,7 +6,6 @@ import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
 import { UpdateTeacherDto } from "../dto/teacher/update-teacher.dto.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
-import { IdValidationMiddleware } from "../middleware/id-validation.middleware.js";
 import { container } from "tsyringe";
 import type { TeacherController } from "../controllers/teacher.controller.js";
 import { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
@@ -29,22 +28,16 @@ TeacherRouter.get(
   DtoValidationMiddleware(FilterTeacherDto, "query"),
   controller.getMany.bind(controller)
 );
-TeacherRouter.get(
-  "/:teacherId",
-  IdValidationMiddleware("teacherId"),
-  controller.getOne.bind(controller)
-);
+TeacherRouter.get("/:teacherId", controller.getOne.bind(controller));
 
 TeacherRouter.get(
   "/:teacherId/courses",
-  IdValidationMiddleware("teacherId"),
   AuthMiddleware(),
   DtoValidationMiddleware(FilterTeacherCourseDto, "query"),
   controller.getCoursesOfTeacher.bind(controller)
 );
 TeacherRouter.get(
   "/:teacherId/assignments",
-  IdValidationMiddleware("teacherId"),
   AuthMiddleware(),
   AccessMiddleware(new TeacherAccessStrategy(), {
     property: "teacherId",
@@ -55,7 +48,6 @@ TeacherRouter.get(
 );
 TeacherRouter.get(
   "/:teacherId/submissions",
-  IdValidationMiddleware("teacherId"),
   AuthMiddleware(),
   AccessMiddleware(new TeacherAccessStrategy(), {
     property: "teacherId",
@@ -66,7 +58,6 @@ TeacherRouter.get(
 );
 TeacherRouter.put(
   "/:teacherId",
-  IdValidationMiddleware("teacherId"),
   AuthMiddleware({ passOnRedirect: true }),
   AccessMiddleware(
     new TeacherAccessStrategy(),
@@ -81,7 +72,6 @@ TeacherRouter.put(
 );
 TeacherRouter.delete(
   "/:teacherId",
-  IdValidationMiddleware("teacherId"),
   AuthMiddleware({ passOnRedirect: true }),
   AccessMiddleware(
     new TeacherAccessStrategy(),
