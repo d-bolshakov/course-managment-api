@@ -16,6 +16,7 @@ import { SubmissionRouter } from "./routes/submission.routes.js";
 import { TeacherRouter } from "./routes/teacher.routes.js";
 import { UserRouter } from "./routes/user.routes.js";
 import { Subject } from "./entities/Subject.entity.js";
+import { FileRouter } from "./routes/file.routes.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -48,6 +49,7 @@ app.use("/students/", StudentRouter);
 app.use("/courses/", CourseRouter);
 app.use("/assignments/", AssignmentRouter);
 app.use("/submissions/", SubmissionRouter);
+app.use("/files/", FileRouter);
 
 app.get("/test/", async (req: any, res: any, next: any) => {
   const sqb = AppDataSource.createQueryBuilder(Subject, "s")
