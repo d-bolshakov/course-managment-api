@@ -12,8 +12,8 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-loadRoutes(app);
 loadMiddleware(app);
+loadRoutes(app);
 
 app.use(ErrorHandlerMiddleware);
 

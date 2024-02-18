@@ -7,8 +7,7 @@ export class UserAccessStrategy implements AccessStrategy {
     user: UserDto,
     resourse: { userId: number }
   ): Promise<boolean> {
-    if (user.role === Role.ADMIN) return true
-    return user.id === resourse.userId
-    }
+    if (user.role === Role.ADMIN) return true;
+    return user.id === resourse.userId;
   }
 }
