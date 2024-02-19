@@ -67,7 +67,7 @@
 # Description
 
 API for managing educational courses, enrollments to the courses, assignments
-and students’ submissions to assignments.
+and students’ submissions of assignments.
 
 # Running the app
 
@@ -400,7 +400,7 @@ Returns a list of assignments and a count of records matching applied filters:
 
 ### GET /students/:id/submissions
 
-Getting a list of submissions for the assignments for the student. Available only to the user with corresponding student profile. Accepts folowing query parameters for filtering:
+Getting a list of submissions of the assignments for the student. Available only to the user with corresponding student profile. Accepts folowing query parameters for filtering:
 
 ```json
 {
@@ -609,7 +609,7 @@ Returns a list of courses and a count of records matching applied filters:
 
 ### GET /teachers/:id/assignments
 
-Getting a list of assignments for the courses of the teacher. Available only to the user the teacher profile is related to. Accepts folowing query parameters for filtering:
+Getting a list of assignments for the courses of the teacher. Available only to the user with corresponding teacher profile. Accepts folowing query parameters for filtering:
 
 ```json
 {
@@ -643,7 +643,7 @@ Returns a list of assignments and a count of records matching applied filters:
 
 ### GET /teachers/:id/submissions
 
-Getting a list of submissions for the assignments of the teacher. Available only to the user the teacher profile is related to. Accepts folowing query parameters for filtering:
+Getting a list of submissions of the assignments of the teacher. Available only to the user with corresponding teacher profile. Accepts folowing query parameters for filtering:
 
 ```json
 {
@@ -654,7 +654,7 @@ Getting a list of submissions for the assignments of the teacher. Available only
 }
 ```
 
-**"status"** can be either a "submitted", "accepted" or "rejected" aand is used to filter the submissions which have not been reviewed yet or were either accepted or rejected.
+**"status"** can be either a "submitted", "accepted" or "rejected" and is used to filter the submissions which have not been reviewed yet or were either accepted or rejected.
 
 Returns a list of submissions and a count of records matching applied filters:
 
@@ -1211,7 +1211,7 @@ Returns the created submission:
 
 ### GET /submissions/
 
-Getting a list of submissions for an assignment. Requires **"assignemntId"** query parameter. Available only to the teacher of the course Accepts following query parameters for filtering:
+Getting a list of submissions of an assignment. Requires **"assignemntId"** query parameter. Available only to the teacher of the course Accepts following query parameters for filtering:
 
 ```json
 {
@@ -1222,7 +1222,7 @@ Getting a list of submissions for an assignment. Requires **"assignemntId"** que
 }
 ```
 
-**"status"** can be either a "submitted", "accepted" or "rejected" and is used to filter the submissions whether it wasn't reviewed yet or was either accepted or rejected by the teacher.
+**"status"** can be either a "submitted", "accepted" or "rejected" and is used to filter the submissions which have not been reviewed yet or were either accepted or rejected.
 
 Returns a list of submissions and a count of records matching applied filters:
 
