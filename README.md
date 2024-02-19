@@ -1021,7 +1021,7 @@ Returns the updated enrollment:
 
 ### DELETE /courses/:courseId/enrollments/:enrollmentId
 
-Deleting an enrollment. Available only for student.
+Deleting an enrollment. Available only to the student.
 
 <hr/>
 
