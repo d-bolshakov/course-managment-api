@@ -157,7 +157,7 @@ Logging out. Requires a cookie with session id.
 
 ### GET /users/
 
-Getting a list of users. Available only for the users with "admin" role. Accepts following query parameters for filtering:
+Getting a list of users. Available only for the users with the "admin" role. Accepts following query parameters for filtering:
 
 ```json
 {
@@ -302,7 +302,7 @@ Returns a list of students and a count of records:
 
 ### GET /students/:id
 
-Getting a student by it's id.
+Getting a student by his id.
 
 Returns a student with a given id:
 
@@ -320,7 +320,7 @@ Returns a student with a given id:
 
 ### DELETE /students/:id
 
-Deleting a student profile. Available only for the user which the student profile is related to.
+Deleting a student profile. Available only for the user with corresponding student profile.
 
 ### GET /students/:id/courses
 
@@ -364,7 +364,7 @@ Returns a list of courses and a count of records matching applied filters:
 
 ### GET /students/:id/assignments
 
-Getting a list of assignments for the courses the student is enrolled to. Available only to the user the student profile is related to. Accepts folowing query parameters for filtering:
+Getting a list of assignments for the courses the student is enrolled to. Available only to the user with corresponding student profile. Accepts folowing query parameters for filtering:
 
 ```json
 {
@@ -375,8 +375,8 @@ Getting a list of assignments for the courses the student is enrolled to. Availa
 }
 ```
 
-**"status"** can be either an "active" or "inactive" and is used to filter the assignments which deadline has already passed or not.
-**"completion"** can be either a "complete" or "incomplete". "complete" is used to get only those assignments which the student had made a submission for and that submission was successfully reviewed by the teacher. "incomplete" is used to get only those assignments which the student haven't submitted to or the submission was rejected by the teacher.
+**"status"** can be either an "active" or "inactive" and is used to filter the assignments the deadline for which either has already passed or not yet.
+**"completion"** can be either a "complete" or "incomplete". "complete" is used to get only those assignments which the student made a submission for and that submission was successfully reviewed by the teacher. “incomplete” is used to get only those assignments which the student didn’t submit or the submission was rejected.
 
 Returns a list of assignments and a count of records matching applied filters:
 
@@ -400,7 +400,7 @@ Returns a list of assignments and a count of records matching applied filters:
 
 ### GET /students/:id/submissions
 
-Getting a list of submissions for the assignments for the student. Available only to the user the student profile is related to. Accepts folowing query parameters for filtering:
+Getting a list of submissions for the assignments for the student. Available only to the user with corresponding student profile. Accepts folowing query parameters for filtering:
 
 ```json
 {
@@ -411,7 +411,7 @@ Getting a list of submissions for the assignments for the student. Available onl
 }
 ```
 
-**"status"** can be either a "submitted", "accepted" or "rejected" and is used to filter the submissions whether it wasn't reviewed yet or was either accepted or rejected by the teacher.
+**"status"** can be either a "submitted", "accepted" or "rejected" and is used to filter the submissions which have not been reviewed yet or were either accepted or rejected.
 
 Returns a list of submissions and a count of records matching applied filters:
 
@@ -510,7 +510,7 @@ Returns a list of teachers and a count of records matching applied filters:
 
 ### GET /teachers/:id
 
-Getting a teacher by it's id.
+Getting a teacher by his id.
 
 Returns a teacher with a given id:
 
@@ -534,7 +534,7 @@ Returns a teacher with a given id:
 
 ### PUT /teachers/:id
 
-Updating a teacher profile. Available only for the user which the teacher profile is related to.
+Updating a teacher profile. Available only for the user with corresponding teacher profile.
 
 The body of the request:
 
@@ -566,7 +566,7 @@ Returns the updated teacher:
 
 ### DELETE /teachers/:id
 
-Deleting a teacher profile. Available only for the user which the teacher profile is related to.
+Deleting a teacher profile. Available only for the user with corresponding teacher profile.
 
 ### GET /teachers/:id/courses
 
@@ -619,7 +619,7 @@ Getting a list of assignments for the courses of the teacher. Available only to 
 }
 ```
 
-**"status"** can be either an "active" or "inactive" and is used to filter the assignments which deadline has already passed or not.
+**"status"** can be either an "active" or "inactive" and is used to filter the assignments the deadline for which either has already passed or not yet.
 
 Returns a list of assignments and a count of records matching applied filters:
 
@@ -654,7 +654,7 @@ Getting a list of submissions for the assignments of the teacher. Available only
 }
 ```
 
-**"status"** can be either a "submitted", "accepted" or "rejected" and is used to filter the submissions whether it wasn't reviewed yet or was either accepted or rejected by the teacher.
+**"status"** can be either a "submitted", "accepted" or "rejected" aand is used to filter the submissions which have not been reviewed yet or were either accepted or rejected.
 
 Returns a list of submissions and a count of records matching applied filters:
 
@@ -688,7 +688,7 @@ Returns a list of submissions and a count of records matching applied filters:
 
 ### POST /subjects/
 
-Creating a subject. Available only for the users with "teacher" role.
+Creating a subject. Available only for the users with the the "teacher" role.
 
 The body of the request:
 
@@ -746,7 +746,7 @@ Returns a subject with a given id:
 
 ### PATCH /subjects/:id
 
-Updating a subject title. Available only for the users with "admin" role.
+Updating a subject title. Available only for the users with the "admin" role.
 
 The body of the request:
 
@@ -769,7 +769,7 @@ Returns the updated subject:
 
 ### DELETE /subjects/:id
 
-Deleting a subject. Available only for the users with "admin" role.
+Deleting a subject. Available only for the users with the "admin" role.
 
 <hr/>
 
@@ -777,7 +777,7 @@ Deleting a subject. Available only for the users with "admin" role.
 
 ### POST /courses/
 
-Creating a course. Requires a cookie with session id. Available only for the users with "teacher" role.
+Creating a course. Requires a cookie with session id. Available only for the users with the "teacher" role.
 
 The body of the request:
 
@@ -927,7 +927,7 @@ Deleting a course. Available only for the teacher of the course.
 
 ### POST /courses/:courseId/enrollments
 
-Creating an application for an enrollment to the course. Available only for the users with 'student' role.
+Creating an application for an enrollment to the course. Available only for the users with the "student" role.
 
 Returns the created enrollment with 'applied' status:
 
@@ -1029,7 +1029,7 @@ Deleting an enrollment. Available only for student.
 
 ### POST /assignments/
 
-Creating an assignment. Available only for the users with "teacher" role.
+Creating an assignment. Available only for the users with the "teacher" role.
 
 Supports file uploads so should be a "multipart/form-data" request with following fields:
 
@@ -1078,7 +1078,7 @@ Getting a list of assignments for a course. Requires **"courseId"** query parame
 }
 ```
 
-**"status"** can be either an "active" or "inactive" and is used to filter the assignments which deadline has already passed or not.
+**"status"** can be either an "active" or "inactive" and is used to filter the assignments the deadline for which either has already passed or not yet.
 
 Returns a list of assignments and a count of records matching applied filters:
 
@@ -1378,4 +1378,4 @@ Returns the created review:
 
 ### GET /files/:id
 
-Getting a file by it's id. Available only to the users who have access to the file. If the file belongs to an assignment - it's available only to the teacher of the course and students enrolled to the course. If the file belongs to a submission - it's available only to the student who created the submission and the teacher of the course. Accepts "download" query parameter with boolean value for downloading the file, otherwise returns a read stream with the contents of the file.
+Getting a file by it's id. Available only to the users who have access to the file. If the file refers to an assignment - it's available only to the teacher of the course and students enrolled to the course. If the file refers to a submission - it's available only to the student who created the submission and the teacher of the course. Accepts "download" query parameter with boolean value for downloading the file, otherwise returns a read stream with the contents of the file.
