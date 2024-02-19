@@ -6,13 +6,13 @@ import { CourseController } from "../controllers/course.controller.js";
 import { EnrollmentController } from "../controllers/enrollment.controller.js";
 import { CreateCourseDto } from "../dto/course/create-course.dto.js";
 import { UpdateCourseDto } from "../dto/course/update-course.dto.js";
-import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js";
 import { Role } from "../entities/User.entity.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { container } from "tsyringe";
 import { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto.js";
+import { FilterCourseEnrollmentDto } from "../dto/enrollment/filter-course-enrollment.dto.js";
 
 export const CourseRouter = Router();
 
@@ -62,7 +62,7 @@ CourseRouter.post(
 );
 CourseRouter.get(
   "/:courseId/enrollments/",
-  DtoValidationMiddleware(FilterEnrollmentDto, "query"),
+  DtoValidationMiddleware(FilterCourseEnrollmentDto, "query"),
   AuthMiddleware(),
   RoleMiddleware({ target: [Role.TEACHER] }),
   AccessMiddleware(new CourseAccessStrategy(), {
