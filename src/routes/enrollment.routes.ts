@@ -9,38 +9,41 @@ import { RoleMiddleware } from "../middleware/role.middleware.js";
 import { container } from "tsyringe";
 import type { EnrollmentController } from "../controllers/enrollment.controller.js";
 
-export const EnrollmentRouter = Router({ mergeParams: true });
+export const getEnrollmentRouter = () => {
+  const EnrollmentRouter = Router({ mergeParams: true });
 
-const controller = container.resolve<EnrollmentController>(
-  "enrollment-controller"
-);
+  const controller = container.resolve<EnrollmentController>(
+    "enrollment-controller"
+  );
 
-EnrollmentRouter.get(
-  "/:enrollmentId",
-  AuthMiddleware(),
-  AccessMiddleware(new EnrollmentAccessStrategy(), {
-    property: "enrollmentId",
-    propertyLocation: "params",
-  }),
-  controller.getOne.bind(controller)
-);
-EnrollmentRouter.patch(
-  "/:enrollmentId",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.TEACHER] }),
-  AccessMiddleware(new EnrollmentAccessStrategy(), {
-    property: "enrollmentId",
-    propertyLocation: "params",
-  }),
-  DtoValidationMiddleware(UpdateEnrollmentDto, "body"),
-  controller.update.bind(controller)
-);
-EnrollmentRouter.delete(
-  "/:enrollmentId",
-  AuthMiddleware(),
-  AccessMiddleware(new EnrollmentAccessStrategy(), {
-    property: "enrollmentId",
-    propertyLocation: "params",
-  }),
-  controller.delete.bind(controller)
-);
+  EnrollmentRouter.get(
+    "/:enrollmentId",
+    AuthMiddleware(),
+    AccessMiddleware(new EnrollmentAccessStrategy(), {
+      property: "enrollmentId",
+      propertyLocation: "params",
+    }),
+    controller.getOne.bind(controller)
+  );
+  EnrollmentRouter.patch(
+    "/:enrollmentId",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.TEACHER] }),
+    AccessMiddleware(new EnrollmentAccessStrategy(), {
+      property: "enrollmentId",
+      propertyLocation: "params",
+    }),
+    DtoValidationMiddleware(UpdateEnrollmentDto, "body"),
+    controller.update.bind(controller)
+  );
+  EnrollmentRouter.delete(
+    "/:enrollmentId",
+    AuthMiddleware(),
+    AccessMiddleware(new EnrollmentAccessStrategy(), {
+      property: "enrollmentId",
+      propertyLocation: "params",
+    }),
+    controller.delete.bind(controller)
+  );
+  return EnrollmentRouter;
+};

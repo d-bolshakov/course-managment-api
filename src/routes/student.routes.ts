@@ -9,46 +9,49 @@ import type { StudentController } from "../controllers/student.controller.js";
 import { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto.js";
 import { FilterBaseSubmissionDto } from "../dto/submission/filter-base-submission.dto.js";
 
-export const StudentRouter = Router();
+export const getStudentRouter = () => {
+  const StudentRouter = Router();
 
-const controller = container.resolve<StudentController>("student-controller");
+  const controller = container.resolve<StudentController>("student-controller");
 
-StudentRouter.post("/", AuthMiddleware(), controller.create.bind(controller));
+  StudentRouter.post("/", AuthMiddleware(), controller.create.bind(controller));
 
-StudentRouter.get("/", controller.getMany.bind(controller));
-StudentRouter.get("/:studentId", controller.getOne.bind(controller));
-StudentRouter.get(
-  "/:studentId/courses",
-  AuthMiddleware(),
-  DtoValidationMiddleware(FilterBaseCourseDto, "query"),
-  controller.getCoursesOfStudent.bind(controller)
-);
-StudentRouter.get(
-  "/:studentId/assignments",
-  AuthMiddleware(),
-  AccessMiddleware(new StudentAccessStrategy(), {
-    property: "studentId",
-    propertyLocation: "params",
-  }),
-  DtoValidationMiddleware(FilterStudentAssignmentDto, "query"),
-  controller.getAssignmentsOfStudent.bind(controller)
-);
-StudentRouter.get(
-  "/:studentId/submissions",
-  AuthMiddleware(),
-  AccessMiddleware(new StudentAccessStrategy(), {
-    property: "studentId",
-    propertyLocation: "params",
-  }),
-  DtoValidationMiddleware(FilterBaseSubmissionDto, "query"),
-  controller.getSubmissionsOfStudent.bind(controller)
-);
-StudentRouter.delete(
-  "/:studentId",
-  AuthMiddleware(),
-  AccessMiddleware(new StudentAccessStrategy(), {
-    property: "studentId",
-    propertyLocation: "params",
-  }),
-  controller.delete.bind(controller)
-);
+  StudentRouter.get("/", controller.getMany.bind(controller));
+  StudentRouter.get("/:studentId", controller.getOne.bind(controller));
+  StudentRouter.get(
+    "/:studentId/courses",
+    AuthMiddleware(),
+    DtoValidationMiddleware(FilterBaseCourseDto, "query"),
+    controller.getCoursesOfStudent.bind(controller)
+  );
+  StudentRouter.get(
+    "/:studentId/assignments",
+    AuthMiddleware(),
+    AccessMiddleware(new StudentAccessStrategy(), {
+      property: "studentId",
+      propertyLocation: "params",
+    }),
+    DtoValidationMiddleware(FilterStudentAssignmentDto, "query"),
+    controller.getAssignmentsOfStudent.bind(controller)
+  );
+  StudentRouter.get(
+    "/:studentId/submissions",
+    AuthMiddleware(),
+    AccessMiddleware(new StudentAccessStrategy(), {
+      property: "studentId",
+      propertyLocation: "params",
+    }),
+    DtoValidationMiddleware(FilterBaseSubmissionDto, "query"),
+    controller.getSubmissionsOfStudent.bind(controller)
+  );
+  StudentRouter.delete(
+    "/:studentId",
+    AuthMiddleware(),
+    AccessMiddleware(new StudentAccessStrategy(), {
+      property: "studentId",
+      propertyLocation: "params",
+    }),
+    controller.delete.bind(controller)
+  );
+  return StudentRouter;
+};

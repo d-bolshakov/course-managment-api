@@ -1,8 +1,5 @@
 import "reflect-metadata";
-// importing loader for dependency injection container this way instead of importing the setupContainer() function
-// to register dependencies during module import resolution because injection of controllers in router files
-// happens during import resolution too
-import "./loaders/di-registry.loader.js";
+import { setupContainer } from "./loaders/di-registry.loader.js";
 import express from "express";
 import { ErrorHandlerMiddleware } from "./middleware/error-handler.middleware.js";
 import { loadMiddleware } from "./loaders/middleware.loader.js";
@@ -12,6 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 
+setupContainer();
 loadMiddleware(app);
 loadRoutes(app);
 

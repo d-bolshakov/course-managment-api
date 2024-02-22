@@ -14,74 +14,77 @@ import { container } from "tsyringe";
 import { FilterBaseSubmissionDto } from "../dto/submission/filter-base-submission.dto.js";
 import { UpdateSubmissionRequestBodyDto } from "../dto/submission/update-submission-request-body.dto.js";
 
-export const SubmissionRouter = Router({ mergeParams: true });
+export const getSubmissionRouter = () => {
+  const SubmissionRouter = Router({ mergeParams: true });
 
-const controller = container.resolve<SubmissionController>(
-  "submission-controller"
-);
+  const controller = container.resolve<SubmissionController>(
+    "submission-controller"
+  );
 
-SubmissionRouter.post(
-  "/",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.STUDENT] }),
-  upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
-  DtoValidationMiddleware(CreateSubmissionDto, "body"),
-  AccessMiddleware(new AssignmentAccessStrategy(), {
-    property: "assignmentId",
-    propertyLocation: "body",
-  }),
-  controller.create.bind(controller)
-);
-SubmissionRouter.get(
-  "/",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.TEACHER] }),
-  AccessMiddleware(new AssignmentAccessStrategy(), {
-    property: "assignmentId",
-    propertyLocation: "query",
-  }),
-  DtoValidationMiddleware(FilterBaseSubmissionDto, "query"),
-  controller.getSubmissionsByAssignment.bind(controller)
-);
-SubmissionRouter.get(
-  "/:submissionId",
-  AuthMiddleware(),
-  AccessMiddleware(new SubmissionAccessStrategy(), {
-    property: "submissionId",
-    propertyLocation: "params",
-  }),
-  controller.getOne.bind(controller)
-);
-SubmissionRouter.delete(
-  "/:submissionId",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.STUDENT] }),
-  AccessMiddleware(new SubmissionAccessStrategy(), {
-    property: "submissionId",
-    propertyLocation: "params",
-  }),
-  controller.delete.bind(controller)
-);
-SubmissionRouter.post(
-  "/:submissionId/review",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.TEACHER] }),
-  AccessMiddleware(new SubmissionAccessStrategy(), {
-    property: "submissionId",
-    propertyLocation: "params",
-  }),
-  DtoValidationMiddleware(ReviewSubmissionDto, "body"),
-  controller.review.bind(controller)
-);
-SubmissionRouter.patch(
-  "/:submissionId",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.STUDENT] }),
-  AccessMiddleware(new SubmissionAccessStrategy(), {
-    property: "submissionId",
-    propertyLocation: "params",
-  }),
-  DtoValidationMiddleware(UpdateSubmissionRequestBodyDto, "body"),
-  upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
-  controller.update.bind(controller)
-);
+  SubmissionRouter.post(
+    "/",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.STUDENT] }),
+    upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
+    DtoValidationMiddleware(CreateSubmissionDto, "body"),
+    AccessMiddleware(new AssignmentAccessStrategy(), {
+      property: "assignmentId",
+      propertyLocation: "body",
+    }),
+    controller.create.bind(controller)
+  );
+  SubmissionRouter.get(
+    "/",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.TEACHER] }),
+    AccessMiddleware(new AssignmentAccessStrategy(), {
+      property: "assignmentId",
+      propertyLocation: "query",
+    }),
+    DtoValidationMiddleware(FilterBaseSubmissionDto, "query"),
+    controller.getSubmissionsByAssignment.bind(controller)
+  );
+  SubmissionRouter.get(
+    "/:submissionId",
+    AuthMiddleware(),
+    AccessMiddleware(new SubmissionAccessStrategy(), {
+      property: "submissionId",
+      propertyLocation: "params",
+    }),
+    controller.getOne.bind(controller)
+  );
+  SubmissionRouter.delete(
+    "/:submissionId",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.STUDENT] }),
+    AccessMiddleware(new SubmissionAccessStrategy(), {
+      property: "submissionId",
+      propertyLocation: "params",
+    }),
+    controller.delete.bind(controller)
+  );
+  SubmissionRouter.post(
+    "/:submissionId/review",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.TEACHER] }),
+    AccessMiddleware(new SubmissionAccessStrategy(), {
+      property: "submissionId",
+      propertyLocation: "params",
+    }),
+    DtoValidationMiddleware(ReviewSubmissionDto, "body"),
+    controller.review.bind(controller)
+  );
+  SubmissionRouter.patch(
+    "/:submissionId",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.STUDENT] }),
+    AccessMiddleware(new SubmissionAccessStrategy(), {
+      property: "submissionId",
+      propertyLocation: "params",
+    }),
+    DtoValidationMiddleware(UpdateSubmissionRequestBodyDto, "body"),
+    upload({ limits: { fileSize: 1024 * 1024 * 20 } }),
+    controller.update.bind(controller)
+  );
+  return SubmissionRouter;
+};

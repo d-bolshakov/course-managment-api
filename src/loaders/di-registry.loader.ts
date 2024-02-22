@@ -264,10 +264,8 @@ const registerControllers = () => {
   );
 };
 
-const setupContainer = () => {
+export const setupContainer = () => {
   registerRepositories();
   registerServices();
   registerControllers();
 };
-
-setupContainer();

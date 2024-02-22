@@ -9,33 +9,36 @@ import { container } from "tsyringe";
 import type { SubjectController } from "../controllers/subject.controller.js";
 import { FilterSubjectDto } from "../dto/subject/filter-subject.dto.js";
 
-export const SubjectRouter = Router();
+export const getSubjectRouter = () => {
+  const SubjectRouter = Router();
 
-const controller = container.resolve<SubjectController>("subject-controller");
+  const controller = container.resolve<SubjectController>("subject-controller");
 
-SubjectRouter.post(
-  "/",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.TEACHER] }),
-  DtoValidationMiddleware(CreateSubjectDto, "body"),
-  controller.create.bind(controller)
-);
-SubjectRouter.get(
-  "/",
-  DtoValidationMiddleware(FilterSubjectDto, "query"),
-  controller.getMany
-);
-SubjectRouter.get("/:id", controller.getOne.bind(controller));
-SubjectRouter.patch(
-  "/:id",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.ADMIN] }),
-  DtoValidationMiddleware(UpdateSubjectDto, "body"),
-  controller.update.bind(controller)
-);
-SubjectRouter.delete(
-  "/:id",
-  AuthMiddleware(),
-  RoleMiddleware({ target: [Role.ADMIN] }),
-  controller.delete.bind(controller)
-);
+  SubjectRouter.post(
+    "/",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.TEACHER] }),
+    DtoValidationMiddleware(CreateSubjectDto, "body"),
+    controller.create.bind(controller)
+  );
+  SubjectRouter.get(
+    "/",
+    DtoValidationMiddleware(FilterSubjectDto, "query"),
+    controller.getMany
+  );
+  SubjectRouter.get("/:id", controller.getOne.bind(controller));
+  SubjectRouter.patch(
+    "/:id",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.ADMIN] }),
+    DtoValidationMiddleware(UpdateSubjectDto, "body"),
+    controller.update.bind(controller)
+  );
+  SubjectRouter.delete(
+    "/:id",
+    AuthMiddleware(),
+    RoleMiddleware({ target: [Role.ADMIN] }),
+    controller.delete.bind(controller)
+  );
+  return SubjectRouter;
+};
