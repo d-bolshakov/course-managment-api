@@ -1,6 +1,6 @@
 import session from "express-session";
 import { AppDataSource } from "../db/data-source.js";
-import { Session } from "../entities/Session.entity.js";
+import { Session } from "../db/entities/Session.entity.js";
 import { TypeormStore } from "connect-typeorm";
 
 const sessionRepository = AppDataSource.getRepository(Session);

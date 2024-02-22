@@ -3,7 +3,7 @@ import type { IStudentService } from "../interfaces/services/student-service.int
 import { inject, injectable } from "tsyringe";
 import type { IStudentRepository } from "../interfaces/repositories/student-repository.interface.js";
 import type { IUserService } from "../interfaces/services/user-service.interface.js";
-import { Role } from "../entities/User.entity.js";
+import { Role } from "../db/entities/User.entity.js";
 
 @injectable()
 export class StudentService implements IStudentService {

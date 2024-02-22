@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Review } from "../entities/Review.entity.js";
+import { Review } from "../db/entities/Review.entity.js";
 import { ReviewDto } from "../dto/review/review.dto.js";
 import type { IReviewRepository } from "../interfaces/repositories/review-repository.interface.js";
 import type { CreateReviewDto } from "../dto/review/create-review.dto.js";

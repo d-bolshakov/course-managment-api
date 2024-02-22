@@ -1,5 +1,5 @@
 import { Expose } from "class-transformer";
-import { EnrollmentStatus } from "../../entities/Enrollment.entity.js";
+import { EnrollmentStatus } from "../../db/entities/Enrollment.entity.js";
 import { IsEnum, NotEquals } from "class-validator";
 
 export class UpdateEnrollmentDto {

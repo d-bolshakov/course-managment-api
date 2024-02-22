@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { Request, Response, NextFunction } from "express";
-import { Role } from "../entities/User.entity.js";
+import { Role } from "../db/entities/User.entity.js";
 
 export const RoleMiddleware = (options: {
   target: Role[];

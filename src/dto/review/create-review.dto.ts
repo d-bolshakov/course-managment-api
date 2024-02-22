@@ -1,4 +1,4 @@
-import { ReviewStatus } from "../../entities/Review.entity.js";
+import { ReviewStatus } from "../../db/entities/Review.entity.js";
 
 export class CreateReviewDto {
   readonly status: ReviewStatus;

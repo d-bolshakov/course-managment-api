@@ -1,6 +1,6 @@
 import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
-import { Role } from "../../entities/User.entity.js";
+import { Role } from "../../db/entities/User.entity.js";
 import { container } from "tsyringe";
 import type { IEnrollmentRepository } from "../../interfaces/repositories/enrollment-repository.interface.js";
 

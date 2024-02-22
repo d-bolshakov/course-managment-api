@@ -1,6 +1,6 @@
 import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
-import { Role } from "../../entities/User.entity.js";
+import { Role } from "../../db/entities/User.entity.js";
 
 export class UserAccessStrategy implements AccessStrategy {
   async hasAccess(

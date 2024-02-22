@@ -1,6 +1,9 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Enrollment, EnrollmentStatus } from "../entities/Enrollment.entity.js";
+import {
+  Enrollment,
+  EnrollmentStatus,
+} from "../db/entities/Enrollment.entity.js";
 import { EnrollmentDto } from "../dto/enrollment/enrollment.dto.js";
 import { CreateEnrollmentDto } from "../dto/enrollment/create-enrollment.dto.js";
 import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js";

@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { AssignmentAttachment } from "../entities/AssignmentAttachment.entity.js";
+import { AssignmentAttachment } from "../db/entities/AssignmentAttachment.entity.js";
 import { AttachmentDto } from "../dto/attachment/attachment.dto.js";
 import { CreateAssignmentAttachmentDto } from "../dto/attachment/create-assignment-attachment.dto.js";
 import type { IAssignmentAttachmentRepository } from "../interfaces/repositories/assignment-attachment-repository.interface.js";

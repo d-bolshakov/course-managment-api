@@ -2,7 +2,7 @@ import createError from "http-errors";
 import { plainToInstance } from "class-transformer";
 import { RegisterUserDto } from "../dto/user/register-user.dto.js";
 import { UserDto } from "../dto/user/user.dto.js";
-import { Role } from "../entities/User.entity.js";
+import { Role } from "../db/entities/User.entity.js";
 import { UpdateUserDto } from "../dto/user/update-user.dto.js";
 import type { IUserService } from "../interfaces/services/user-service.interface.js";
 import bcrypt from "bcryptjs";

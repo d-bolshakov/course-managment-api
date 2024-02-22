@@ -2,7 +2,7 @@ import { AuthDto } from "../../dto/user/auth.dto";
 import type { FilterUserDto } from "../../dto/user/filter-user.dto";
 import { UpdateUserDto } from "../../dto/user/update-user.dto";
 import { UserDto } from "../../dto/user/user.dto";
-import { User } from "../../entities/User.entity";
+import { User } from "../../db/entities/User.entity";
 
 export interface IUserRepository {
   create(item: Partial<User>): Promise<UserDto>;

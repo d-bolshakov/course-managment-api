@@ -4,14 +4,12 @@ import path from "path";
 
 const entitiesPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "..",
   "entities",
   "**"
 );
 
 const migrationsPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "..",
   "migrations",
   "**"
 );

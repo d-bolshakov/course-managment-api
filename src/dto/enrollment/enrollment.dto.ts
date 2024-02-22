@@ -1,5 +1,5 @@
 import { Expose, Type } from "class-transformer";
-import { EnrollmentStatus } from "../../entities/Enrollment.entity.js";
+import { EnrollmentStatus } from "../../db/entities/Enrollment.entity.js";
 import { CourseDto } from "../course/course.dto.js";
 import { StudentDto } from "../student/student.dto.js";
 

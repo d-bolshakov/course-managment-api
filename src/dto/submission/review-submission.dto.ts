@@ -6,7 +6,7 @@ import {
   IsString,
   ValidateIf,
 } from "class-validator";
-import { ReviewStatus } from "../../entities/Review.entity.js";
+import { ReviewStatus } from "../../db/entities/Review.entity.js";
 
 export class ReviewSubmissionDto {
   @Expose()

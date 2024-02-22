@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
 import { IsString, IsEmail, MinLength, IsOptional } from "class-validator";
-import type { Role } from "../../entities/User.entity";
+import type { Role } from "../../db/entities/User.entity";
 
 export class UpdateUserDto {
   @Expose()

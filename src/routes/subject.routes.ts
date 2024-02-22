@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { CreateSubjectDto } from "../dto/subject/create-subject.dto.js";
 import { UpdateSubjectDto } from "../dto/subject/update-subject.dto.js";
-import { Role } from "../entities/User.entity.js";
+import { Role } from "../db/entities/User.entity.js";
 import { AuthMiddleware } from "../middleware/auth.middleware.js";
 import { DtoValidationMiddleware } from "../middleware/dto-validation.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";

@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Assignment } from "../entities/Assignment.entity.js";
+import { Assignment } from "../db/entities/Assignment.entity.js";
 import { AssignmentDto } from "../dto/assignment/assignment.dto.js";
 import { CreateAssignmentDto } from "../dto/assignment/create-assignment.dto.js";
 import { UpdateAssignmentDto } from "../dto/assignment/update-assignment.dto.js";
@@ -14,8 +14,8 @@ import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { FilterStudentAssignmentCompletion } from "../dto/assignment/filter-student-assignment.dto.js";
 import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
 import { injectable } from "tsyringe";
-import { EnrollmentStatus } from "../entities/Enrollment.entity.js";
-import { ReviewStatus } from "../entities/Review.entity.js";
+import { EnrollmentStatus } from "../db/entities/Enrollment.entity.js";
+import { ReviewStatus } from "../db/entities/Review.entity.js";
 
 @injectable()
 export class AssignmentRepository implements IAssignmentRepository {

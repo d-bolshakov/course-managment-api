@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from "class-transformer";
-import { Role } from "../../entities/User.entity.js";
+import { Role } from "../../db/entities/User.entity.js";
 import { StudentDto } from "../student/student.dto.js";
 import { TeacherDto } from "../teacher/teacher.dto.js";
 

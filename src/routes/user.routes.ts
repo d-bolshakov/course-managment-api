@@ -6,7 +6,7 @@ import type { UserController } from "../controllers/user.controller.js";
 import { UpdateUserDto } from "../dto/user/update-user.dto.js";
 import { MeMiddleware } from "../middleware/me.middleware.js";
 import { RoleMiddleware } from "../middleware/role.middleware.js";
-import { Role } from "../entities/User.entity.js";
+import { Role } from "../db/entities/User.entity.js";
 import { FilterUserDto } from "../dto/user/filter-user.dto.js";
 import { AccessMiddleware } from "../middleware/access.middleware.js";
 import { UserAccessStrategy } from "../middleware/access-strategies/user.access-strategy.js";

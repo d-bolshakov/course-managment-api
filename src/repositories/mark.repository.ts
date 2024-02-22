@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Mark } from "../entities/Mark.entity.js";
+import { Mark } from "../db/entities/Mark.entity.js";
 import { MarkDto } from "../dto/mark/mark.dto.js";
 import { CreateMarkDto } from "../dto/mark/create-mark.dto.js";
 import type { IMarkRepository } from "../interfaces/repositories/mark-repository.interface.js";

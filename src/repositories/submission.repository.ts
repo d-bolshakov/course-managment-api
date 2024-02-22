@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Submission } from "../entities/Submission.entity.js";
+import { Submission } from "../db/entities/Submission.entity.js";
 import { SubmissionDto } from "../dto/submission/submission.dto.js";
 import { CreateSubmissionDto } from "../dto/submission/create-submission.dto.js";
 import {

@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsNumber, IsOptional } from "class-validator";
-import { Role } from "../../entities/User.entity.js";
+import { Role } from "../../db/entities/User.entity.js";
 
 export class FilterUserDto {
   @Expose()

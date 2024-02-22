@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { SubmissionAttachment } from "../entities/SubmissionAttachment.entity.js";
+import { SubmissionAttachment } from "../db/entities/SubmissionAttachment.entity.js";
 import { AttachmentDto } from "../dto/attachment/attachment.dto.js";
 import { CreateSubmissionAttachmentDto } from "../dto/attachment/create-submission-attachment.dto.js";
 import type { ISubmissionAttachmentRepository } from "../interfaces/repositories/submission-attachment-repository.interface.js";

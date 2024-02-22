@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Subject } from "../entities/Subject.entity.js";
+import { Subject } from "../db/entities/Subject.entity.js";
 import { SubjectDto } from "../dto/subject/subject.dto.js";
 import { In } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";

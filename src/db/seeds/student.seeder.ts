@@ -1,7 +1,7 @@
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 import { DataSource } from "typeorm";
-import { Role, User } from "../../entities/User.entity.js";
-import { Student } from "../../entities/Student.entity.js";
+import { Role, User } from "../entities/User.entity.js";
+import { Student } from "../entities/Student.entity.js";
 
 export default class StudentSeeder implements Seeder {
   public async run(

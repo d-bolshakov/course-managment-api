@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { Teacher } from "../entities/Teacher.entity.js";
+import { Teacher } from "../db/entities/Teacher.entity.js";
 import { TeacherDto } from "../dto/teacher/teacher.dto.js";
 import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
 import { In } from "typeorm";

@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { ReviewSubmissionDto } from "../dto/submission/review-submission.dto.js";
-import { ReviewStatus } from "../entities/Review.entity.js";
+import { ReviewStatus } from "../db/entities/Review.entity.js";
 import type { IReviewService } from "../interfaces/services/review-service.interface.js";
 import { inject, injectable } from "tsyringe";
 import type { IReviewRepository } from "../interfaces/repositories/review-repository.interface.js";

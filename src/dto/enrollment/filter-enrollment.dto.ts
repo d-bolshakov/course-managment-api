@@ -1,6 +1,6 @@
 import { IsEnum, IsNumber, IsOptional } from "class-validator";
 import { Expose, Type } from "class-transformer";
-import { EnrollmentStatus } from "../../entities/Enrollment.entity.js";
+import { EnrollmentStatus } from "../../db/entities/Enrollment.entity.js";
 
 export class FilterEnrollmentDto {
   @Expose()

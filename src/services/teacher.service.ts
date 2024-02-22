@@ -9,7 +9,7 @@ import { inject, injectable } from "tsyringe";
 import type { ITeacherRepository } from "../interfaces/repositories/teacher-repository.interface.js";
 import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
 import type { IUserService } from "../interfaces/services/user-service.interface.js";
-import { Role } from "../entities/User.entity.js";
+import { Role } from "../db/entities/User.entity.js";
 
 @injectable()
 export class TeacherService implements ITeacherService {

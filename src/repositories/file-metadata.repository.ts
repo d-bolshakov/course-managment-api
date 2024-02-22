@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
-import { File } from "../entities/File.entity.js";
+import { File } from "../db/entities/File.entity.js";
 import { FileMetadataDto } from "../dto/file-metadata/file-metadata.dto.js";
 import { CreateFileMetadataDto } from "../dto/file-metadata/create-file-metadata.dto.js";
 import type { IFileMetadataRepository } from "../interfaces/repositories/file-metadata-repository.interface.js";

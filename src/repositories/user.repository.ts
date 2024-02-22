@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
 import { UserDto } from "../dto/user/user.dto.js";
-import { User } from "../entities/User.entity.js";
+import { User } from "../db/entities/User.entity.js";
 import { UpdateUserDto } from "../dto/user/update-user.dto.js";
 import { AuthDto } from "../dto/user/auth.dto.js";
 import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
