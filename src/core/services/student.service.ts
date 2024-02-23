@@ -1,9 +1,9 @@
 import createError from "http-errors";
-import type { IStudentService } from "../interfaces/services/student-service.interface.js";
+import type { IStudentService } from "./interfaces/student-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { IStudentRepository } from "../interfaces/repositories/student-repository.interface.js";
-import type { IUserService } from "../interfaces/services/user-service.interface.js";
-import { Role } from "../db/entities/User.entity.js";
+import type { IStudentRepository } from "../../repositories/interfaces/student-repository.interface.js";
+import type { IUserService } from "./interfaces/user-service.interface.js";
+import { Role } from "../../db/entities/User.entity.js";
 
 @injectable()
 export class StudentService implements IStudentService {

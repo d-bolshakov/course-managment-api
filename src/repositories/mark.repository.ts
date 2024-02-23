@@ -3,7 +3,7 @@ import { AppDataSource } from "../db/data-source.js";
 import { Mark } from "../db/entities/Mark.entity.js";
 import { MarkDto } from "../dto/mark/mark.dto.js";
 import { CreateMarkDto } from "../dto/mark/create-mark.dto.js";
-import type { IMarkRepository } from "../interfaces/repositories/mark-repository.interface.js";
+import type { IMarkRepository } from "./interfaces/mark-repository.interface.js";
 import { injectable } from "tsyringe";
 
 @injectable()

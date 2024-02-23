@@ -3,7 +3,7 @@ import { AppDataSource } from "../db/data-source.js";
 import { Student } from "../db/entities/Student.entity.js";
 import { StudentDto } from "../dto/student/student.dto.js";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-import type { IStudentRepository } from "../interfaces/repositories/student-repository.interface.js";
+import type { IStudentRepository } from "./interfaces/student-repository.interface.js";
 import { injectable } from "tsyringe";
 
 @injectable()

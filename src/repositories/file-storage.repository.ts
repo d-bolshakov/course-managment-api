@@ -2,7 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import type { UploadedFile } from "express-fileupload";
 import { mkdir, open, rm, writeFile, access } from "fs/promises";
-import type { IFileStorageRepository } from "../interfaces/repositories/file-storage-repository.interface";
+import type { IFileStorageRepository } from "./interfaces/file-storage-repository.interface";
 import { injectable } from "tsyringe";
 
 @injectable()

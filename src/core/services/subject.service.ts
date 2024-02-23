@@ -1,10 +1,10 @@
 import createError from "http-errors";
-import { CreateSubjectDto } from "../dto/subject/create-subject.dto.js";
-import { UpdateSubjectDto } from "../dto/subject/update-subject.dto.js";
-import type { ISubjectService } from "../interfaces/services/subject-service.interface.js";
+import { CreateSubjectDto } from "../../dto/subject/create-subject.dto.js";
+import { UpdateSubjectDto } from "../../dto/subject/update-subject.dto.js";
+import type { ISubjectService } from "./interfaces/subject-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
-import type { FilterSubjectDto } from "../dto/subject/filter-subject.dto.js";
+import type { ISubjectRepository } from "../../repositories/interfaces/subject-repository.interface.js";
+import type { FilterSubjectDto } from "../../dto/subject/filter-subject.dto.js";
 
 @injectable()
 export class SubjectService implements ISubjectService {

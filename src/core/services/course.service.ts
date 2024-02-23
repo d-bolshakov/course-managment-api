@@ -1,13 +1,13 @@
 import createError from "http-errors";
-import { CourseDto } from "../dto/course/course.dto.js";
-import { CreateCourseDto } from "../dto/course/create-course.dto.js";
-import { UpdateCourseDto } from "../dto/course/update-course.dto.js";
-import type { ICourseService } from "../interfaces/services/course-service.interface.js";
+import { CourseDto } from "../../dto/course/course.dto.js";
+import { CreateCourseDto } from "../../dto/course/create-course.dto.js";
+import { UpdateCourseDto } from "../../dto/course/update-course.dto.js";
+import type { ICourseService } from "./interfaces/course-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
-import type { ITeacherSubjectRepository } from "../interfaces/repositories/teacher-subject-repository.interface.js";
-import type { FilterTeacherCourseDto } from "../dto/course/filter-teacher-course.dto.js";
-import type { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto.js";
+import type { ICourseRepository } from "../../repositories/interfaces/course-repository.interface.js";
+import type { ITeacherSubjectRepository } from "../../repositories/interfaces/teacher-subject-repository.interface.js";
+import type { FilterTeacherCourseDto } from "../../dto/course/filter-teacher-course.dto.js";
+import type { FilterBaseCourseDto } from "../../dto/course/filter-base-course.dto.js";
 
 @injectable()
 export class CourseService implements ICourseService {

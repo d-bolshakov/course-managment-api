@@ -1,5 +1,5 @@
-import { EnrollmentDto } from "../../dto/enrollment/enrollment.dto";
-import { FilterEnrollmentDto } from "../../dto/enrollment/filter-enrollment.dto";
+import { EnrollmentDto } from "../../../dto/enrollment/enrollment.dto";
+import { FilterEnrollmentDto } from "../../../dto/enrollment/filter-enrollment.dto";
 
 export interface IEnrollmentService {
   create(courseId: number, studentId: number): Promise<EnrollmentDto>;

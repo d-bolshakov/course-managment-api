@@ -1,8 +1,8 @@
 import createError from "http-errors";
-import type { IMarkService } from "../interfaces/services/mark-service.interface.js";
-import { CreateMarkDto } from "../dto/mark/create-mark.dto.js";
+import type { IMarkService } from "./interfaces/mark-service.interface.js";
+import { CreateMarkDto } from "../../dto/mark/create-mark.dto.js";
 import { inject, injectable } from "tsyringe";
-import type { IMarkRepository } from "../interfaces/repositories/mark-repository.interface.js";
+import type { IMarkRepository } from "../../repositories/interfaces/mark-repository.interface.js";
 
 @injectable()
 export class MarkService implements IMarkService {

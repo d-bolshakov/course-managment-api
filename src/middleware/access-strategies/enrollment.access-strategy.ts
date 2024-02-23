@@ -2,7 +2,7 @@ import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
 import { Role } from "../../db/entities/User.entity.js";
 import { container } from "tsyringe";
-import type { IEnrollmentRepository } from "../../interfaces/repositories/enrollment-repository.interface.js";
+import type { IEnrollmentRepository } from "../../repositories/interfaces/enrollment-repository.interface.js";
 
 export class EnrollmentAccessStrategy implements AccessStrategy {
   async hasAccess(

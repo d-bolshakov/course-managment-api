@@ -1,5 +1,5 @@
 import type { UploadedFile } from "express-fileupload";
-import { AttachmentDto } from "../../dto/attachment/attachment.dto";
+import { AttachmentDto } from "../../../dto/attachment/attachment.dto";
 
 export interface IAttachmentService {
   create(

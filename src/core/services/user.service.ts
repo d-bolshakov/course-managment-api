@@ -1,15 +1,15 @@
 import createError from "http-errors";
 import { plainToInstance } from "class-transformer";
-import { RegisterUserDto } from "../dto/user/register-user.dto.js";
-import { UserDto } from "../dto/user/user.dto.js";
-import { Role } from "../db/entities/User.entity.js";
-import { UpdateUserDto } from "../dto/user/update-user.dto.js";
-import type { IUserService } from "../interfaces/services/user-service.interface.js";
+import { RegisterUserDto } from "../../dto/user/register-user.dto.js";
+import { UserDto } from "../../dto/user/user.dto.js";
+import { Role } from "../../db/entities/User.entity.js";
+import { UpdateUserDto } from "../../dto/user/update-user.dto.js";
+import type { IUserService } from "./interfaces/user-service.interface.js";
 import bcrypt from "bcryptjs";
-import { LoginUserDto } from "../dto/user/login-user.dto.js";
+import { LoginUserDto } from "../../dto/user/login-user.dto.js";
 import { inject, injectable } from "tsyringe";
-import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
-import type { FilterUserDto } from "../dto/user/filter-user.dto.js";
+import type { IUserRepository } from "../../repositories/interfaces/user-repository.interface.js";
+import type { FilterUserDto } from "../../dto/user/filter-user.dto.js";
 
 @injectable()
 export class UserService implements IUserService {

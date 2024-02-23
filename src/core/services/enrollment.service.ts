@@ -1,10 +1,10 @@
 import createError from "http-errors";
-import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js";
-import type { IEnrollmentService } from "../interfaces/services/enrollment-service.interface.js";
-import { UpdateEnrollmentDto } from "../dto/enrollment/update-enrollment.dto.js";
+import { FilterEnrollmentDto } from "../../dto/enrollment/filter-enrollment.dto.js";
+import type { IEnrollmentService } from "./interfaces/enrollment-service.interface.js";
+import { UpdateEnrollmentDto } from "../../dto/enrollment/update-enrollment.dto.js";
 import { inject, injectable } from "tsyringe";
-import type { IEnrollmentRepository } from "../interfaces/repositories/enrollment-repository.interface.js";
-import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
+import type { IEnrollmentRepository } from "../../repositories/interfaces/enrollment-repository.interface.js";
+import type { ICourseRepository } from "../../repositories/interfaces/course-repository.interface.js";
 
 @injectable()
 export class EnrollmentService implements IEnrollmentService {

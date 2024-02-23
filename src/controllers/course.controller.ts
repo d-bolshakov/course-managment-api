@@ -1,6 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import type { NextFunction, Request, Response } from "express";
-import type { ICourseService } from "../interfaces/services/course-service.interface";
+import type { ICourseService } from "../core/services/interfaces/course-service.interface";
 import type { FilterBaseCourseDto } from "../dto/course/filter-base-course.dto";
 
 @injectable()

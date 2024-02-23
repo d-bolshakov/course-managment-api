@@ -10,7 +10,7 @@ import { FilterEnrollmentDto } from "../dto/enrollment/filter-enrollment.dto.js"
 import type { FindOptionsWhere } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { UpdateEnrollmentDto } from "../dto/enrollment/update-enrollment.dto.js";
-import type { IEnrollmentRepository } from "../interfaces/repositories/enrollment-repository.interface.js";
+import type { IEnrollmentRepository } from "./interfaces/enrollment-repository.interface.js";
 import { injectable } from "tsyringe";
 
 @injectable()

@@ -5,7 +5,7 @@ import { SubjectDto } from "../dto/subject/subject.dto.js";
 import { In } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { UpdateSubjectDto } from "../dto/subject/update-subject.dto.js";
-import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
+import type { ISubjectRepository } from "./interfaces/subject-repository.interface.js";
 import { injectable } from "tsyringe";
 import type { FilterSubjectDto } from "../dto/subject/filter-subject.dto.js";
 

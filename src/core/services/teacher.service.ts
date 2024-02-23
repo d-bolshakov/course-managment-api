@@ -1,15 +1,15 @@
 import createError from "http-errors";
 import { plainToInstance } from "class-transformer";
-import { CreateTeacherDto } from "../dto/teacher/create-teacher.dto.js";
-import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
-import { TeacherDto } from "../dto/teacher/teacher.dto.js";
-import { UpdateTeacherDto } from "../dto/teacher/update-teacher.dto.js";
-import type { ITeacherService } from "../interfaces/services/teacher-service.interface.js";
+import { CreateTeacherDto } from "../../dto/teacher/create-teacher.dto.js";
+import { FilterTeacherDto } from "../../dto/teacher/filter-teacher.dto.js";
+import { TeacherDto } from "../../dto/teacher/teacher.dto.js";
+import { UpdateTeacherDto } from "../../dto/teacher/update-teacher.dto.js";
+import type { ITeacherService } from "./interfaces/teacher-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { ITeacherRepository } from "../interfaces/repositories/teacher-repository.interface.js";
-import type { ISubjectRepository } from "../interfaces/repositories/subject-repository.interface.js";
-import type { IUserService } from "../interfaces/services/user-service.interface.js";
-import { Role } from "../db/entities/User.entity.js";
+import type { ITeacherRepository } from "../../repositories/interfaces/teacher-repository.interface.js";
+import type { ISubjectRepository } from "../../repositories/interfaces/subject-repository.interface.js";
+import type { IUserService } from "./interfaces/user-service.interface.js";
+import { Role } from "../../db/entities/User.entity.js";
 
 @injectable()
 export class TeacherService implements ITeacherService {

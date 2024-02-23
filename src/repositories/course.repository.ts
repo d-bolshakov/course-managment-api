@@ -12,7 +12,7 @@ import type { FindOptionsWhere } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { EnrollmentStatus } from "../db/entities/Enrollment.entity.js";
 import { UpdateCourseDto } from "../dto/course/update-course.dto.js";
-import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
+import type { ICourseRepository } from "./interfaces/course-repository.interface.js";
 import { injectable } from "tsyringe";
 
 @injectable()

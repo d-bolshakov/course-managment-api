@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { IAssignmentService } from "../interfaces/services/assignment-service.interface";
+import type { IAssignmentService } from "../core/services/interfaces/assignment-service.interface";
 
 @injectable()
 export class AssignmentController {

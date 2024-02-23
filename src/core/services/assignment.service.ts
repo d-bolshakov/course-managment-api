@@ -1,18 +1,18 @@
 import createError from "http-errors";
 import type { UploadedFile } from "express-fileupload";
 import { plainToInstance } from "class-transformer";
-import { AssignmentDto } from "../dto/assignment/assignment.dto.js";
-import { CreateAssignmentDto } from "../dto/assignment/create-assignment.dto.js";
-import { FilterStudentAssignmentDto } from "../dto/assignment/filter-student-assignment.dto.js";
-import { UpdateAssignmentDto } from "../dto/assignment/update-assignment.dto.js";
-import type { IAssignmentService } from "../interfaces/services/assignment-service.interface.js";
+import { AssignmentDto } from "../../dto/assignment/assignment.dto.js";
+import { CreateAssignmentDto } from "../../dto/assignment/create-assignment.dto.js";
+import { FilterStudentAssignmentDto } from "../../dto/assignment/filter-student-assignment.dto.js";
+import { UpdateAssignmentDto } from "../../dto/assignment/update-assignment.dto.js";
+import type { IAssignmentService } from "./interfaces/assignment-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
-import type { ICourseRepository } from "../interfaces/repositories/course-repository.interface.js";
-import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
-import type { FilterBaseAssignmentDto } from "../dto/assignment/filter-base-assignment.dto.js";
-import type { UpdateAssignmentRequestBodyDto } from "../dto/assignment/update-assignment-request-body.dto.js";
-import type { ISubmissionRepository } from "../interfaces/repositories/submission-repository.interface.js";
+import type { IAssignmentRepository } from "../../repositories/interfaces/assignment-repository.interface.js";
+import type { ICourseRepository } from "../../repositories/interfaces/course-repository.interface.js";
+import type { IAttachmentService } from "./interfaces/attachment-service.interface.js";
+import type { FilterBaseAssignmentDto } from "../../dto/assignment/filter-base-assignment.dto.js";
+import type { UpdateAssignmentRequestBodyDto } from "../../dto/assignment/update-assignment-request-body.dto.js";
+import type { ISubmissionRepository } from "../../repositories/interfaces/submission-repository.interface.js";
 
 @injectable()
 export class AssignmentService implements IAssignmentService {

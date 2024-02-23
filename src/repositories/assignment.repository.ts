@@ -12,7 +12,7 @@ import { LessThanOrEqual, MoreThan, Not } from "typeorm";
 import type { FindOptionsWhere } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { FilterStudentAssignmentCompletion } from "../dto/assignment/filter-student-assignment.dto.js";
-import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
+import type { IAssignmentRepository } from "./interfaces/assignment-repository.interface.js";
 import { injectable } from "tsyringe";
 import { EnrollmentStatus } from "../db/entities/Enrollment.entity.js";
 import { ReviewStatus } from "../db/entities/Review.entity.js";

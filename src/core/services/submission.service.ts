@@ -1,18 +1,18 @@
 import createError from "http-errors";
 import type { UploadedFile } from "express-fileupload";
 import { plainToInstance } from "class-transformer";
-import { ReviewSubmissionDto } from "../dto/submission/review-submission.dto.js";
-import { CreateSubmissionDto } from "../dto/submission/create-submission.dto.js";
-import { FilterSubmissionDto } from "../dto/submission/filter-submission.dto.js";
-import { SubmissionDto } from "../dto/submission/submission.dto.js";
-import type { ISubmissionService } from "../interfaces/services/submission-service.interface.js";
+import { ReviewSubmissionDto } from "../../dto/submission/review-submission.dto.js";
+import { CreateSubmissionDto } from "../../dto/submission/create-submission.dto.js";
+import { FilterSubmissionDto } from "../../dto/submission/filter-submission.dto.js";
+import { SubmissionDto } from "../../dto/submission/submission.dto.js";
+import type { ISubmissionService } from "./interfaces/submission-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { IAssignmentRepository } from "../interfaces/repositories/assignment-repository.interface.js";
-import type { ISubmissionRepository } from "../interfaces/repositories/submission-repository.interface.js";
-import type { IReviewService } from "../interfaces/services/review-service.interface.js";
-import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
-import type { UpdateSubmissionRequestBodyDto } from "../dto/submission/update-submission-request-body.dto.js";
-import { UpdateSubmissionDto } from "../dto/submission/update-submission.dto.js";
+import type { IAssignmentRepository } from "../../repositories/interfaces/assignment-repository.interface.js";
+import type { ISubmissionRepository } from "../../repositories/interfaces/submission-repository.interface.js";
+import type { IReviewService } from "./interfaces/review-service.interface.js";
+import type { IAttachmentService } from "./interfaces/attachment-service.interface.js";
+import type { UpdateSubmissionRequestBodyDto } from "../../dto/submission/update-submission-request-body.dto.js";
+import { UpdateSubmissionDto } from "../../dto/submission/update-submission.dto.js";
 
 @injectable()
 export class SubmissionService implements ISubmissionService {

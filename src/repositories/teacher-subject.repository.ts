@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { AppDataSource } from "../db/data-source.js";
 import { TeacherSubjectDto } from "../dto/teacher-subject/teacher-subject.dto.js";
-import type { ITeacherSubjectRepository } from "../interfaces/repositories/teacher-subject-repository.interface.js";
+import type { ITeacherSubjectRepository } from "./interfaces/teacher-subject-repository.interface.js";
 import { injectable } from "tsyringe";
 
 @injectable()

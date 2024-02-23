@@ -1,7 +1,7 @@
-import { CreateSubjectDto } from "../../dto/subject/create-subject.dto";
-import type { FilterSubjectDto } from "../../dto/subject/filter-subject.dto";
-import { SubjectDto } from "../../dto/subject/subject.dto";
-import { UpdateSubjectDto } from "../../dto/subject/update-subject.dto";
+import { CreateSubjectDto } from "../../../dto/subject/create-subject.dto";
+import type { FilterSubjectDto } from "../../../dto/subject/filter-subject.dto";
+import { SubjectDto } from "../../../dto/subject/subject.dto";
+import { UpdateSubjectDto } from "../../../dto/subject/update-subject.dto";
 
 export interface ISubjectService {
   create(dto: CreateSubjectDto): Promise<SubjectDto>;

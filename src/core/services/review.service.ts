@@ -1,10 +1,10 @@
 import createError from "http-errors";
-import { ReviewSubmissionDto } from "../dto/submission/review-submission.dto.js";
-import { ReviewStatus } from "../db/entities/Review.entity.js";
-import type { IReviewService } from "../interfaces/services/review-service.interface.js";
+import { ReviewSubmissionDto } from "../../dto/submission/review-submission.dto.js";
+import { ReviewStatus } from "../../db/entities/Review.entity.js";
+import type { IReviewService } from "./interfaces/review-service.interface.js";
 import { inject, injectable } from "tsyringe";
-import type { IReviewRepository } from "../interfaces/repositories/review-repository.interface.js";
-import type { IMarkService } from "../interfaces/services/mark-service.interface.js";
+import type { IReviewRepository } from "../../repositories/interfaces/review-repository.interface.js";
+import type { IMarkService } from "./interfaces/mark-service.interface.js";
 
 @injectable()
 export class ReviewService implements IReviewService {

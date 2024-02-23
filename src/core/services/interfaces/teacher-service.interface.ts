@@ -1,7 +1,7 @@
-import { CreateTeacherDto } from "../../dto/teacher/create-teacher.dto";
-import { FilterTeacherDto } from "../../dto/teacher/filter-teacher.dto";
-import { TeacherDto } from "../../dto/teacher/teacher.dto";
-import { UpdateTeacherDto } from "../../dto/teacher/update-teacher.dto";
+import { CreateTeacherDto } from "../../../dto/teacher/create-teacher.dto";
+import { FilterTeacherDto } from "../../../dto/teacher/filter-teacher.dto";
+import { TeacherDto } from "../../../dto/teacher/teacher.dto";
+import { UpdateTeacherDto } from "../../../dto/teacher/update-teacher.dto";
 
 export interface ITeacherService {
   create(dto: CreateTeacherDto): Promise<TeacherDto>;

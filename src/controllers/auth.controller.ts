@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { inject, injectable } from "tsyringe";
-import type { IUserService } from "../interfaces/services/user-service.interface.js";
+import type { IUserService } from "../core/services/interfaces/user-service.interface.js";
 
 @injectable()
 export class AuthController {

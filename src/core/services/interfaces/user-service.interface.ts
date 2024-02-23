@@ -1,9 +1,9 @@
-import type { FilterUserDto } from "../../dto/user/filter-user.dto";
-import { LoginUserDto } from "../../dto/user/login-user.dto";
-import { RegisterUserDto } from "../../dto/user/register-user.dto";
-import type { UpdateUserDto } from "../../dto/user/update-user.dto";
-import { UserDto } from "../../dto/user/user.dto";
-import type { Role } from "../../db/entities/User.entity";
+import type { FilterUserDto } from "../../../dto/user/filter-user.dto";
+import { LoginUserDto } from "../../../dto/user/login-user.dto";
+import { RegisterUserDto } from "../../../dto/user/register-user.dto";
+import type { UpdateUserDto } from "../../../dto/user/update-user.dto";
+import { UserDto } from "../../../dto/user/user.dto";
+import type { Role } from "../../../db/entities/User.entity";
 
 export interface IUserService {
   create(dto: RegisterUserDto): Promise<UserDto>;

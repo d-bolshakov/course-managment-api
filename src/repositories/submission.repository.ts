@@ -11,7 +11,7 @@ import { IsNull } from "typeorm";
 import type { FindOptionsWhere } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
 import { UpdateSubmissionDto } from "../dto/submission/update-submission.dto.js";
-import type { ISubmissionRepository } from "../interfaces/repositories/submission-repository.interface.js";
+import type { ISubmissionRepository } from "./interfaces/submission-repository.interface.js";
 import { injectable } from "tsyringe";
 
 @injectable()

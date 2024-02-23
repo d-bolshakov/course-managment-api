@@ -1,5 +1,5 @@
 import type { UploadedFile } from "express-fileupload";
-import { FileMetadataDto } from "../../dto/file-metadata/file-metadata.dto.js";
+import { FileMetadataDto } from "../../../dto/file-metadata/file-metadata.dto.js";
 import { ReadStream } from "fs";
 
 export interface IFileService {

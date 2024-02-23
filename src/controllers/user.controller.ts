@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { IUserService } from "../interfaces/services/user-service.interface.js";
+import type { IUserService } from "../core/services/interfaces/user-service.interface.js";
 
 @injectable()
 export class UserController {

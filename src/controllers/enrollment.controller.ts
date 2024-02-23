@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { IEnrollmentService } from "../interfaces/services/enrollment-service.interface";
+import type { IEnrollmentService } from "../core/services/interfaces/enrollment-service.interface";
 
 @injectable()
 export class EnrollmentController {

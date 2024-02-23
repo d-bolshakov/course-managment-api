@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { IFileService } from "../interfaces/services/file-service.interface";
+import type { IFileService } from "../core/services/interfaces/file-service.interface";
 import createError from "http-errors";
 
 @injectable()

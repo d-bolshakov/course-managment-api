@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import type { Request, Response, NextFunction } from "express";
 import { container } from "tsyringe";
-import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
+import type { IUserRepository } from "../repositories/interfaces/user-repository.interface.js";
 
 export const AuthMiddleware = (options?: {
   strict?: boolean;

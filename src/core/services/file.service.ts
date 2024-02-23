@@ -1,13 +1,13 @@
 import { v4 } from "uuid";
 import createError from "http-errors";
-import type { IFileService } from "../interfaces/services/file-service.interface.js";
-import { CreateFileMetadataDto } from "../dto/file-metadata/create-file-metadata.dto.js";
+import type { IFileService } from "./interfaces/file-service.interface.js";
+import { CreateFileMetadataDto } from "../../dto/file-metadata/create-file-metadata.dto.js";
 import type { UploadedFile } from "express-fileupload";
-import { FileMetadataDto } from "../dto/file-metadata/file-metadata.dto.js";
+import { FileMetadataDto } from "../../dto/file-metadata/file-metadata.dto.js";
 import { inject, injectable } from "tsyringe";
-import type { IFileMetadataRepository } from "../interfaces/repositories/file-metadata-repository.interface.js";
-import type { IFileStorageRepository } from "../interfaces/repositories/file-storage-repository.interface.js";
-import { EventBus } from "../events/event-bus.js";
+import type { IFileMetadataRepository } from "../../repositories/interfaces/file-metadata-repository.interface.js";
+import type { IFileStorageRepository } from "../../repositories/interfaces/file-storage-repository.interface.js";
+import { EventBus } from "../../events/event-bus.js";
 
 @injectable()
 export class FileService implements IFileService {

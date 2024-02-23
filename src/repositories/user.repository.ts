@@ -4,7 +4,7 @@ import { UserDto } from "../dto/user/user.dto.js";
 import { User } from "../db/entities/User.entity.js";
 import { UpdateUserDto } from "../dto/user/update-user.dto.js";
 import { AuthDto } from "../dto/user/auth.dto.js";
-import type { IUserRepository } from "../interfaces/repositories/user-repository.interface.js";
+import type { IUserRepository } from "./interfaces/user-repository.interface.js";
 import { injectable } from "tsyringe";
 import type { FilterUserDto } from "../dto/user/filter-user.dto.js";
 import type { FindOptionsWhere } from "typeorm";

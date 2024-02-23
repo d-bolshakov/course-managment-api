@@ -2,7 +2,7 @@ import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
 import { Role } from "../../db/entities/User.entity.js";
 import { container } from "tsyringe";
-import type { IFileMetadataRepository } from "../../interfaces/repositories/file-metadata-repository.interface.js";
+import type { IFileMetadataRepository } from "../../repositories/interfaces/file-metadata-repository.interface.js";
 
 export class FileAccessStrategy implements AccessStrategy {
   async hasAccess(

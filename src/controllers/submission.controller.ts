@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { ISubmissionService } from "../interfaces/services/submission-service.interface";
+import type { ISubmissionService } from "../core/services/interfaces/submission-service.interface";
 
 @injectable()
 export class SubmissionController {

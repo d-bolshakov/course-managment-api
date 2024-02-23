@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { ISubjectService } from "../interfaces/services/subject-service.interface";
+import type { ISubjectService } from "../core/services/interfaces/subject-service.interface";
 
 @injectable()
 export class SubjectController {

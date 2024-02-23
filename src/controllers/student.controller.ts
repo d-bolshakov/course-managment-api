@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import type { IStudentService } from "../interfaces/services/student-service.interface";
-import type { ICourseService } from "../interfaces/services/course-service.interface";
-import type { ISubmissionService } from "../interfaces/services/submission-service.interface";
-import type { IAssignmentService } from "../interfaces/services/assignment-service.interface";
+import type { IStudentService } from "../core/services/interfaces/student-service.interface";
+import type { ICourseService } from "../core/services/interfaces/course-service.interface";
+import type { ISubmissionService } from "../core/services/interfaces/submission-service.interface";
+import type { IAssignmentService } from "../core/services/interfaces/assignment-service.interface";
 
 @injectable()
 export class StudentController {

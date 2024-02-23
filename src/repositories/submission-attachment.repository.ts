@@ -3,7 +3,7 @@ import { AppDataSource } from "../db/data-source.js";
 import { SubmissionAttachment } from "../db/entities/SubmissionAttachment.entity.js";
 import { AttachmentDto } from "../dto/attachment/attachment.dto.js";
 import { CreateSubmissionAttachmentDto } from "../dto/attachment/create-submission-attachment.dto.js";
-import type { ISubmissionAttachmentRepository } from "../interfaces/repositories/submission-attachment-repository.interface.js";
+import type { ISubmissionAttachmentRepository } from "./interfaces/submission-attachment-repository.interface.js";
 import { injectable } from "tsyringe";
 import { In } from "typeorm";
 

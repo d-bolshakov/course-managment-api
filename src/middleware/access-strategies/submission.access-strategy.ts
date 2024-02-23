@@ -2,7 +2,7 @@ import type { AccessStrategy } from "./access-strategy.js";
 import { UserDto } from "../../dto/user/user.dto.js";
 import { Role } from "../../db/entities/User.entity.js";
 import { container } from "tsyringe";
-import type { ISubmissionRepository } from "../../interfaces/repositories/submission-repository.interface.js";
+import type { ISubmissionRepository } from "../../repositories/interfaces/submission-repository.interface.js";
 
 export class SubmissionAccessStrategy implements AccessStrategy {
   async hasAccess(

@@ -1,6 +1,6 @@
-import { LoginUserDto } from "../../dto/user/login-user.dto";
-import { RegisterUserDto } from "../../dto/user/register-user.dto";
-import { UserDto } from "../../dto/user/user.dto";
+import { LoginUserDto } from "../../../dto/user/login-user.dto";
+import { RegisterUserDto } from "../../../dto/user/register-user.dto";
+import { UserDto } from "../../../dto/user/user.dto";
 
 export interface IAuthService {
   login(

@@ -1,4 +1,4 @@
-import { StudentDto } from "../../dto/student/student.dto";
+import { StudentDto } from "../../../dto/student/student.dto";
 
 export interface IStudentService {
   create(userId: number): Promise<StudentDto>;

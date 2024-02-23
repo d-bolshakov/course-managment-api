@@ -1,11 +1,11 @@
 import type { UploadedFile } from "express-fileupload";
-import type { IAttachmentService } from "../interfaces/services/attachment-service.interface.js";
-import { FileMetadataDto } from "../dto/file-metadata/file-metadata.dto.js";
+import type { IAttachmentService } from "./interfaces/attachment-service.interface.js";
+import { FileMetadataDto } from "../../dto/file-metadata/file-metadata.dto.js";
 import { inject, injectable } from "tsyringe";
-import type { ISubmissionAttachmentRepository } from "../interfaces/repositories/submission-attachment-repository.interface.js";
-import type { IFileService } from "../interfaces/services/file-service.interface.js";
+import type { ISubmissionAttachmentRepository } from "../../repositories/interfaces/submission-attachment-repository.interface.js";
+import type { IFileService } from "./interfaces/file-service.interface.js";
 import createError from "http-errors";
-import { EventBus } from "../events/event-bus.js";
+import { EventBus } from "../../events/event-bus.js";
 
 @injectable()
 export class SubmissionAttachmentService implements IAttachmentService {

@@ -6,11 +6,11 @@ import { FilterTeacherDto } from "../dto/teacher/filter-teacher.dto.js";
 import { In } from "typeorm";
 import type { FindManyOptions } from "typeorm";
 import { getPaginationOffset } from "../utils/pagination-offset.util.js";
-import type { ITeacherRepository } from "../interfaces/repositories/teacher-repository.interface.js";
+import type { ITeacherRepository } from "./interfaces/teacher-repository.interface.js";
 import type { CreateTeacherDto } from "../dto/teacher/create-teacher.dto.js";
 import type { UpdateTeacherDto } from "../dto/teacher/update-teacher.dto.js";
 import { inject, injectable } from "tsyringe";
-import type { ITeacherSubjectRepository } from "../interfaces/repositories/teacher-subject-repository.interface.js";
+import type { ITeacherSubjectRepository } from "./interfaces/teacher-subject-repository.interface.js";
 
 @injectable()
 export class TeacherRepository implements ITeacherRepository {
